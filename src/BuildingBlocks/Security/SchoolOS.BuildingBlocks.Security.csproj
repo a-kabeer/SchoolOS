@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Multi-tenancy context, security abstractions and authorization interfaces</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>
