@@ -7,6 +7,8 @@
     <ProjectReference Include="..\..\BuildingBlocks\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Security\SchoolOS.BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Observability\SchoolOS.BuildingBlocks.Observability.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Persistence\SchoolOS.BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\PlatformModules\Tenants\SchoolOS.PlatformModules.Tenants.csproj" />
   </ItemGroup>
 
   <ItemGroup>
