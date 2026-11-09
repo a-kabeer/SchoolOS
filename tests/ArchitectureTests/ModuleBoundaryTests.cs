@@ -12,10 +12,7 @@ public class ModuleBoundaryTests
     {
         var result = Types.InAssembly(typeof(Entity<>).Assembly)
             .ShouldNot()
-            .HaveDependencyOn("SchoolOS.Cloud.Api")
-            .And()
-            .ShouldNot()
-            .HaveDependencyOn("SchoolOS.Local.Api")
+            .HaveDependencyOnAny("SchoolOS.Cloud.Api", "SchoolOS.Local.Api")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
