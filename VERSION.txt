@@ -1,0 +1,4 @@
+SchoolOS Project Blueprint v1.7
+Updated: 9 November 2026
+Status: Planning baseline; no implementation work is implied.
+Major update: Added ephemeral session-based demo design and ADR-021; tasks BCP-036 through BCP-041; updated demo requirements, task/progress trackers, risk register, open questions, README and changelog. All implementation remains Not Started.
