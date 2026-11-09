@@ -1,0 +1,83 @@
+name: SchoolOS CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+      - 'setup/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend:
+    name: Backend Build & Tests (.NET 10)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: schoolos_dev
+          POSTGRES_PASSWORD: schoolos_dev_password
+          POSTGRES_DB: schoolos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore SchoolOS.sln
+
+      - name: Build solution
+        run: dotnet build SchoolOS.sln --no-restore --configuration Release
+
+      - name: Run Unit Tests
+        run: dotnet test tests/UnitTests/SchoolOS.UnitTests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Run Architecture Tests
+        run: dotnet test tests/ArchitectureTests/SchoolOS.ArchitectureTests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Run Multi-Tenant Integration Tests
+        run: dotnet test tests/IntegrationTests/SchoolOS.IntegrationTests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Vulnerability Audit
+        run: dotnet list SchoolOS.sln package --vulnerable --include-transitive
+
+  frontend:
+    name: Frontend Build (React + Vite)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend/schoolos-web
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: frontend/schoolos-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck and Build
+        run: npm run build
