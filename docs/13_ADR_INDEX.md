@@ -68,3 +68,12 @@ Decision record: `decisions/ADR-020-BUSINESS-CUSTOMER-PLATFORM.md`.
 | ADR-021 | Ephemeral Session-Based Demo | Temporary session-bound workspace; synthetic-only data; immediate logout revocation; server leases/expiry; retryable cleanup; isolated Demo Runtime | Accepted product direction; storage/timeouts and retention details pending |
 
 Decision record: `decisions/ADR-021-EPHEMERAL-SESSION-BASED-DEMO.md`. Full design: `41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md`.
+
+## Platform & Tenancy Foundation Decisions (Phase 1)
+
+| ADR | Title | Direction | Status |
+|---|---|---|---|
+| ADR-022 | Primary Identifier Strategy (UUIDv7) | Adopt UUIDv7 via `Guid.CreateVersion7()` for time-ordered B-tree index locality and offline generation | Accepted |
+| ADR-023 | Local-First Identity and Authentication Strategy | Two-tier architecture with provider-independent `ITenantContext` and offline ASP.NET Core Identity on Local Data Plane | Accepted |
+
+Decision records: `decisions/ADR-022-IDENTIFIER-STRATEGY.md`, `decisions/ADR-023-LOCAL-FIRST-AUTHENTICATION-STRATEGY.md`.

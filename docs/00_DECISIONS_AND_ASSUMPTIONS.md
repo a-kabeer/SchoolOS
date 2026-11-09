@@ -60,6 +60,7 @@ All six belong in the product vision. They do not all need to ship in the first 
 | Frontend | React + TypeScript |
 | Frontend build | Vite (recommended) |
 | Database | PostgreSQL |
+| Primary identifier strategy | UUIDv7 via Guid.CreateVersion7() (RFC 9562); see ADR-022 |
 | ORM | Entity Framework Core 10 |
 | PostgreSQL provider | Compatible Npgsql EF Core 10 release; verify latest patch at implementation time |
 | Authentication | ASP.NET Core Identity or a carefully selected identity solution |

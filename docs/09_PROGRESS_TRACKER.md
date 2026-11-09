@@ -14,8 +14,8 @@
 
 | Phase | Name | Status | Owner | Evidence / notes |
 |---|---|---|---|---|
-| 0 | Product discovery and design | Not Started | Product owner + technical lead | |
-| 1 | Platform and tenancy foundation | Not Started | Technical lead | |
+| 0 | Product discovery and design | Completed | Product owner + technical lead | Phase 0 baseline merged to main at commit 66e0d35 |
+| 1 | Platform and tenancy foundation | In Progress | Technical lead | Phase 1A implemented: multi-tenant domain, EF Core 10 persistence, RLS, 26 unit/arch/integration tests passing |
 | 2 | Admissions and student lifecycle | Not Started | Team | |
 | 3 | Fees, finance and reconciliation | Not Started | Team | |
 | 4 | Academics and offline workflows | Not Started | Team | |
@@ -32,10 +32,10 @@ Copy this table for each phase or migrate it to GitHub Issues/Projects.
 
 | Task ID | Phase | Module | Task | Priority | Status | Owner | Dependencies | Acceptance evidence |
 |---|---|---|---|---|---|---|---|---|
-| PLAT-001 | 1 | Platform | Create ASP.NET Core solution | Critical | Not Started | | | |
-| PLAT-002 | 1 | Frontend | Create React + TypeScript app | High | Not Started | | PLAT-001 | |
-| TEN-001 | 1 | Organization | Implement tenant/school/campus model | Critical | Not Started | | PLAT-001 | |
-| SEC-001 | 1 | Identity | Implement scoped authorization | Critical | Not Started | | TEN-001 | |
+| PLAT-001 | 1 | Platform | Create ASP.NET Core solution | Critical | Completed | Technical lead | | Solution scaffolded with .NET 10, OpenAPI, health endpoints |
+| PLAT-002 | 1 | Frontend | Create React + TypeScript app | High | Completed | Technical lead | PLAT-001 | React 19 + TypeScript + Vite production build verified |
+| TEN-001 | 1 | Organization | Implement tenant/school/campus model | Critical | Completed | Technical lead | PLAT-001 | UUIDv7 domain models, EF Core 10 mappings, RLS, integration tests passing |
+| SEC-001 | 1 | Identity | Implement scoped authorization | Critical | In Progress | Technical lead | TEN-001 | Claims-based ITenantContext implemented; RBAC in Phase 1B |
 | FIN-001 | 3 | Finance | Design chart of accounts and posting rules | Critical | Not Started | | Phase 0 finance rules | |
 | FIN-002 | 3 | Fees | Implement invoice/payment allocation model | Critical | Not Started | | FIN-001 | |
 | REC-001 | 3 | Reconciliation | Import bank statement batches | High | Not Started | | FIN-002 | |
