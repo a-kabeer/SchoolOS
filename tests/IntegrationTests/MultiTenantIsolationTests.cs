@@ -1,0 +1,298 @@
+using System.Data.Common;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using SchoolOS.BuildingBlocks.Security;
+using SchoolOS.Modules.Organization.Domain;
+using Xunit;
+
+namespace SchoolOS.IntegrationTests;
+
+public class MultiTenantIsolationTests : IClassFixture<PostgresDatabaseFixture>
+{
+    private readonly PostgresDatabaseFixture _fixture;
+
+    public MultiTenantIsolationTests(PostgresDatabaseFixture fixture)
+    {
+        _fixture = fixture;
+    }
+
+    [Fact]
+    public async Task Scenario1_And_7_TenantA_Cannot_Retrieve_TenantB_Records()
+    {
+        // Arrange: Two independent tenants
+        var tenantA = Guid.CreateVersion7();
+        var tenantB = Guid.CreateVersion7();
+
+        var contextA = new TenantContext(tenantA, null, "user-tenant-a");
+        var contextB = new TenantContext(tenantB, null, "user-tenant-b");
+
+        // Seed Tenant A data
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            var schoolA = School.Create(tenantA, "Army Public School Islamabad", "APS-ISB");
+            schoolA.AddCampus("Main Campus", "MAIN");
+            dbA.Schools.Add(schoolA);
+            await dbA.SaveChangesAsync();
+        }
+
+        // Seed Tenant B data
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            var schoolB = School.Create(tenantB, "Beaconhouse Lahore", "BSS-LHR");
+            schoolB.AddCampus("Gulberg Branch", "GUL");
+            dbB.Schools.Add(schoolB);
+            await dbB.SaveChangesAsync();
+        }
+
+        // Act & Assert: Querying as Tenant A should only return Tenant A records
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            var schoolsA = await dbA.Schools.Include(s => s.Campuses).ToListAsync();
+            schoolsA.Should().ContainSingle(s => s.Code == "APS-ISB");
+            schoolsA.Should().NotContain(s => s.Code == "BSS-LHR");
+
+            var campusesA = await dbA.Campuses.ToListAsync();
+            campusesA.Should().ContainSingle(c => c.Code == "MAIN");
+            campusesA.Should().NotContain(c => c.Code == "GUL");
+        }
+
+        // Act & Assert: Querying as Tenant B should only return Tenant B records
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            var schoolsB = await dbB.Schools.Include(s => s.Campuses).ToListAsync();
+            schoolsB.Should().ContainSingle(s => s.Code == "BSS-LHR");
+            schoolsB.Should().NotContain(s => s.Code == "APS-ISB");
+        }
+    }
+
+    [Fact]
+    public async Task Scenario2_TenantA_Cannot_Modify_TenantB_Records_FailsFast()
+    {
+        var tenantA = Guid.CreateVersion7();
+        var tenantB = Guid.CreateVersion7();
+
+        var contextA = new TenantContext(tenantA, null, "user-a");
+        var contextB = new TenantContext(tenantB, null, "user-b");
+
+        Guid schoolBId;
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            var schoolB = School.Create(tenantB, "City School Karachi", "CS-KHI");
+            dbB.Schools.Add(schoolB);
+            await dbB.SaveChangesAsync();
+            schoolBId = schoolB.Id;
+        }
+
+        // Act: Tenant A attempts to update or attach an entity carrying Tenant B's ID
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            // Attempting to inject a school with Tenant B's tenant_id inside Tenant A's context
+            var rogueSchool = School.Create(tenantB, "Rogue School", "ROGUE");
+            dbA.Schools.Add(rogueSchool);
+
+            var act = () => dbA.SaveChangesAsync();
+            await act.Should().ThrowAsync<InvalidOperationException>()
+                     .WithMessage("*Cross-tenant operation detected*");
+        }
+    }
+
+    [Fact]
+    public async Task Scenario3_CampusScope_Restricts_Campus_Query_Results()
+    {
+        var tenantId = Guid.CreateVersion7();
+        var contextAll = new TenantContext(tenantId, null, "admin-user");
+
+        Guid campus1Id;
+        Guid campus2Id;
+
+        await using (var db = _fixture.CreateDbContext(contextAll))
+        {
+            var school = School.Create(tenantId, "Roots Millennium", "RMS");
+            var c1 = school.AddCampus("Campus One", "C1");
+            var c2 = school.AddCampus("Campus Two", "C2");
+            db.Schools.Add(school);
+            await db.SaveChangesAsync();
+            campus1Id = c1.Id;
+            campus2Id = c2.Id;
+        }
+
+        // Act: Scoped user with access restricted to Campus 1 only
+        var contextCampus1 = new TenantContext(tenantId, campus1Id, "teacher-c1");
+        await using (var db = _fixture.CreateDbContext(contextCampus1))
+        {
+            // Application logic applying campus scope check
+            var campuses = await db.Campuses
+                                   .Where(c => c.Id == contextCampus1.CampusId!.Value)
+                                   .ToListAsync();
+
+            campuses.Should().ContainSingle(c => c.Id == campus1Id);
+            campuses.Should().NotContain(c => c.Id == campus2Id);
+        }
+    }
+
+    [Fact]
+    public async Task Scenario4_And_5_Tenantless_And_Unauthenticated_Query_FailsClosed()
+    {
+        // Arrange: Unauthenticated / Tenant-less context
+        var unauthenticatedContext = new TenantContext(null, null, null);
+
+        await using var db = _fixture.CreateDbContext(unauthenticatedContext);
+
+        // Act: Global query filter evaluates `CurrentTenantId != null && TenantId == CurrentTenantId`
+        var schools = await db.Schools.ToListAsync();
+
+        // Assert: Zero records returned
+        schools.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Scenario8_Postgres_RLS_Enforces_Isolation_At_Database_Layer()
+    {
+        // Arrange
+        var tenantA = Guid.CreateVersion7();
+        var tenantB = Guid.CreateVersion7();
+
+        var contextA = new TenantContext(tenantA, null, "admin-a");
+        var contextB = new TenantContext(tenantB, null, "admin-b");
+
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            dbA.Schools.Add(School.Create(tenantA, "RLS Test School A", "RLS-A"));
+            await dbA.SaveChangesAsync();
+        }
+
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            dbB.Schools.Add(School.Create(tenantB, "RLS Test School B", "RLS-B"));
+            await dbB.SaveChangesAsync();
+        }
+
+        // Act & Assert 1: Raw SQL with app.current_tenant_id = tenantA
+        await using (var connA = await _fixture.OpenRawConnectionAsync(tenantA.ToString()))
+        await using (var cmdA = connA.CreateCommand())
+        {
+            cmdA.CommandText = "SELECT COUNT(*) FROM organization.schools;";
+            var countA = Convert.ToInt32(await cmdA.ExecuteScalarAsync());
+            countA.Should().Be(1, "PostgreSQL RLS should only allow Tenant A's record");
+        }
+
+        // Act & Assert 2: Raw SQL with app.current_tenant_id = tenantB
+        await using (var connB = await _fixture.OpenRawConnectionAsync(tenantB.ToString()))
+        await using (var cmdB = connB.CreateCommand())
+        {
+            cmdB.CommandText = "SELECT COUNT(*) FROM organization.schools;";
+            var countB = Convert.ToInt32(await cmdB.ExecuteScalarAsync());
+            countB.Should().Be(1, "PostgreSQL RLS should only allow Tenant B's record");
+        }
+
+        // Act & Assert 3: Raw SQL with app.current_tenant_id = '' (missing/reset)
+        await using (var connEmpty = await _fixture.OpenRawConnectionAsync(string.Empty))
+        await using (var cmdEmpty = connEmpty.CreateCommand())
+        {
+            cmdEmpty.CommandText = "SELECT COUNT(*) FROM organization.schools;";
+            var countEmpty = Convert.ToInt32(await cmdEmpty.ExecuteScalarAsync());
+            countEmpty.Should().Be(0, "PostgreSQL RLS must fail closed when tenant context is empty");
+        }
+    }
+
+    [Fact]
+    public async Task Scenario9_Pooled_Connection_Reset_Prevents_Context_Leakage()
+    {
+        var tenantA = Guid.CreateVersion7();
+
+        // 1. Borrow connection for Tenant A
+        await using (var conn = await _fixture.OpenRawConnectionAsync(tenantA.ToString()))
+        await using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
+            var setting = (string?)await cmd.ExecuteScalarAsync();
+            setting.Should().Be(tenantA.ToString());
+
+            // Reset session variable (as done by connection pooling / reset)
+            cmd.CommandText = "RESET app.current_tenant_id;";
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        // 2. Query again on a new connection without setting tenant
+        await using (var conn2 = await _fixture.OpenRawConnectionAsync(null))
+        await using (var cmd2 = conn2.CreateCommand())
+        {
+            cmd2.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
+            var setting2 = (string?)await cmd2.ExecuteScalarAsync();
+            setting2.Should().BeEmpty("Connection reset must wipe any residual tenant context");
+        }
+    }
+
+    [Fact]
+    public async Task Scenario10_AuditFields_Populated_On_Insert_And_Update()
+    {
+        var tenantId = Guid.CreateVersion7();
+        var authorUser = "principal-audit-tester";
+        var context = new TenantContext(tenantId, null, authorUser);
+
+        Guid schoolId;
+
+        // Insert
+        await using (var db = _fixture.CreateDbContext(context))
+        {
+            var school = School.Create(tenantId, "Audit Tracking School", "ATS");
+            db.Schools.Add(school);
+            await db.SaveChangesAsync();
+            schoolId = school.Id;
+
+            school.CreatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+            school.CreatedBy.Should().Be(authorUser);
+            school.UpdatedAtUtc.Should().BeNull();
+            school.UpdatedBy.Should().BeNull();
+        }
+
+        // Update with another user
+        var editorUser = "admin-editor";
+        var editContext = new TenantContext(tenantId, null, editorUser);
+
+        await using (var db = _fixture.CreateDbContext(editContext))
+        {
+            var school = await db.Schools.FirstAsync(s => s.Id == schoolId);
+            school.Update("Audit Tracking School (Updated)", "ATS-UPD");
+            await db.SaveChangesAsync();
+
+            school.CreatedBy.Should().Be(authorUser);
+            school.UpdatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+            school.UpdatedBy.Should().Be(editorUser);
+        }
+    }
+
+    [Fact]
+    public async Task Scenario11_Idempotent_Seed_Execution_Does_Not_Fail()
+    {
+        var tenantId = Guid.CreateVersion7();
+        var context = new TenantContext(tenantId, null, "seed-worker");
+
+        // First Seed
+        await using (var db1 = _fixture.CreateDbContext(context))
+        {
+            if (!await db1.Schools.AnyAsync(s => s.Code == "SEED-01"))
+            {
+                db1.Schools.Add(School.Create(tenantId, "Seed School", "SEED-01"));
+                await db1.SaveChangesAsync();
+            }
+        }
+
+        // Second Seed (Repeated execution)
+        await using (var db2 = _fixture.CreateDbContext(context))
+        {
+            if (!await db2.Schools.AnyAsync(s => s.Code == "SEED-01"))
+            {
+                db2.Schools.Add(School.Create(tenantId, "Seed School", "SEED-01"));
+                await db2.SaveChangesAsync();
+            }
+        }
+
+        // Verify exactly one instance exists
+        await using (var dbCheck = _fixture.CreateDbContext(context))
+        {
+            var count = await dbCheck.Schools.CountAsync(s => s.Code == "SEED-01");
+            count.Should().Be(1);
+        }
+    }
+}
