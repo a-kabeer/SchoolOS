@@ -107,5 +107,8 @@ $RECYCLE.BIN/
 .DS_Store
 .AppleDouble
 .LSOverride
-Icon?
+# Custom folder icon (macOS)
+[Ii]con[\r]
+!**/icons/
+!**/icons/**
 ._*

@@ -56,9 +56,35 @@ jobs:
 
       - name: Vulnerability Audit (Hard Failure Gate)
         run: |
+          # 1. Structured JSON audit verification
+          AUDIT_JSON=$(dotnet list SchoolOS.sln package --vulnerable --include-transitive --format json 2>/dev/null || true)
+          if [ -n "$AUDIT_JSON" ]; then
+            VULN_COUNT=$(node -e '
+              try {
+                const data = JSON.parse(process.argv[1]);
+                let count = 0;
+                for (const p of data.projects || []) {
+                  for (const f of p.frameworks || []) {
+                    for (const pkg of [...(f.topLevelPackages || []), ...(f.transitivePackages || [])]) {
+                      if (pkg.vulnerabilities && pkg.vulnerabilities.length > 0) count += pkg.vulnerabilities.length;
+                    }
+                  }
+                }
+                console.log(count);
+              } catch {
+                console.log(0);
+              }
+            ' "$AUDIT_JSON" 2>/dev/null || echo "0")
+            if [ -n "$VULN_COUNT" ] && [ "$VULN_COUNT" -gt 0 ]; then
+              echo "::error::Detected $VULN_COUNT vulnerable package advisories in SchoolOS.sln (JSON audit)! Failing CI build."
+              exit 1
+            fi
+          fi
+
+          # 2. Text audit verification with word-boundary severity matcher (prevents false-positive on "following")
           AUDIT_OUTPUT=$(dotnet list SchoolOS.sln package --vulnerable --include-transitive)
           echo "$AUDIT_OUTPUT"
-          if echo "$AUDIT_OUTPUT" | grep -qiE "(Critical|High|Moderate|Low)"; then
+          if echo "$AUDIT_OUTPUT" | grep -E '\b(Critical|High|Moderate|Low)\b'; then
             echo "::error::Vulnerable NuGet packages detected! Failing CI build."
             exit 1
           fi
