@@ -10,7 +10,7 @@ using SchoolOS.PlatformModules.Tenants.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 // Building Blocks & Modules
-builder.Services.AddSecurityBuildingBlocks();
+builder.Services.AddSecurityBuildingBlocks(builder.Configuration);
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks();
 builder.Services.AddPlatformTenantsModule(builder.Configuration);
@@ -21,6 +21,8 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseObservabilityBuildingBlocks();
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
@@ -52,6 +54,7 @@ app.MapGet("/health", () => Results.Ok(new
 // Platform Tenant Registry Endpoints (Cloud Control Plane)
 // ==============================================================================
 var tenantGroup = app.MapGroup("/api/v1/platform/tenants")
+                     .RequireAuthorization(SecurityPolicies.PlatformAdminPolicy)
                      .WithTags("Platform Tenants");
 
 tenantGroup.MapGet("/", async (
@@ -93,3 +96,8 @@ tenantGroup.MapPost("/", async (
 app.Run();
 
 public record CreateTenantRequest(string Name, string Slug);
+
+namespace SchoolOS.Cloud.Api
+{
+    public partial class Program { }
+}

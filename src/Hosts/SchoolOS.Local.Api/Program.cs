@@ -10,7 +10,7 @@ using SchoolOS.Modules.Organization.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 // Building Blocks & Modules
-builder.Services.AddSecurityBuildingBlocks();
+builder.Services.AddSecurityBuildingBlocks(builder.Configuration);
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks();
 builder.Services.AddOrganizationModule(builder.Configuration);
@@ -21,6 +21,8 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseObservabilityBuildingBlocks();
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
@@ -52,6 +54,7 @@ app.MapGet("/health", () => Results.Ok(new
 // Organization Endpoints (Local Data Plane — Multi-Tenant Scoped)
 // ==============================================================================
 var orgGroup = app.MapGroup("/api/v1/organization")
+                  .RequireAuthorization(SecurityPolicies.TenantScopedPolicy)
                   .WithTags("Organization");
 
 orgGroup.MapGet("/schools", async (
@@ -137,3 +140,8 @@ app.Run();
 
 public record CreateSchoolRequest(string Name, string Code);
 public record CreateCampusRequest(string Name, string Code, string? Address);
+
+namespace SchoolOS.Local.Api
+{
+    public partial class Program { }
+}

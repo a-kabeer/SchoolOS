@@ -10,6 +10,8 @@
     <ProjectReference Include="..\..\src\BuildingBlocks\Persistence\SchoolOS.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\..\src\Modules\Organization\SchoolOS.Modules.Organization.csproj" />
     <ProjectReference Include="..\..\src\PlatformModules\Tenants\SchoolOS.PlatformModules.Tenants.csproj" />
+    <ProjectReference Include="..\..\src\Hosts\SchoolOS.Cloud.Api\SchoolOS.Cloud.Api.csproj" />
+    <ProjectReference Include="..\..\src\Hosts\SchoolOS.Local.Api\SchoolOS.Local.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,8 +21,10 @@
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 </Project>
