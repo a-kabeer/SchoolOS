@@ -43,36 +43,74 @@ We adopt a **Scoped Two-Tier Identity Architecture with Strict Credential Isolat
 - **Local Data Plane (`organization` / `identity` schema):** Authoritative local verification authority for campus staff. Stores credentials *only* for users explicitly assigned to that campus.
 - **No Global Credential Synchronization:** The Cloud Control Plane never pushes credentials of Tenant A to Tenant B, nor does it push credentials of Campus 1 staff to Campus 2 nodes unless a user holds an explicit cross-campus assignment.
 
-### 2. Password Change and Reset Handling
-- **Connected Mode:** Password updates are initiated on either plane, verified against current password, re-hashed using ASP.NET Core Identity password hasher (PBKDF2 with HMAC-SHA512 / Argon2id), and synchronized to the user's assigned node via encrypted outbox replication.
-- **Disconnected Local Mode:** During an internet outage, a local campus administrator (Principal / IT In-charge) can initiate an emergency temporary password reset for local staff. The node generates a new salt/hash, increments the local `CredentialVersion`, and records an audit event in the transactional Outbox.
+### 2. Password Hashing Algorithm Evaluation & Selection
+- **Evaluation:**
+  - *Argon2id:* Memory-hard and state-of-the-art against ASIC/GPU cracking. However, it requires native C libraries / FFI wrappers (`libsodium` or `Konscious.Security.Cryptography`), adding unmanaged binary dependencies and compilation overhead across heterogeneous platforms (Windows x64 desktop, Linux Alpine containers, ARM64 local edge gateways).
+  - *ASP.NET Core Identity PasswordHasher (PBKDF2-HMAC-SHA512):* Built into the standard .NET 10 runtime (`Microsoft.AspNetCore.Identity`), requires zero external packages, complies fully with NIST SP 800-63B guidelines, and provides native, battle-tested constant-time verification with 100% cross-platform deterministic portability.
+- **Decision:** Adopt **ASP.NET Core Identity `PasswordHasher<User>` (PBKDF2-HMAC-SHA512)**.
+- **Cryptographic Parameters:**
+  - Algorithm: PBKDF2 with HMAC-SHA512 (Identity Version 3 format).
+  - Salt Size: 128 bits (16 bytes) generated via `RandomNumberGenerator`.
+  - Iteration Count: 100,000 iterations (balanced for 15-30ms verification time on edge hardware).
+  - Subkey Size: 256 bits (32 bytes).
+  - Verification: Constant-time bitwise comparison to prevent timing side-channel attacks.
+  - Custom Cryptography Ban: No custom hashing, salting, or comparison code is permitted.
+
+### 3. Password Change, Reset & Offline Voucher Workflow
+- **Connected Mode:** Password updates are verified against the existing password, hashed via `PasswordHasher<User>`, `CredentialVersion` is incremented, and updates are queued in the transactional Outbox for encrypted replication.
+- **Disconnected Local Mode:** During WAN outages, cloud-based email/SMS reset workflows are unavailable. A designated local administrator (`CampusAdmin` or `Principal`) can initiate a supervised offline credential reset. The local node sets `MustChangePasswordOnNextLogin = true`, generates a temporary password, increments `CredentialVersion`, and records a high-severity `EmergencyCredentialResetEvent` in the transactional Outbox.
 - **Conflict Resolution on Reconnect:** When the local node reconnects, outbox synchronization resolves password updates using monotonic credential version numbers. The higher version wins. If equal version concurrent changes occur, cloud administrative policy takes precedence.
 
-### 3. Revocation and Disabled-User Propagation
+### 4. Separate Cloud and Local Authentication Control Planes
+- **Cloud Control Plane (`SchoolOS.Cloud.Api`):**
+  - Issuer: `https://cloud.schoolos.internal`
+  - Audience: `schoolos-cloud-control-plane`
+  - Signing Keys: RSA 4096-bit or ECDSA P-256 asymmetric keypairs managed via cloud key vault. Key identifier header (`kid: cloud-2026-v1`) embedded in JWT headers.
+  - Scope: Platform administrators, customer onboarding, tenant subscription management.
+- **Local Data Plane (`SchoolOS.Local.Api`):**
+  - Issuer: `https://campus-{campusId}.schoolos.local`
+  - Audience: `schoolos-local-data-plane`
+  - Signing Keys: Campus node RSA 2048-bit or ECDSA P-256 asymmetric keypairs generated at node provisioning. Private key secured via platform DPAPI / Linux Keyring. Key identifier header (`kid: campus-{campusId}-v1`).
+  - Validation: 100% autonomous local validation using the node's local public key. Local school login does not ping or require cloud infrastructure.
+
+### 5. Refresh Token Rotation, Storage & Reuse Detection
+- **Storage:** Refresh tokens are never stored in plaintext. The database persists only `SHA-256(raw_refresh_token)` in `identity.user_sessions`.
+- **Rotation:** Every refresh token exchange issues a new refresh token and invalidates the previous token.
+- **Reuse / Breach Detection:** If a previously consumed or revoked refresh token is presented:
+  1. The server flags a critical security breach (`TokenReuseDetected`).
+  2. The parent `UserSession` is immediately revoked across all sibling tokens (`IsRevoked = true, RevokedReason = 'TokenReuseDetected'`).
+  3. A high-priority security audit event is emitted.
+  4. The request is rejected with HTTP 401 Unauthorized, forcing user re-authentication.
+
+### 6. Credential Versioning & Stale Token Invalidation
+- Every user entity maintains an integer `CredentialVersion` and GUID `SecurityStamp`.
+- Every password change, administrative lockout, or session revocation increments `CredentialVersion`.
+- Every issued access token carries the claim `cv: <int>`.
+- The authentication middleware verifies `token.cv == user.CredentialVersion`. If `token.cv < user.CredentialVersion`, the token is rejected immediately, providing sub-millisecond global token revocation across all devices without requiring distributed blacklist caches.
+
+### 7. Tenant and Campus Context Switching
+- Client requests a context switch via `POST /api/v1/auth/switch-context` with `targetCampusId`.
+- The server validates that `UserId` possesses an active, unrevoked assignment in `identity.user_campus_assignments` for that specific `(tenant_id, target_campus_id)`.
+- If verified, the server updates `UserSession.ActiveCampusId` and issues a newly scoped JWT access token.
+- **Zero Client-Trust:** Server authorization policies NEVER trust client-supplied scope headers (`X-Campus-Id` or `X-Tenant-Id`) without validating the cryptographically signed JWT claims or executing database membership checks.
+
+### 8. Frontend Token Security & Session UX
+- **Access Token:** Kept strictly in React application memory / closure state. Never persisted in `localStorage` or `sessionStorage` where malicious third-party scripts or XSS could extract it.
+- **Refresh Token:** Stored in an `HttpOnly`, `Secure`, `SameSite=Strict` cookie path-restricted to `/api/v1/auth/refresh`.
+- **Silent Renewal:** API client automatically dispatches a silent refresh request 60 seconds prior to token expiration.
+- **Session Expiration UX:** Unobtrusive modal alert when session is about to expire; graceful redirect to `/auth/login?returnUrl=...` on termination.
+
+### 9. Revocation and Disabled-User Propagation
 - When a user is terminated, suspended, or locked out in the Cloud Management Console:
   1. The Cloud node immediately revokes active cloud sessions and updates `IsActive = false`.
   2. A high-priority `UserSuspendedEvent` is dispatched via the sync pipeline.
   3. Upon receipt by the local node, the user record is updated to `IsActive = false`, and the `SecurityStamp` is regenerated.
-  4. Active local JWT access tokens (short-lived: 15–30 minutes) expire, and subsequent token refresh or login attempts fail closed.
+  4. Active local JWT access tokens (short-lived: 15 minutes) expire, and subsequent token refresh or login attempts fail closed.
 
-### 4. Offline Authentication Behavior
-- Local nodes execute authentication 100% locally against PostgreSQL `identity.users`.
-- Verification requires zero WAN connectivity, zero DNS resolution, and zero external cloud pings.
-- The local node issues signed JWT access tokens or HTTP-only SameSite cookies signed by the node's local asymmetric private key (persisted in DPAPI/secure local key store).
+### 10. Local Offline MFA (RFC 6238 TOTP)
+- Where multi-factor authentication is required for financial or exam operations, local nodes utilize **RFC 6238 TOTP** (e.g. Google Authenticator / Microsoft Authenticator). TOTP operates 100% offline because it relies on standard Unix epoch time calculations and pre-shared HMAC keys, requiring only synchronized system clocks.
 
-### 5. Credential Versioning & Session Invalidation
-- Every user entity maintains an integer `CredentialVersion` and GUID `SecurityStamp`.
-- Every password change, lockout, or permission change increments `CredentialVersion`.
-- Every issued token carries the `sec_ver` claim matching the active `CredentialVersion`.
-- The `TenantContext` validation pipeline verifies that the incoming token's `sec_ver` matches the active user security stamp, immediately invalidating stale tokens across all devices.
-
-### 6. MFA and Session Boundaries
-- **Local Offline MFA:** Where multi-factor authentication is required for financial or exam operations, local nodes utilize **RFC 6238 TOTP** (e.g. Google Authenticator / Microsoft Authenticator). TOTP operates 100% offline because it relies on standard Unix epoch time calculations and pre-shared HMAC keys, requiring only synchronized system clocks.
-- **Session Duration:**
-  - Local Access Tokens: 30 minutes lifetime.
-  - Refresh Tokens: 12 hours lifetime (sliding window, bound to device fingerprint).
-
-### 7. Threat Modeling: Consequences of a Compromised Local Node
+### 11. Threat Modeling: Consequences of a Compromised Local Node
 - If a campus server is physically stolen or root-compromised:
   1. **Blast Radius Confined to Single Campus:** The adversary obtains access only to that specific campus's local data and the credentials of local staff assigned to that campus.
   2. **No Pivot to Cloud or Other Campuses:** The local node's mTLS certificate and API token grant access only to its own tenant/campus endpoints. The node has zero credentials or network routing for any other school.

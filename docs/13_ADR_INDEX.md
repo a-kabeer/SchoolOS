@@ -77,4 +77,4 @@ Decision record: `decisions/ADR-021-EPHEMERAL-SESSION-BASED-DEMO.md`. Full desig
 | ADR-023 | Local-First Identity and Authentication Strategy | Two-tier architecture with provider-independent `ITenantContext` and offline ASP.NET Core Identity on Local Data Plane | Accepted |
 | ADR-024 | PostgreSQL RLS Transaction Context and Connection Pooling Isolation | Dual-tier transaction-local scoping (`is_local = true`) and fail-closed baseline session reset | Accepted |
 
-Decision records: `decisions/ADR-022-IDENTIFIER-STRATEGY.md`, `decisions/ADR-023-LOCAL-FIRST-AUTHENTICATION-STRATEGY.md`, `decisions/ADR-024-RLS-TRANSACTION-CONTEXT-AND-CONNECTION-POOLING.md`.
+Decision records: `decisions/ADR-022-IDENTIFIER-STRATEGY.md`, `decisions/ADR-023-LOCAL-FIRST-AUTHENTICATION-STRATEGY.md`, `decisions/ADR-024-RLS-TRANSACTION-CONTEXT-AND-CONNECTION-POOLING.md`. Architecture specification: `42_PHASE_1B_IDENTITY_AND_ACCESS_ARCHITECTURE.md`.
