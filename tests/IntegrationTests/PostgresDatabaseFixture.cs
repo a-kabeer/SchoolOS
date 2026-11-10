@@ -25,9 +25,9 @@ public class PostgresDatabaseFixture : IAsyncLifetime
         var systemContext = new TenantContext(null, null, "system-setup");
         await using var db = new OrganizationDbContext(options, systemContext);
 
-        // Ensure clean test database
+        // Ensure clean test database and apply formal EF Core migrations
         await db.Database.EnsureDeletedAsync();
-        await db.Database.EnsureCreatedAsync();
+        await db.Database.MigrateAsync();
 
         // Ensure non-superuser application role exists (superusers bypass PostgreSQL RLS by engine design)
         await db.Database.ExecuteSqlRawAsync("""
