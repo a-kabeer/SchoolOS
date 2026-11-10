@@ -295,4 +295,80 @@ public class MultiTenantIsolationTests : IClassFixture<PostgresDatabaseFixture>
             count.Should().Be(1);
         }
     }
+
+    [Fact]
+    public async Task Scenario12_Missing_UserId_On_AuditableEntity_Mutation_FailsFast()
+    {
+        // Arrange: Tenant context with null UserId
+        var tenantId = Guid.CreateVersion7();
+        var contextWithoutUser = new TenantContext(tenantId, null, null);
+
+        await using var db = _fixture.CreateDbContext(contextWithoutUser);
+        var school = School.Create(tenantId, "Unattributed School", "UNATTR");
+        db.Schools.Add(school);
+
+        // Act & Assert: Must fail fast to prevent unattributed audit records
+        var act = () => db.SaveChangesAsync();
+        await act.Should().ThrowAsync<InvalidOperationException>()
+                 .WithMessage("*Audit integrity failure: Cannot create entity of type 'School' without an authenticated user identifier*");
+    }
+
+    [Fact]
+    public async Task Scenario13_Database_Level_Composite_Foreign_Key_Enforces_Campus_Tenant_Ownership()
+    {
+        // Arrange: School B belonging to Tenant B
+        var tenantA = Guid.CreateVersion7();
+        var tenantB = Guid.CreateVersion7();
+
+        var contextA = new TenantContext(tenantA, null, "user-a");
+        var contextB = new TenantContext(tenantB, null, "user-b");
+
+        Guid schoolBId;
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            var schoolB = School.Create(tenantB, "Tenant B School", "TB-SCH");
+            dbB.Schools.Add(schoolB);
+            await dbB.SaveChangesAsync();
+            schoolBId = schoolB.Id;
+        }
+
+        // Act & Assert: Attempt to insert a campus with Tenant A's tenant_id pointing to Tenant B's school_id
+        // This simulates a cross-tenant injection bypassing domain constructors
+        await using (var connA = await _fixture.OpenRawConnectionAsync(tenantA.ToString()))
+        await using (var cmd = connA.CreateCommand())
+        {
+            var rogueCampusId = Guid.CreateVersion7();
+            cmd.CommandText = $"""
+                INSERT INTO organization.campuses (id, tenant_id, school_id, name, code, is_active, created_at_utc, created_by)
+                VALUES ('{rogueCampusId}', '{tenantA}', '{schoolBId}', 'Cross-Tenant Rogue Campus', 'ROGUE-C', true, NOW(), 'attacker');
+                """;
+
+            var act = () => cmd.ExecuteNonQueryAsync();
+            var ex = await act.Should().ThrowAsync<Npgsql.PostgresException>();
+            ex.Which.SqlState.Should().Be("23503", "Foreign key violation must be raised by PostgreSQL engine");
+            ex.Which.ConstraintName.Should().Be("fk_campuses_schools_tenant_id_school_id");
+        }
+    }
+
+    [Fact]
+    public async Task Scenario14_Connection_Closing_Resets_Session_Variable_Preventing_Pool_Leakage()
+    {
+        var tenantA = Guid.CreateVersion7();
+        var contextA = new TenantContext(tenantA, null, "tenant-a-user");
+
+        // 1. Open and close a DbContext session for Tenant A
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            var schools = await dbA.Schools.ToListAsync();
+        }
+
+        // 2. Open a raw connection without specifying tenant context
+        await using (var conn = await _fixture.OpenRawConnectionAsync(null))
+        await using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
+            var residualSetting = (string?)await cmd.ExecuteScalarAsync();
+            residualSetting.Should().BeEmpty("Connection close must reset app.current_tenant_id to empty string");
+        }
+    }
 }

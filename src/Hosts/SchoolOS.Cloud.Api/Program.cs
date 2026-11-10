@@ -54,16 +54,29 @@ app.MapGet("/health", () => Results.Ok(new
 var tenantGroup = app.MapGroup("/api/v1/platform/tenants")
                      .WithTags("Platform Tenants");
 
-tenantGroup.MapGet("/", async ([FromServices] PlatformDbContext db) =>
+tenantGroup.MapGet("/", async (
+    [FromServices] PlatformDbContext db,
+    [FromServices] ITenantContext tenantContext) =>
 {
+    if (!tenantContext.IsAuthenticated)
+    {
+        return Results.Unauthorized();
+    }
+
     var tenants = await db.Tenants.AsNoTracking().ToListAsync();
     return Results.Ok(tenants);
 });
 
 tenantGroup.MapPost("/", async (
     [FromBody] CreateTenantRequest request,
-    [FromServices] PlatformDbContext db) =>
+    [FromServices] PlatformDbContext db,
+    [FromServices] ITenantContext tenantContext) =>
 {
+    if (!tenantContext.IsAuthenticated)
+    {
+        return Results.Unauthorized();
+    }
+
     var existingSlug = await db.Tenants.AnyAsync(t => t.Slug == request.Slug.ToLowerInvariant());
     if (existingSlug)
     {
