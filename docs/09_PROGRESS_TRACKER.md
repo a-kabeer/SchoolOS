@@ -15,7 +15,7 @@
 | Phase | Name | Status | Owner | Evidence / notes |
 |---|---|---|---|---|
 | 0 | Product discovery and design | In Progress | Product owner | Field interviews and operational workflow discovery ongoing; technical repository foundation completed at commit 66e0d35 |
-| 1 | Platform and tenancy foundation | In Progress | Technical lead | Phase 1A/1A.1 implemented: multi-tenant domain, composite FK, EF Core 10 migrations, RLS, audit, and 28+ unit/arch/integration tests passing |
+| 1 | Platform and tenancy foundation | In Review | Technical lead | Phase 1A & 1A.1 verified milestone on feature/phase-1-platform-foundation (commit 8e84995, GitHub Actions run #42867943730 green). Awaiting PR review and merge to main before initiating Phase 1B. |
 | 2 | Admissions and student lifecycle | Not Started | Team | |
 | 3 | Fees, finance and reconciliation | Not Started | Team | |
 | 4 | Academics and offline workflows | Not Started | Team | |
@@ -32,10 +32,15 @@ Copy this table for each phase or migrate it to GitHub Issues/Projects.
 
 | Task ID | Phase | Module | Task | Priority | Status | Owner | Dependencies | Acceptance evidence |
 |---|---|---|---|---|---|---|---|---|
-| PLAT-001 | 1 | Platform | Create ASP.NET Core solution | Critical | Completed | Technical lead | | Solution scaffolded with .NET 10, OpenAPI, health endpoints |
-| PLAT-002 | 1 | Frontend | Create React + TypeScript app | High | Completed | Technical lead | PLAT-001 | React 19 + TypeScript + Vite production build verified |
-| TEN-001 | 1 | Organization | Implement tenant/school/campus model | Critical | Completed | Technical lead | PLAT-001 | UUIDv7 domain models, EF Core 10 mappings, RLS, integration tests passing |
-| SEC-001 | 1 | Identity | Implement scoped authorization | Critical | In Progress | Technical lead | TEN-001 | Cryptographic JWT Bearer auth, claims validation, PlatformAdmin, TenantScoped & OrganizationAdmin policies, Npgsql ClearPool safety, and HTTP 401/403 tests implemented; fine-grained RBAC in Phase 1B |
+| PLAT-001 | 1A | Platform | Create ASP.NET Core solution | Critical | Completed | Technical lead | | Solution scaffolded with .NET 10, OpenAPI, health endpoints |
+| PLAT-002 | 1A | Frontend | Create React + TypeScript app | High | Completed | Technical lead | PLAT-001 | React 19 + TypeScript + Vite production build verified |
+| FE-001 | 1A | Frontend | Integrate MaterialM design system & theme | High | Completed | Frontend lead | PLAT-002 | Theme Clone tokens, layouts, dashboards integrated; 0 warnings chunk split |
+| TEN-001 | 1A | Organization | Implement tenant/school/campus model | Critical | Completed | Technical lead | PLAT-001 | UUIDv7 domain models, EF Core 10 mappings, composite FKs, 19 DB integration tests passing |
+| SEC-001 | 1A.1 | Identity | Implement scoped authorization & RLS isolation | Critical | Completed | Technical lead | TEN-001 | JWT Bearer auth, claims policies, transaction-local RLS, Npgsql ClearPool fail-closed reset, 0 CVEs, CI run 42867943730 green |
+| IDN-001 | 1B.1 | Identity | User account lifecycle & credential hashing | Critical | Not Started | Backend lead | SEC-001 | Argon2id/PBKDF2 password hasher, User/Account entities, EF Core migration, unit tests |
+| IDN-002 | 1B.2 | Identity | Scoped RBAC/ABAC role & permission engine | Critical | Not Started | Backend lead | IDN-001 | Role, Permission, Assignment entities scoped by Tenant/Campus, authorization handlers |
+| IDN-003 | 1B.3 | Identity | Token issuance & local-first credential cache | High | Not Started | Backend lead | IDN-002 | Cloud token issuer, local encrypted token validator, offline token cache (ADR-023) |
+| FE-002 | 1B.4 | Frontend | Auth provider, login flow & route guards | High | Not Started | Frontend lead | IDN-003, FE-001 | React auth context, token refresh, protected routes, tenant/campus switcher |
 | FIN-001 | 3 | Finance | Design chart of accounts and posting rules | Critical | Not Started | | Phase 0 finance rules | |
 | FIN-002 | 3 | Fees | Implement invoice/payment allocation model | Critical | Not Started | | FIN-001 | |
 | REC-001 | 3 | Reconciliation | Import bank statement batches | High | Not Started | | FIN-002 | |
@@ -46,7 +51,7 @@ Copy this table for each phase or migrate it to GitHub Issues/Projects.
 
 | Date | Contributor | Completed | In progress | Blockers | Decisions / links |
 |---|---|---|---|---|---|
-| | | | | | |
+| 2026-11-10 | Engineering Team | Phase 1A & Phase 1A.1 Stabilization: Multi-tenant domain, EF Core migrations, composite FKs, RLS transaction-local interceptor, Npgsql ClearPool fail-closed reset, JWT Bearer auth, MaterialM theme integration, CI green (run #42867943730). | PR review & merge to main | None | ADR-022, ADR-023, ADR-024; commit `8e84995` |
 
 ## Release gate checklist
 
