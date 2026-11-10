@@ -68,7 +68,7 @@ public partial class Initial_Organization_Create : Migration
             name: "ix_campuses_school_id_code",
             schema: "organization",
             table: "campuses",
-            column: "school_id",
+            columns: new[] { "school_id", "code" },
             unique: true);
 
         migrationBuilder.CreateIndex(

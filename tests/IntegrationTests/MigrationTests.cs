@@ -6,7 +6,8 @@ using Xunit;
 
 namespace SchoolOS.IntegrationTests;
 
-public class MigrationTests : IClassFixture<PostgresDatabaseFixture>
+[Collection(PostgresDatabaseCollection.Name)]
+public class MigrationTests
 {
     private readonly PostgresDatabaseFixture _fixture;
 

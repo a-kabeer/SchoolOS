@@ -9,14 +9,38 @@ using Xunit;
 
 namespace SchoolOS.IntegrationTests;
 
+[CollectionDefinition(Name)]
+public class PostgresDatabaseCollection : ICollectionFixture<PostgresDatabaseFixture>
+{
+    public const string Name = "PostgresDatabaseCollection";
+}
+
 public class PostgresDatabaseFixture : IAsyncLifetime
 {
-    public const string AdminConnectionString = "Host=127.0.0.1;Port=5432;Database=schoolos_test;Username=schoolos_dev;Password=schoolos_dev_password";
-    public const string AppConnectionString = "Host=127.0.0.1;Port=5432;Database=schoolos_test;Username=schoolos_app;Password=schoolos_app_password";
+    public const string MasterConnectionString = "Host=127.0.0.1;Port=5432;Database=postgres;Username=schoolos_dev;Password=schoolos_dev_password";
+    public const string AdminConnectionString = "Host=127.0.0.1;Port=5432;Database=schoolos_test;Username=schoolos_dev;Password=schoolos_dev_password;Include Error Detail=true";
+    public const string AppConnectionString = "Host=127.0.0.1;Port=5432;Database=schoolos_test;Username=schoolos_app;Password=schoolos_app_password;Include Error Detail=true";
 
     public async Task InitializeAsync()
     {
-        // Setup schema and initial structure using admin credentials
+        // 1. Ensure clean, isolated schoolos_test database by connecting to default postgres administrative database
+        await using (var masterConn = new NpgsqlConnection(MasterConnectionString))
+        {
+            await masterConn.OpenAsync();
+            await using (var cmd = masterConn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'schoolos_test' AND pid <> pg_backend_pid();";
+                await cmd.ExecuteNonQueryAsync();
+
+                cmd.CommandText = "DROP DATABASE IF EXISTS schoolos_test;";
+                await cmd.ExecuteNonQueryAsync();
+
+                cmd.CommandText = "CREATE DATABASE schoolos_test;";
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        // 2. Setup schema and initial structure using admin credentials on schoolos_test
         var options = new DbContextOptionsBuilder<OrganizationDbContext>()
             .UseNpgsql(AdminConnectionString)
             .UseSnakeCaseNamingConvention()
@@ -25,8 +49,7 @@ public class PostgresDatabaseFixture : IAsyncLifetime
         var systemContext = new TenantContext(null, null, "system-setup");
         await using var db = new OrganizationDbContext(options, systemContext);
 
-        // Ensure clean test database and apply formal EF Core migrations
-        await db.Database.EnsureDeletedAsync();
+        // Apply formal EF Core migrations
         await db.Database.MigrateAsync();
 
         // Ensure non-superuser application role exists (superusers bypass PostgreSQL RLS by engine design)
@@ -70,6 +93,8 @@ public class PostgresDatabaseFixture : IAsyncLifetime
         var options = new DbContextOptionsBuilder<OrganizationDbContext>()
             .UseNpgsql(AppConnectionString)
             .UseSnakeCaseNamingConvention()
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors()
             .AddInterceptors(auditInterceptor, sessionInterceptor, txInterceptor)
             .Options;
 

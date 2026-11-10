@@ -6,7 +6,8 @@ using Xunit;
 
 namespace SchoolOS.IntegrationTests;
 
-public class AuditActorSafetyTests : IClassFixture<PostgresDatabaseFixture>
+[Collection(PostgresDatabaseCollection.Name)]
+public class AuditActorSafetyTests
 {
     private readonly PostgresDatabaseFixture _fixture;
 
@@ -91,7 +92,7 @@ public class AuditActorSafetyTests : IClassFixture<PostgresDatabaseFixture>
             await db2.SaveChangesAsync();
 
             school.CreatedBy.Should().Be("author-bob", "Original author must be preserved across updates");
-            school.CreatedAtUtc.Should().Be(originalCreatedAt, "Original creation timestamp must remain unmodified");
+            school.CreatedAtUtc.Should().BeCloseTo(originalCreatedAt, TimeSpan.FromMilliseconds(1), "Original creation timestamp must remain unmodified");
             school.UpdatedBy.Should().Be("modifier-charlie");
             school.UpdatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }

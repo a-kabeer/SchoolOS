@@ -7,7 +7,8 @@ using Xunit;
 
 namespace SchoolOS.IntegrationTests;
 
-public class MultiTenantIsolationTests : IClassFixture<PostgresDatabaseFixture>
+[Collection(PostgresDatabaseCollection.Name)]
+public class MultiTenantIsolationTests
 {
     private readonly PostgresDatabaseFixture _fixture;
 
