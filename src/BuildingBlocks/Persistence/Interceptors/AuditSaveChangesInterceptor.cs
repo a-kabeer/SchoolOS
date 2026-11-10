@@ -9,6 +9,7 @@ namespace SchoolOS.BuildingBlocks.Persistence.Interceptors;
 /// EF Core SaveChangesInterceptor that automatically stamps audit metadata
 /// (CreatedAtUtc, CreatedBy, UpdatedAtUtc, UpdatedBy) on all entities implementing IAuditableEntity.
 /// The actor identity is derived strictly from trusted server-side ITenantContext.
+/// If an authenticated user identifier is missing during a mutation, it fails fast to prevent unattributed audit records.
 /// </summary>
 public class AuditSaveChangesInterceptor : SaveChangesInterceptor
 {
@@ -48,10 +49,24 @@ public class AuditSaveChangesInterceptor : SaveChangesInterceptor
         {
             if (entry.State == EntityState.Added)
             {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    throw new InvalidOperationException(
+                        $"Audit integrity failure: Cannot create entity of type '{entry.Entity.GetType().Name}' " +
+                        "without an authenticated user identifier in the ambient TenantContext.");
+                }
+
                 entry.Entity.SetCreated(utcNow, userId);
             }
             else if (entry.State == EntityState.Modified)
             {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    throw new InvalidOperationException(
+                        $"Audit integrity failure: Cannot modify entity of type '{entry.Entity.GetType().Name}' " +
+                        "without an authenticated user identifier in the ambient TenantContext.");
+                }
+
                 entry.Entity.SetUpdated(utcNow, userId);
             }
         }

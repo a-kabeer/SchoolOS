@@ -12,6 +12,10 @@ public class SchoolConfiguration : IEntityTypeConfiguration<School>
 
         builder.HasKey(s => s.Id);
 
+        // Composite alternate key to enforce database-level composite foreign key from campuses
+        builder.HasAlternateKey(s => new { s.TenantId, s.Id })
+            .HasName("ak_schools_tenant_id_id");
+
         builder.Property(s => s.TenantId)
             .IsRequired();
 
@@ -42,10 +46,12 @@ public class SchoolConfiguration : IEntityTypeConfiguration<School>
             .IsUnique()
             .HasDatabaseName("ix_schools_tenant_id_code");
 
-        // Relationships
+        // Relationships: Enforce composite FK (tenant_id, school_id) -> schools(tenant_id, id)
         builder.HasMany(s => s.Campuses)
             .WithOne(c => c.School)
-            .HasForeignKey(c => c.SchoolId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasPrincipalKey(s => new { s.TenantId, s.Id })
+            .HasForeignKey(c => new { c.TenantId, c.SchoolId })
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_campuses_schools_tenant_id_school_id");
     }
 }

@@ -1,3 +1,4 @@
+using System.Data;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using SchoolOS.BuildingBlocks.Security;
@@ -9,6 +10,7 @@ namespace SchoolOS.BuildingBlocks.Persistence.Interceptors;
 /// using `set_config('app.current_tenant_id', ...)`.
 /// This powers PostgreSQL Row-Level Security (RLS) policies and ensures pooled
 /// database connections fail closed if tenant context is missing.
+/// On connection close, it explicitly resets the session variable to prevent any cross-request context leakage.
 /// </summary>
 public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
 {
@@ -34,6 +36,24 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
         base.ConnectionOpened(connection, eventData);
     }
 
+    public override async ValueTask<InterceptionResult> ConnectionClosingAsync(
+        DbConnection connection,
+        ConnectionEventData eventData,
+        InterceptionResult result)
+    {
+        await ResetTenantSessionVariableAsync(connection);
+        return await base.ConnectionClosingAsync(connection, eventData, result);
+    }
+
+    public override InterceptionResult ConnectionClosing(
+        DbConnection connection,
+        ConnectionEventData eventData,
+        InterceptionResult result)
+    {
+        ResetTenantSessionVariable(connection);
+        return base.ConnectionClosing(connection, eventData, result);
+    }
+
     private async Task SetTenantSessionVariableAsync(DbConnection connection, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId?.ToString() ?? string.Empty;
@@ -56,5 +76,39 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
         param.Value = tenantId;
         cmd.Parameters.Add(param);
         cmd.ExecuteNonQuery();
+    }
+
+    private async Task ResetTenantSessionVariableAsync(DbConnection connection)
+    {
+        if (connection.State == ConnectionState.Open)
+        {
+            try
+            {
+                await using var cmd = connection.CreateCommand();
+                cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false);";
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch
+            {
+                // Connection might be in broken/closed state; ignore on close
+            }
+        }
+    }
+
+    private void ResetTenantSessionVariable(DbConnection connection)
+    {
+        if (connection.State == ConnectionState.Open)
+        {
+            try
+            {
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false);";
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                // Connection might be in broken/closed state; ignore on close
+            }
+        }
     }
 }
