@@ -106,7 +106,7 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
                 }
 
                 var message = "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
-                              "The connection pool was cleared to ensure the affected physical connection is discarded upon close.";
+                              "The connection pool was cleared to ensure busy connections are closed when returned to the cleared pool.";
 
                 if (clearPoolEx is not null)
                 {
@@ -144,7 +144,7 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
                 }
 
                 var message = "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
-                              "The connection pool was cleared to ensure the affected physical connection is discarded upon close.";
+                              "The connection pool was cleared to ensure busy connections are closed when returned to the cleared pool.";
 
                 if (clearPoolEx is not null)
                 {
