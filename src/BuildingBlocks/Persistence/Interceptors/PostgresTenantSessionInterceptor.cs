@@ -88,9 +88,21 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
                 cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false);";
                 await cmd.ExecuteNonQueryAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                // Connection might be in broken/closed state; ignore on close
+                // Never swallow reset failures: fail closed and invalidate physical connection
+                try
+                {
+                    connection.Close();
+                }
+                catch
+                {
+                    // Ignore secondary exception during close attempt
+                }
+
+                throw new InvalidOperationException(
+                    "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
+                    "Connection was closed to prevent cross-tenant context leakage.", ex);
             }
         }
     }
@@ -105,9 +117,21 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
                 cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false);";
                 cmd.ExecuteNonQuery();
             }
-            catch
+            catch (Exception ex)
             {
-                // Connection might be in broken/closed state; ignore on close
+                // Never swallow reset failures: fail closed and invalidate physical connection
+                try
+                {
+                    connection.Close();
+                }
+                catch
+                {
+                    // Ignore secondary exception during close attempt
+                }
+
+                throw new InvalidOperationException(
+                    "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
+                    "Connection was closed to prevent cross-tenant context leakage.", ex);
             }
         }
     }

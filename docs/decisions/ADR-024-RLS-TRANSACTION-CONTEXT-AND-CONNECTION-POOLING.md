@@ -39,12 +39,14 @@ SELECT set_config('app.current_tenant_id', @tenant_id, true);
 
 ### 2. Baseline Connection Initialization & Explicit Pool Return Reset (`PostgresTenantSessionInterceptor`)
 To protect non-transactional read queries and eliminate residual session artifacts:
-- **On Connection Opened:** The interceptor immediately executes `SELECT set_config('app.current_tenant_id', @tenant_id, false);`. If `ITenantContext.TenantId` is null, it explicitly sets the empty string `''`.
-- **On Connection Closing (Pool Check-In):** Before Npgsql returns the connection to the connection pool, `ConnectionClosingAsync` intercepts the lifecycle event and executes:
+- **On Connection Opened (Non-Transactional Baseline):** The interceptor immediately executes `SELECT set_config('app.current_tenant_id', @tenant_id, false);`. If `ITenantContext.TenantId` is null, it explicitly sets the empty string `''`. This ensures non-transactional read queries (e.g., `await db.Schools.ToListAsync()`) execute within the correct tenant scope without requiring an explicit transaction boundary.
+- **Coordination with Transactional Operations:** When a transaction is started, `PostgresTenantTransactionInterceptor` executes with `is_local = true`. This overrides the session setting for the duration of the transaction. Upon commit or rollback, PostgreSQL automatically reverts the parameter to its pre-transaction state.
+- **On Connection Closing (Pool Check-In & Zero-Swallow Policy):** Before Npgsql returns the connection to the connection pool, `ConnectionClosingAsync` intercepts the lifecycle event and executes:
   ```sql
   SELECT set_config('app.current_tenant_id', '', false);
   ```
   This guarantees that any idle connection sitting in the pool has `app.current_tenant_id = ''`.
+- **Zero Swallowing on Reset Failure:** If the reset query fails for any reason, the interceptor explicitly catches the error, forcefully terminates the physical connection (`connection.Close()`), and throws an `InvalidOperationException`. Under no circumstances is an un-reset connection allowed to return to the Npgsql pool silently. Npgsql recognizes the broken connection state and discards the socket.
 
 ### 3. Fail-Closed SQL Evaluation
 The RLS policy is formulated as:
