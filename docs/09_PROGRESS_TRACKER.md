@@ -14,8 +14,8 @@
 
 | Phase | Name | Status | Owner | Evidence / notes |
 |---|---|---|---|---|
-| 0 | Product discovery and design | Completed | Product owner + technical lead | Phase 0 baseline merged to main at commit 66e0d35 |
-| 1 | Platform and tenancy foundation | In Progress | Technical lead | Phase 1A implemented: multi-tenant domain, EF Core 10 persistence, RLS, 26 unit/arch/integration tests passing |
+| 0 | Product discovery and design | In Progress | Product owner | Field interviews and operational workflow discovery ongoing; technical repository foundation completed at commit 66e0d35 |
+| 1 | Platform and tenancy foundation | In Progress | Technical lead | Phase 1A/1A.1 implemented: multi-tenant domain, composite FK, EF Core 10 migrations, RLS, audit, and 28+ unit/arch/integration tests passing |
 | 2 | Admissions and student lifecycle | Not Started | Team | |
 | 3 | Fees, finance and reconciliation | Not Started | Team | |
 | 4 | Academics and offline workflows | Not Started | Team | |
