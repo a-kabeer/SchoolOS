@@ -20,13 +20,14 @@ public static class DependencyInjection
         {
             var auditInterceptor = sp.GetRequiredService<AuditSaveChangesInterceptor>();
             var sessionInterceptor = sp.GetRequiredService<PostgresTenantSessionInterceptor>();
+            var txInterceptor = sp.GetRequiredService<PostgresTenantTransactionInterceptor>();
 
             if (!string.IsNullOrEmpty(connectionString))
             {
                 options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
             }
 
-            options.AddInterceptors(auditInterceptor, sessionInterceptor);
+            options.AddInterceptors(auditInterceptor, sessionInterceptor, txInterceptor);
         });
 
         return services;

@@ -9,6 +9,7 @@ public static class DependencyInjection
     {
         services.AddScoped<AuditSaveChangesInterceptor>();
         services.AddScoped<PostgresTenantSessionInterceptor>();
+        services.AddScoped<PostgresTenantTransactionInterceptor>();
         return services;
     }
 }
