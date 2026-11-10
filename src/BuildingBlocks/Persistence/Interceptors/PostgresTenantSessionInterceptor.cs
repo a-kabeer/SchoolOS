@@ -11,6 +11,8 @@ namespace SchoolOS.BuildingBlocks.Persistence.Interceptors;
 /// This powers PostgreSQL Row-Level Security (RLS) policies and ensures pooled
 /// database connections fail closed if tenant context is missing.
 /// On connection close, it explicitly resets the session variable to prevent any cross-request context leakage.
+/// If reset fails, it clears the Npgsql connection pool so that the physical connection is closed and discarded
+/// rather than recycled with potentially stale tenant context.
 /// </summary>
 public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
 {
@@ -90,19 +92,28 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
             }
             catch (Exception ex)
             {
-                // Never swallow reset failures: fail closed and invalidate physical connection
+                Exception? clearPoolEx = null;
                 try
                 {
-                    connection.Close();
+                    if (connection is Npgsql.NpgsqlConnection npgsqlConnection)
+                    {
+                        Npgsql.NpgsqlConnection.ClearPool(npgsqlConnection);
+                    }
                 }
-                catch
+                catch (Exception poolEx)
                 {
-                    // Ignore secondary exception during close attempt
+                    clearPoolEx = poolEx;
                 }
 
-                throw new InvalidOperationException(
-                    "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
-                    "Connection was closed to prevent cross-tenant context leakage.", ex);
+                var message = "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
+                              "The connection pool was cleared to ensure the affected physical connection is discarded upon close.";
+
+                if (clearPoolEx is not null)
+                {
+                    throw new AggregateException(message, ex, clearPoolEx);
+                }
+
+                throw new InvalidOperationException(message, ex);
             }
         }
     }
@@ -119,19 +130,28 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
             }
             catch (Exception ex)
             {
-                // Never swallow reset failures: fail closed and invalidate physical connection
+                Exception? clearPoolEx = null;
                 try
                 {
-                    connection.Close();
+                    if (connection is Npgsql.NpgsqlConnection npgsqlConnection)
+                    {
+                        Npgsql.NpgsqlConnection.ClearPool(npgsqlConnection);
+                    }
                 }
-                catch
+                catch (Exception poolEx)
                 {
-                    // Ignore secondary exception during close attempt
+                    clearPoolEx = poolEx;
                 }
 
-                throw new InvalidOperationException(
-                    "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
-                    "Connection was closed to prevent cross-tenant context leakage.", ex);
+                var message = "CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id' before returning connection to pool. " +
+                              "The connection pool was cleared to ensure the affected physical connection is discarded upon close.";
+
+                if (clearPoolEx is not null)
+                {
+                    throw new AggregateException(message, ex, clearPoolEx);
+                }
+
+                throw new InvalidOperationException(message, ex);
             }
         }
     }

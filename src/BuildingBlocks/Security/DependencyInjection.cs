@@ -57,7 +57,7 @@ public static class DependencyInjection
                     ctx.User.HasClaim(TenantContext.ScopeClaimType, SecurityPolicies.PlatformAdminScope));
             });
 
-            // TenantScoped policy: required for Local Data Plane tenant operations
+            // TenantScoped policy: baseline policy verifying authenticated membership in a tenant
             options.AddPolicy(SecurityPolicies.TenantScopedPolicy, policy =>
             {
                 policy.RequireAuthenticatedUser();
@@ -65,6 +65,34 @@ public static class DependencyInjection
                 {
                     var tenantClaim = ctx.User.FindFirst(TenantContext.TenantIdClaimType)?.Value;
                     return Guid.TryParse(tenantClaim, out var tenantId) && tenantId != Guid.Empty;
+                });
+            });
+
+            // OrganizationAdmin policy: requires verified tenant membership AND administrative role/permission
+            options.AddPolicy(SecurityPolicies.OrganizationAdminPolicy, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(ctx =>
+                {
+                    var tenantClaim = ctx.User.FindFirst(TenantContext.TenantIdClaimType)?.Value;
+                    var hasValidTenant = Guid.TryParse(tenantClaim, out var tenantId) && tenantId != Guid.Empty;
+                    if (!hasValidTenant)
+                    {
+                        return false;
+                    }
+
+                    var hasAdminRole = ctx.User.IsInRole(SecurityPolicies.TenantAdminRole) ||
+                                       ctx.User.IsInRole(SecurityPolicies.SchoolAdminRole) ||
+                                       ctx.User.IsInRole(SecurityPolicies.PrincipalRole) ||
+                                       ctx.User.HasClaim("role", SecurityPolicies.TenantAdminRole) ||
+                                       ctx.User.HasClaim("role", SecurityPolicies.SchoolAdminRole) ||
+                                       ctx.User.HasClaim("role", SecurityPolicies.PrincipalRole);
+
+                    var hasAdminScope = ctx.User.HasClaim(TenantContext.ScopeClaimType, SecurityPolicies.OrganizationManageScope) ||
+                                        ctx.User.HasClaim(TenantContext.ScopeClaimType, SecurityPolicies.SchoolsWriteScope) ||
+                                        ctx.User.HasClaim(TenantContext.ScopeClaimType, SecurityPolicies.CampusesWriteScope);
+
+                    return hasAdminRole || hasAdminScope;
                 });
             });
         });

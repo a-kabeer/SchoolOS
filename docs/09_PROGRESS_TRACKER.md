@@ -35,7 +35,7 @@ Copy this table for each phase or migrate it to GitHub Issues/Projects.
 | PLAT-001 | 1 | Platform | Create ASP.NET Core solution | Critical | Completed | Technical lead | | Solution scaffolded with .NET 10, OpenAPI, health endpoints |
 | PLAT-002 | 1 | Frontend | Create React + TypeScript app | High | Completed | Technical lead | PLAT-001 | React 19 + TypeScript + Vite production build verified |
 | TEN-001 | 1 | Organization | Implement tenant/school/campus model | Critical | Completed | Technical lead | PLAT-001 | UUIDv7 domain models, EF Core 10 mappings, RLS, integration tests passing |
-| SEC-001 | 1 | Identity | Implement scoped authorization | Critical | In Progress | Technical lead | TEN-001 | Cryptographic JWT Bearer auth, claims validation, PlatformAdmin and TenantScoped policies, and HTTP 401/403 tests implemented; fine-grained RBAC in Phase 1B |
+| SEC-001 | 1 | Identity | Implement scoped authorization | Critical | In Progress | Technical lead | TEN-001 | Cryptographic JWT Bearer auth, claims validation, PlatformAdmin, TenantScoped & OrganizationAdmin policies, Npgsql ClearPool safety, and HTTP 401/403 tests implemented; fine-grained RBAC in Phase 1B |
 | FIN-001 | 3 | Finance | Design chart of accounts and posting rules | Critical | Not Started | | Phase 0 finance rules | |
 | FIN-002 | 3 | Fees | Implement invoice/payment allocation model | Critical | Not Started | | FIN-001 | |
 | REC-001 | 3 | Reconciliation | Import bank statement batches | High | Not Started | | FIN-002 | |

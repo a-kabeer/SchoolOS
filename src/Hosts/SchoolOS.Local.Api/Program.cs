@@ -9,6 +9,12 @@ using SchoolOS.Modules.Organization.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure JSON serialization to ignore circular references
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+
 // Building Blocks & Modules
 builder.Services.AddSecurityBuildingBlocks(builder.Configuration);
 builder.Services.AddPersistenceBuildingBlocks();
@@ -89,8 +95,9 @@ orgGroup.MapPost("/schools", async (
     db.Schools.Add(school);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/api/v1/organization/schools/{school.Id}", school);
-});
+    var response = new CreateSchoolResponse(school.Id, school.TenantId, school.Name, school.Code);
+    return Results.Created($"/api/v1/organization/schools/{school.Id}", response);
+}).RequireAuthorization(SecurityPolicies.OrganizationAdminPolicy);
 
 orgGroup.MapGet("/campuses", async (
     [FromServices] OrganizationDbContext db,
@@ -131,15 +138,19 @@ orgGroup.MapPost("/schools/{schoolId:guid}/campuses", async (
     }
 
     var campus = school.AddCampus(request.Name, request.Code, request.Address);
+    db.Campuses.Add(campus);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/api/v1/organization/campuses/{campus.Id}", campus);
-});
+    var response = new CreateCampusResponse(campus.Id, campus.TenantId, campus.SchoolId, campus.Name, campus.Code, campus.Address);
+    return Results.Created($"/api/v1/organization/campuses/{campus.Id}", response);
+}).RequireAuthorization(SecurityPolicies.OrganizationAdminPolicy);
 
 app.Run();
 
 public record CreateSchoolRequest(string Name, string Code);
+public record CreateSchoolResponse(Guid Id, Guid TenantId, string Name, string Code);
 public record CreateCampusRequest(string Name, string Code, string? Address);
+public record CreateCampusResponse(Guid Id, Guid TenantId, Guid SchoolId, string Name, string Code, string? Address);
 
 namespace SchoolOS.Local.Api
 {

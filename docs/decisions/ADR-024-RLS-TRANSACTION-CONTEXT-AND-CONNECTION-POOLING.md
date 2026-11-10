@@ -46,7 +46,7 @@ To protect non-transactional read queries and eliminate residual session artifac
   SELECT set_config('app.current_tenant_id', '', false);
   ```
   This guarantees that any idle connection sitting in the pool has `app.current_tenant_id = ''`.
-- **Zero Swallowing on Reset Failure:** If the reset query fails for any reason, the interceptor explicitly catches the error, forcefully terminates the physical connection (`connection.Close()`), and throws an `InvalidOperationException`. Under no circumstances is an un-reset connection allowed to return to the Npgsql pool silently. Npgsql recognizes the broken connection state and discards the socket.
+- **Pool-Clearing on Reset Failure (`NpgsqlConnection.ClearPool`):** In ADO.NET and Npgsql, calling `Close()` on a pooled connection merely returns the physical connection to the pool; it does not destroy the underlying socket. Therefore, if the session reset query fails, relying on `Close()` alone would risk returning an uncleared connection to the pool. To prevent this, the interceptor invokes `NpgsqlConnection.ClearPool(npgsqlConnection)`. According to Npgsql design, `ClearPool` immediately closes all idle connections in that pool and flags busy connections so that when they are closed by EF Core, Npgsql destroys and discards the physical connection rather than returning it to the pool. The interceptor preserves the original exception, does not use empty catch blocks, avoids recursive `Close()` calls within `ConnectionClosing`, and raises an `InvalidOperationException` (or `AggregateException`) to fail closed.
 
 ### 3. Fail-Closed SQL Evaluation
 The RLS policy is formulated as:

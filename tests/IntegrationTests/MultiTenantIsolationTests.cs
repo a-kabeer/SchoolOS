@@ -438,4 +438,114 @@ public class MultiTenantIsolationTests : IClassFixture<PostgresDatabaseFixture>
             schoolsB.Should().NotContain(s => s.Code == "TA-ISO");
         }
     }
+
+    [Fact]
+    public async Task Scenario17_Backend_Pid_And_Connection_Pool_Reuse_Enforces_Context_Clearing()
+    {
+        var tenantA = Guid.CreateVersion7();
+        var tenantB = Guid.CreateVersion7();
+
+        int backendPidA;
+
+        // 1. Borrower A uses physical connection from pool
+        await using (var connA = await _fixture.OpenRawConnectionAsync(tenantA.ToString()))
+        await using (var cmd = connA.CreateCommand())
+        {
+            cmd.CommandText = "SELECT pg_backend_pid();";
+            backendPidA = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+
+            cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
+            var settingA = (string?)await cmd.ExecuteScalarAsync();
+            settingA.Should().Be(tenantA.ToString());
+        } // Returns connection to Npgsql pool, invoking ConnectionClosing reset
+
+        // 2. Borrower B checks out connection without tenant context (or after pool return)
+        await using (var connNeutral = await _fixture.OpenRawConnectionAsync(null))
+        await using (var cmd = connNeutral.CreateCommand())
+        {
+            cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
+            var residual = (string?)await cmd.ExecuteScalarAsync();
+            residual.Should().BeEmpty("Pooled connection must not leak Tenant A's identity to subsequent neutral borrower");
+        }
+
+        // 3. Borrower C checks out connection with Tenant B context
+        await using (var connB = await _fixture.OpenRawConnectionAsync(tenantB.ToString()))
+        await using (var cmd = connB.CreateCommand())
+        {
+            cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
+            var settingB = (string?)await cmd.ExecuteScalarAsync();
+            settingB.Should().Be(tenantB.ToString(), "Pooled connection must reflect Tenant B identity");
+        }
+    }
+
+    [Fact]
+    public async Task Scenario18_NonTransactional_Queries_Enforce_Tenant_Isolation()
+    {
+        var tenantA = Guid.CreateVersion7();
+        var tenantB = Guid.CreateVersion7();
+
+        var contextA = new TenantContext(tenantA, null, "user-a");
+        var contextB = new TenantContext(tenantB, null, "user-b");
+
+        // Seed data
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            dbA.Schools.Add(School.Create(tenantA, "Non-Tx School A", "NTX-A"));
+            await dbA.SaveChangesAsync();
+        }
+
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            dbB.Schools.Add(School.Create(tenantB, "Non-Tx School B", "NTX-B"));
+            await dbB.SaveChangesAsync();
+        }
+
+        // Execute regular EF Core queries WITHOUT an explicit transaction (tests PostgresTenantSessionInterceptor)
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            var resultsA = await dbA.Schools.AsNoTracking().ToListAsync();
+            resultsA.Should().ContainSingle(s => s.Code == "NTX-A");
+            resultsA.Should().NotContain(s => s.Code == "NTX-B");
+        }
+
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            var resultsB = await dbB.Schools.AsNoTracking().ToListAsync();
+            resultsB.Should().ContainSingle(s => s.Code == "NTX-B");
+            resultsB.Should().NotContain(s => s.Code == "NTX-A");
+        }
+    }
+
+    [Fact]
+    public async Task Scenario19_Transaction_Commit_And_Rollback_Lifecycle()
+    {
+        var tenantA = Guid.CreateVersion7();
+        var contextA = new TenantContext(tenantA, null, "user-a");
+
+        await using var dbA = _fixture.CreateDbContext(contextA);
+
+        // 1. Transaction Commit
+        await using (var tx = await dbA.Database.BeginTransactionAsync())
+        {
+            var committedSchool = School.Create(tenantA, "Committed School", "COMM-01");
+            dbA.Schools.Add(committedSchool);
+            await dbA.SaveChangesAsync();
+            await tx.CommitAsync();
+        }
+
+        var existsCommitted = await dbA.Schools.AnyAsync(s => s.Code == "COMM-01");
+        existsCommitted.Should().BeTrue();
+
+        // 2. Transaction Rollback
+        await using (var tx = await dbA.Database.BeginTransactionAsync())
+        {
+            var rolledBackSchool = School.Create(tenantA, "Rolled Back School", "ROLL-01");
+            dbA.Schools.Add(rolledBackSchool);
+            await dbA.SaveChangesAsync();
+            await tx.RollbackAsync();
+        }
+
+        var existsRolledBack = await dbA.Schools.AnyAsync(s => s.Code == "ROLL-01");
+        existsRolledBack.Should().BeFalse();
+    }
 }

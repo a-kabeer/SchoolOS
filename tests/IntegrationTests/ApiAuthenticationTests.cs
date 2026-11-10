@@ -216,11 +216,30 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
     }
 
     [Fact]
-    public async Task LocalApi_Authenticated_Tenant_User_Can_Create_And_List_Schools()
+    public async Task LocalApi_Authenticated_Tenant_User_Without_Admin_Role_Gets_403_When_Creating_School()
     {
         var client = _localFactory.CreateClient();
         var tenantId = Guid.NewGuid();
-        var token = CreateToken("principal-user", tenantId: tenantId);
+        // User has verified tenant_id, but is only a Teacher (insufficient permissions for school creation)
+        var token = CreateToken("teacher-user", tenantId: tenantId, roles: new[] { SecurityPolicies.TeacherRole });
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Can read schools within tenant scope
+        var getResponse = await client.GetAsync("/api/v1/organization/schools");
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Cannot create new school (requires OrganizationAdminPolicy)
+        var payload = new { Name = "Unauthorized School Attempt", Code = "FAIL-01" };
+        var postResponse = await client.PostAsJsonAsync("/api/v1/organization/schools", payload);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task LocalApi_Authenticated_TenantAdmin_Can_Create_And_List_Schools()
+    {
+        var client = _localFactory.CreateClient();
+        var tenantId = Guid.NewGuid();
+        var token = CreateToken("admin-user", tenantId: tenantId, roles: new[] { SecurityPolicies.TenantAdminRole });
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var code = $"SCH-{Guid.NewGuid():N}"[..10];
@@ -230,6 +249,44 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
 
         var getResponse = await client.GetAsync("/api/v1/organization/schools");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task LocalApi_Authenticated_SchoolAdmin_Can_Create_Campus()
+    {
+        var client = _localFactory.CreateClient();
+        var tenantId = Guid.NewGuid();
+        var token = CreateToken("school-admin-user", tenantId: tenantId, roles: new[] { SecurityPolicies.SchoolAdminRole });
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // First create school as school admin
+        var schoolCode = $"SCH-{Guid.NewGuid():N}"[..10];
+        var schoolPayload = new { Name = "City School Model Town", Code = schoolCode };
+        var schoolPost = await client.PostAsJsonAsync("/api/v1/organization/schools", schoolPayload);
+        schoolPost.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var school = await schoolPost.Content.ReadFromJsonAsync<CreatedSchoolResponse>();
+        school.Should().NotBeNull();
+
+        // Create campus
+        var campusPayload = new { Name = "Junior Branch", Code = "JB-01", Address = "123 Main St" };
+        var campusPost = await client.PostAsJsonAsync($"/api/v1/organization/schools/{school!.Id}/campuses", campusPayload);
+        campusPost.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task LocalApi_Authenticated_User_With_Functional_Scope_Can_Create_School()
+    {
+        var client = _localFactory.CreateClient();
+        var tenantId = Guid.NewGuid();
+        // Functional scope instead of explicit role
+        var token = CreateToken("scoped-operator", tenantId: tenantId, scopes: new[] { SecurityPolicies.SchoolsWriteScope });
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var code = $"SCH-{Guid.NewGuid():N}"[..10];
+        var payload = new { Name = "Scope-Authorized Academy", Code = code };
+        var postResponse = await client.PostAsJsonAsync("/api/v1/organization/schools", payload);
+        postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Fact]
@@ -245,3 +302,5 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         localHealth.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }
+
+public record CreatedSchoolResponse(Guid Id, Guid TenantId, string Name, string Code);
