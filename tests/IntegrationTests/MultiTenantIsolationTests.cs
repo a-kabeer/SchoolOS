@@ -371,4 +371,71 @@ public class MultiTenantIsolationTests : IClassFixture<PostgresDatabaseFixture>
             residualSetting.Should().BeEmpty("Connection close must reset app.current_tenant_id to empty string");
         }
     }
+
+    [Fact]
+    public async Task Scenario15_Transaction_Rollback_Does_Not_Leak_Tenant_Context()
+    {
+        var tenantA = Guid.CreateVersion7();
+        var contextA = new TenantContext(tenantA, null, "user-a");
+
+        await using var dbA = _fixture.CreateDbContext(contextA);
+        await using (var tx = await dbA.Database.BeginTransactionAsync())
+        {
+            var tempSchool = School.Create(tenantA, "Temporary School", "TEMP");
+            dbA.Schools.Add(tempSchool);
+            await dbA.SaveChangesAsync();
+
+            // Explicit rollback
+            await tx.RollbackAsync();
+        }
+
+        // Verify school was not persisted
+        var schoolExists = await dbA.Schools.AnyAsync(s => s.Code == "TEMP");
+        schoolExists.Should().BeFalse();
+
+        // Verify transaction-local setting is cleared
+        await using var conn = await _fixture.OpenRawConnectionAsync(null);
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
+        var setting = (string?)await cmd.ExecuteScalarAsync();
+        setting.Should().BeEmpty("Rollback must not leak transaction-local tenant context");
+    }
+
+    [Fact]
+    public async Task Scenario16_Reused_Pooled_Connection_Across_Tenants_Enforces_Strict_Isolation()
+    {
+        var tenantA = Guid.CreateVersion7();
+        var tenantB = Guid.CreateVersion7();
+
+        var contextA = new TenantContext(tenantA, null, "user-a");
+        var contextB = new TenantContext(tenantB, null, "user-b");
+
+        // Seed Tenant A and B rows
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            dbA.Schools.Add(School.Create(tenantA, "Tenant A Isolated School", "TA-ISO"));
+            await dbA.SaveChangesAsync();
+        }
+
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            dbB.Schools.Add(School.Create(tenantB, "Tenant B Isolated School", "TB-ISO"));
+            await dbB.SaveChangesAsync();
+        }
+
+        // Reusing connections sequentially as pooled connections
+        await using (var dbA = _fixture.CreateDbContext(contextA))
+        {
+            var schoolsA = await dbA.Schools.ToListAsync();
+            schoolsA.Should().ContainSingle(s => s.Code == "TA-ISO");
+            schoolsA.Should().NotContain(s => s.Code == "TB-ISO");
+        }
+
+        await using (var dbB = _fixture.CreateDbContext(contextB))
+        {
+            var schoolsB = await dbB.Schools.ToListAsync();
+            schoolsB.Should().ContainSingle(s => s.Code == "TB-ISO");
+            schoolsB.Should().NotContain(s => s.Code == "TA-ISO");
+        }
+    }
 }

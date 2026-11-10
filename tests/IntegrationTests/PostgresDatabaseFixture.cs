@@ -65,11 +65,12 @@ public class PostgresDatabaseFixture : IAsyncLifetime
     {
         var auditInterceptor = new AuditSaveChangesInterceptor(tenantContext);
         var sessionInterceptor = new PostgresTenantSessionInterceptor(tenantContext);
+        var txInterceptor = new PostgresTenantTransactionInterceptor(tenantContext);
 
         var options = new DbContextOptionsBuilder<OrganizationDbContext>()
             .UseNpgsql(AppConnectionString)
             .UseSnakeCaseNamingConvention()
-            .AddInterceptors(auditInterceptor, sessionInterceptor)
+            .AddInterceptors(auditInterceptor, sessionInterceptor, txInterceptor)
             .Options;
 
         return new OrganizationDbContext(options, tenantContext);
