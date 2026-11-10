@@ -54,8 +54,14 @@ jobs:
       - name: Run Multi-Tenant Integration Tests
         run: dotnet test tests/IntegrationTests/SchoolOS.IntegrationTests.csproj --no-build --configuration Release --verbosity normal
 
-      - name: Vulnerability Audit
-        run: dotnet list SchoolOS.sln package --vulnerable --include-transitive
+      - name: Vulnerability Audit (Hard Failure Gate)
+        run: |
+          AUDIT_OUTPUT=$(dotnet list SchoolOS.sln package --vulnerable --include-transitive)
+          echo "$AUDIT_OUTPUT"
+          if echo "$AUDIT_OUTPUT" | grep -qiE "(Critical|High|Moderate|Low)"; then
+            echo "::error::Vulnerable NuGet packages detected! Failing CI build."
+            exit 1
+          fi
 
   frontend:
     name: Frontend Build (React + Vite)
