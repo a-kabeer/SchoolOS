@@ -148,3 +148,21 @@ The BCP is not a gateway to unrestricted campus operational data. Customer porta
 ## Ephemeral session-based demo added in v1.7
 
 The instant demo is a temporary session-bound workspace rather than a permanent demo account. Logout revokes access immediately; last-tab close, browser crash, inactivity or absolute lifetime are handled with best-effort close hints plus server-side client leases and expiry sweeps. Refresh and multiple tabs reconnect safely. The workspace contains synthetic data only and is cleaned through an idempotent retryable worker, including associated temporary files/cache/queues/resources. The recommended starting shape is a dedicated Demo Runtime store isolated from production and excluded from long-lived production/customer backups. Final storage isolation, timeouts and residual-data retention remain subject to threat/load testing and approval. All implementation tasks remain Not Started. See document 41 and ADR-021.
+
+
+## Documentation completion baseline (v1.8)
+
+The documentation-first supplement is in `docs/42` through `docs/51`. Read these after the original product/architecture baseline and before beginning Phase 1 implementation:
+
+- `42_DOCUMENTATION_COMPLETION_AND_GAP_REGISTER.md` — repository evidence, documentation gaps, architecture boundaries and no-code gate.
+- `43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md` — proposed Local Data Plane entities and logical fields.
+- `44_POSTGRESQL_ERD_AND_MIGRATION_SPEC.md` — database boundaries, ERD, constraints, RLS and migration controls.
+- `45_API_AND_INTEGRATION_EVENT_CONTRACTS.md` — Local/Cloud API families, errors, idempotency and events.
+- `46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md` — roles, resource scopes and Restricted Mode permissions.
+- `47_WORKFLOW_ACCEPTANCE_TEST_CATALOGUE.md` — Given/When/Then business, security and operational tests.
+- `48_HYBRID_DEPLOYMENT_OPERATIONS_AND_RECOVERY_RUNBOOK.md` — provisioning, backup, restore, sync, upgrade and incident procedures.
+- `49_OPERATIONAL_UI_UX_AND_SCREEN_CATALOGUE.md` — role dashboards, screen inventory, states, Urdu/RTL and accessibility.
+- `50_DATA_MIGRATION_IMPORT_EXPORT_SPECIFICATION.md` — onboarding imports, dry-run, reconciliation, data exchange and customer exports.
+- `51_REQUIREMENTS_TRACEABILITY_AND_DOCUMENTATION_SIGNOFF.md` — requirement-to-test traceability and approval gate.
+
+These specifications are drafts until reviewed and approved. Their existence does not imply implementation. Phase 1 coding must remain blocked until the sign-off checklist in document 51 is complete.

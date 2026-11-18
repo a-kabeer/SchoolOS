@@ -21,6 +21,8 @@
 
 **Exit criteria:** Product scope, key workflows and architectural decisions are reviewed and approved by product owner and technical lead.
 
+**Documentation-first exit gate (v1.8):** Before Phase 1 coding, complete review and approval of docs 42–51, including operational/Cloud ERDs, data dictionary, API/event contracts, permission matrix, acceptance tests, UI screen inventory, migration/export rules and deployment runbooks. Close or formally accept every Open Decision with an owner. The no-code gate is tracked in docs/42 and docs/51.
+
 ## Phase 1 — Platform and tenancy foundation
 
 - [ ] Create ASP.NET Core solution and React/TypeScript application.

@@ -149,3 +149,23 @@ The separate BCP workstream is tracked in `docs/39_BUSINESS_CUSTOMER_PLATFORM_TA
 ### Ephemeral demo design addition (v1.7)
 
 Session-bound temporary demo work is now specified in `docs/41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md` and ADR-021. BCP-013, BCP-014 and BCP-036–BCP-041 remain Not Started; no implementation evidence has been supplied.
+
+
+## Documentation workstream (v1.8)
+
+The following documents were added on branch `docs/implementation-ready-baseline-v1-8`. Their status is **Draft / Review Pending**; this is documentation work, not implementation completion.
+
+| Document | Scope | Status | Required approval |
+|---|---|---|---|
+| DOC-001 / 42 | Repository gap register and doc-first gate | Draft | Product owner + technical lead |
+| DOC-002 / 43 | Operational domain data dictionary | Draft | Technical lead + domain owners |
+| DOC-003 / 44 | PostgreSQL ERD and migration specification | Draft | Technical lead + security/DBA |
+| DOC-004 / 45 | API and event contracts | Draft | Backend lead + security |
+| DOC-005 / 46 | Roles, authorization and tenant isolation | Draft | Product owner + security |
+| DOC-006 / 47 | Workflow acceptance tests | Draft | Product owner + QA |
+| DOC-007 / 48 | Deployment and recovery runbook | Draft | Operations + technical lead |
+| DOC-008 / 49 | UI/UX and screen catalogue | Draft | Product owner + design/QA |
+| DOC-009 / 50 | Data migration and export specification | Draft | Product owner + migration/finance |
+| DOC-010 / 51 | Requirements traceability and sign-off | Draft | Product owner + technical lead + QA |
+
+**No-code rule:** Do not start Phase 1 implementation until documents 42–51 are reviewed, open decisions are closed or accepted as blockers, and document 51 is signed off. Existing implementation phase statuses remain unchanged.
