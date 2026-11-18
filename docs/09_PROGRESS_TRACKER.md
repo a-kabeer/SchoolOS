@@ -169,3 +169,8 @@ The following documents were added on branch `docs/implementation-ready-baseline
 | DOC-010 / 51 | Requirements traceability and sign-off | Draft | Product owner + technical lead + QA |
 
 **No-code rule:** Do not start Phase 1 implementation until documents 42–51 are reviewed, open decisions are closed or accepted as blockers, and document 51 is signed off. Existing implementation phase statuses remain unchanged.
+
+
+## OCI staging CI/CD and automated QA workstream (v1.8)
+
+The developer/pilot staging pipeline is documented in `docs/52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md` and tracked in `docs/53_STAGING_QA_PROGRESS_TRACKER.md`. Repository audit task STQA-001 is complete; OCI provisioning, containerization, CI/CD, Playwright and optional Gemini/MCP integration remain Not Started. Login, school-creation, campus and permission regression tests remain Blocked until the corresponding application features and test interfaces are implemented. This cloud-hosted staging environment complements, but does not replace, the production hybrid Local Node operations in document 48 and the H0–H7 work packages in document 17.

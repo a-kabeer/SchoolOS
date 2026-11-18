@@ -164,5 +164,9 @@ The documentation-first supplement is in `docs/42` through `docs/51`. Read these
 - `49_OPERATIONAL_UI_UX_AND_SCREEN_CATALOGUE.md` — role dashboards, screen inventory, states, Urdu/RTL and accessibility.
 - `50_DATA_MIGRATION_IMPORT_EXPORT_SPECIFICATION.md` — onboarding imports, dry-run, reconciliation, data exchange and customer exports.
 - `51_REQUIREMENTS_TRACEABILITY_AND_DOCUMENTATION_SIGNOFF.md` — requirement-to-test traceability and approval gate.
+- `52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md` — OCI staging deployment, GitHub Actions CI/CD, Playwright and optional Gemini/MCP QA.
+- `53_STAGING_QA_PROGRESS_TRACKER.md` — staging task dependencies, blockers and acceptance evidence.
 
 These specifications are drafts until reviewed and approved. Their existence does not imply implementation. Phase 1 coding must remain blocked until the sign-off checklist in document 51 is complete.
+
+The separate developer/pilot OCI staging pipeline is documented in `docs/52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md` and tracked in `docs/53_STAGING_QA_PROGRESS_TRACKER.md`. It complements document 48 but does not replace production Local Node operations.
