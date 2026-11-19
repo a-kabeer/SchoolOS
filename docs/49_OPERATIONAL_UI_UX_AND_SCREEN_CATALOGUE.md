@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed screen catalogue; design approval pending
 - **Owner:** Product owner (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 **Version:** v1.8 draft · **Status:** Screen inventory and interaction baseline; wireframes/design system approval pending  
 **Applies to:** Local Data Plane staff, teacher, parent and student experiences  
 **Companion:** docs/01_PRODUCT_REQUIREMENTS.md, docs/02_MODULES_AND_WORKFLOWS.md, docs/33_CUSTOMER_PORTAL_SPECIFICATION.md, docs/34_SUPER_ADMIN_CONSOLE_SPECIFICATION.md
@@ -266,7 +266,7 @@ Full language scope (English, Urdu and whether Roman Urdu is a complete UI local
 - [ ] Campus selector and freshness indicators.
 
 
-## 13. Reference-informed cashier and operational workflow
+## 14. Reference-informed cashier and operational workflow
 
 The eSchool fee-counter research is a usability reference, not a requirement to reproduce its legacy screen or mandate a particular scanner/hardware vendor.
 
