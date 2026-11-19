@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed security and quality baseline
 - **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 
 ## 1. Security baseline
 
