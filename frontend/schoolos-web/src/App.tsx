@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { LocaleProvider } from '@/context/LocaleContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { AppDataProvider } from '@/context/AppDataContext';
@@ -58,15 +59,17 @@ export function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <AppDataProvider>
-              <AppRoutes />
-            </AppDataProvider>
-          </ToastProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <LocaleProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <AppDataProvider>
+                <AppRoutes />
+              </AppDataProvider>
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </LocaleProvider>
     </BrowserRouter>
   );
 }

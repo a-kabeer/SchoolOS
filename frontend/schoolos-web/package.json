@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "verify-locales": "node scripts/verify-locales.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.5",
