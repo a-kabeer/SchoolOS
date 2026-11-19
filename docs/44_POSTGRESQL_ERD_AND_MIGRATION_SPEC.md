@@ -324,3 +324,20 @@ Imports require signature/recipient/tenant/schema verification, dry-run, duplica
 - [ ] Seed/reference-data strategy approved.
 - [ ] Migration lock, backup and rollback/forward-fix plan approved.
 - [ ] Backup/restore acceptance tests defined.
+
+## 12. SaaS tenant implementation companion
+
+Use [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) as the end-to-end implementation companion for the v1 SaaS tenant boundary.
+
+Physical schema and migration work must preserve these invariants:
+
+- Cloud Organizations.Id is the canonical TenantId. Cloud OrganizationId and Local TenantId are the same UUID, not separate identity domains.
+- Organization/Tenant → School → Campus is the proposed v1 hierarchy. A Campus must not reference a School in another tenant.
+- A Local Node binds to one Tenant and may be assigned multiple campuses only when all assignments belong to that Tenant.
+- Every tenant-owned table has a non-null tenant key directly or an enforced same-tenant parent relationship. Prefer direct tenant keys for high-volume and security-sensitive tables.
+- Add composite unique keys and composite foreign keys to prevent cross-tenant references.
+- Cloud runtime roles are restricted and must not own tables, be superusers or have BYPASSRLS. Schema migration credentials are separate.
+- Set app.tenant_id transaction-locally inside every tenant-scoped database unit of work. Never depend on session-level state on a pooled connection.
+- Missing tenant context fails closed. RLS, application authorization and resource-scope checks all remain required.
+
+DOC-62 provides the recommended entity catalogue additions, RLS policy pattern, rollout gates and SAAS acceptance criteria. This does not replace the physical ERD approval checklist in this document. DEC-001 and DEC-004 remain open until owner approval and executable integration/security evidence are linked.
