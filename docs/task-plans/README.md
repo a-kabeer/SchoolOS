@@ -17,4 +17,4 @@ This folder contains the canonical detailed work-package plans. Their numbered c
 | Business & Customer Platform | [BCP_IMPLEMENTATION_TASK_PLAN.md](BCP_IMPLEMENTATION_TASK_PLAN.md) | [BCP](../../registers/task-register-business-customer-platform.csv) |
 | Documentation governance | [DOCUMENTATION_ALIGNMENT_TASK_PLAN.md](DOCUMENTATION_ALIGNMENT_TASK_PLAN.md) | [DOCALIGN](../../registers/task-register-documentation-governance.csv) |
 
-Update the relevant detailed plan and its task-register row in the same pull request. Task status is authoritative in the eight CSV partitions under `registers/`; progress trackers are summary views only. Update the relevant plan and register row in the same pull request.
+Update the relevant detailed plan and its task-register row in the same pull request. Task status is authoritative in the eight CSV partitions under `registers/`; progress trackers are summary views only.
