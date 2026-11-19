@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed Cloud Control Plane logical data catalogue
 - **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `898812f89e0ec7f03aff6c3b1408e46782814dfd` (base for documentation governance refactor)
 **Version:** v1.7 · **Status:** Preliminary entity catalogue; detailed ERD and migrations Not Started
 
 ## 1. Database boundary
@@ -88,3 +88,22 @@ Organization-owned entities must carry `OrganizationId` directly or through a ri
 ## Ephemeral demo session schema update (v1.7)
 
 The `demo` namespace must support the session-bound lifecycle. `DemoSessions` records template/version, server timestamps, lifecycle state, idle/absolute expiry, revocation and cleanup state. `DemoSessionClients` stores opaque client lease identifiers and heartbeat/disconnect/lease-expiry timestamps. `DemoSessionResources` inventories session-owned database/object/cache/queue/runtime resources and cleanup state. `DemoSessionEvents` contains minimal lifecycle/security metadata only, not demo record payloads or credentials. All data access is derived from the authenticated server-side demo session, with database-enforced session isolation (RLS when shared tables are used). See `docs/41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md` and ADR-021.
+
+## 8. SaaS tenant implementation baseline
+
+The Cloud Control Plane remains a shared PostgreSQL SaaS database. V1 does not create one Cloud database per customer. Tenant-owned rows use the canonical Organizations.Id UUID as OrganizationId; the same UUID is represented as TenantId in Local Data Plane records. Do not introduce a second independent Tenants identity table.
+
+For implementation, use the following hierarchy and constraints:
+
+- Organization/Tenant 1-to-many Schools; School 1-to-many Campuses.
+- Every School and Campus is owned by exactly one Tenant. Campus-to-School references must use composite same-tenant foreign keys.
+- A Tenant can have multiple Local Nodes. Each Local Node is bound to exactly one Tenant and may serve multiple same-tenant campuses through effective-dated NodeCampusAssignments.
+- Global Users can have separate TenantMemberships. A user row by itself never proves access to an Organization.
+- Tenant-owned Cloud rows carry a non-null OrganizationId directly or through a rigorously enforced parent relationship. High-volume or sensitive rows should carry it directly.
+- Platform-global catalogues are explicitly classified and kept separate from nullable tenant-owned rows.
+- Normal request-serving roles are non-superuser, not table owners and have no BYPASSRLS. Use transaction-local tenant context with connection-pool isolation tests; see DOC-44 and DOC-62.
+- The Cloud Control Plane stores commercial/platform metadata and approved minimum-necessary projections, not an uncontrolled copy of the Local operational database.
+
+Minimum tenant entities include Schools, Campuses, TenantMemberships, TenantInvitations, NodeCampusAssignments and effective-dated role/scope assignments. Reuse existing equivalent entities rather than creating duplicate tables. Composite foreign keys must prevent cross-tenant School/Campus/Node relationships even when identifiers are globally unique.
+
+The complete provisioning lifecycle, TenantContext contract, database role model, RLS policy pattern, node enrollment, entitlement snapshot and test plan are in [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md). DOC-36 remains a logical catalogue; DOC-44 remains the authority for physical DDL and migration approval. DEC-001 and DEC-004 remain open pending formal approval.
