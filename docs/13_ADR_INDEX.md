@@ -1,19 +1,19 @@
 # 13 — Architecture Decision Record (ADR) Index
 
-Use `../templates/ADR_TEMPLATE.md` to document material design decisions. Statuses below describe the current planning baseline; cryptographic and operational implementations still require review.
+Use the [canonical ADR template](templates/ADR_TEMPLATE.md) to document material design decisions. The root `templates/ADR_TEMPLATE.md` is a deprecated compatibility pointer. Statuses below describe the current planning baseline; cryptographic and operational implementations still require review.
 
 | ADR | Title | Current decision | Status |
 |---|---|---|---|
-| ADR-001 | Modular Monolith | School business application remains a domain-oriented ASP.NET Core Modular Monolith | Accepted direction |
-| ADR-002 | Backend Framework | ASP.NET Core / .NET 10 LTS | Accepted direction |
-| ADR-003 | Frontend | React + TypeScript | Accepted direction |
-| ADR-004 | Database | PostgreSQL | Accepted direction |
-| ADR-005 | Multi-tenancy and database boundary | Tenant/site-scoped records; each Local Data Plane has its own operational DB and Cloud Control Plane has a separate platform DB | Accepted direction; detailed ERD pending |
-| ADR-006 | Offline Model | Local Data Plane server is authoritative for local operations; PWA/IndexedDB is supplementary | Accepted direction |
-| ADR-007 | Finance Integrity | Double-entry ledger and immutable posted entries | Recommended product rule |
-| ADR-008 | Event Delivery | Transactional Outbox/Inbox and idempotent consumers | Accepted direction |
-| ADR-009 | AI Provider | Provider abstraction; no vendor lock-in | Proposed |
-| ADR-010 | Deployment | Hybrid Cloud Control Plane + Local Data Plane nodes | Accepted direction |
+| ADR-001 | Modular Monolith | School business application remains a domain-oriented ASP.NET Core Modular Monolith | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-002 | Backend Framework | ASP.NET Core / .NET 10 LTS | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-003 | Frontend | React + TypeScript | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-004 | Database | PostgreSQL | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-005 | Multi-tenancy and database boundary | Tenant/site-scoped records; each Local Data Plane has its own operational DB and Cloud Control Plane has a separate platform DB | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-006 | Offline Model | Local Data Plane server is authoritative for local operations; PWA/IndexedDB is supplementary | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-007 | Finance Integrity | Double-entry ledger and immutable posted entries | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-008 | Event Delivery | Transactional Outbox/Inbox and idempotent consumers | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-009 | AI Provider | Provider abstraction; no vendor lock-in | Historical summary only — no standalone ADR file in the current repository baseline |
+| ADR-010 | Deployment | Hybrid Cloud Control Plane + Local Data Plane nodes | Historical summary only — no standalone ADR file in the current repository baseline |
 | ADR-011 | Hybrid Topology | Shared group node or per-campus edge nodes based on outage requirement | Accepted direction; per-pilot topology pending |
 | ADR-012 | Signed Offline License Lease | Node-bound, time-bounded asymmetric signed licence; automatic online renewal + manual `.lic`/USB fallback; restricted mode after grace | Accepted product policy; format/security review pending |
 | ADR-013 | Multi-node Synchronization | Event-based hub-and-spoke through Cloud Sync Hub; no generic financial last-write-wins | Accepted direction; detailed contracts pending |
@@ -38,6 +38,10 @@ Use `../templates/ADR_TEMPLATE.md` to document material design decisions. Status
 
 Decision records: `decisions/ADR-015-AI-HYBRID-HOSTING-AND-OFFLINE.md`, `ADR-016-AI-PROVIDER-GATEWAY-AND-PRIVACY-ROUTING.md`, `ADR-017-AI-RAG-AND-TOOL-CALLING.md`, `ADR-018-AI-TRAINING-AND-CUSTOMER-DATA-GOVERNANCE.md`.
 
+
+## Historical ADR coverage
+
+ADR-001 through ADR-010 are index-only historical summaries in this repository baseline; standalone decision files are not present. Do not infer that an ADR file exists for these rows.
 
 ## Licence policy decision update (v1.4)
 
@@ -68,3 +72,7 @@ Decision record: `decisions/ADR-020-BUSINESS-CUSTOMER-PLATFORM.md`.
 | ADR-021 | Ephemeral Session-Based Demo | Temporary session-bound workspace; synthetic-only data; immediate logout revocation; server leases/expiry; retryable cleanup; isolated Demo Runtime | Accepted product direction; storage/timeouts and retention details pending |
 
 Decision record: `decisions/ADR-021-EPHEMERAL-SESSION-BASED-DEMO.md`. Full design: `41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md`.
+
+## Documentation and governance decisions
+
+The canonical documentation governance standard is [document 54](54_DOCUMENTATION_STANDARDS.md). Remaining architecture/security decisions are tracked in [document 60](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md).

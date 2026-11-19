@@ -2,7 +2,7 @@
 
 - **Document ID:** ADR-NNN
 - **Status:** Proposed / Accepted direction / Accepted product policy / Superseded / Rejected
-- **Decision maturity:** Proposed / Accepted / Open / Superseded
+- **Decision maturity:** Proposed / Accepted direction / Accepted product policy / Open / Superseded
 - **Owner:** Accountable role; named assignee TBD until assigned
 - **Last reviewed:** YYYY-MM-DD
 - **Source baseline:** Repository/ref and full commit SHA

@@ -1,7 +1,11 @@
 # 04 — Preliminary PostgreSQL Database Blueprint
 
-**Status:** Logical table catalogue only. Detailed columns, datatypes, constraints, indexes, cardinalities and migration scripts are not yet approved.
-
+- **Document ID:** DOC-04
+- **Status:** Current
+- **Decision maturity:** Proposed logical data model; physical schema approval pending
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `91cd4355e68d1b37e1943aeae1db58b4ff34c53f` (documentation refactor base)
 > **Hybrid database topology update (v1.1):** The earlier “one PostgreSQL database initially” statement is superseded for hybrid deployment. Each Local Data Plane has its own operational PostgreSQL database; the Cloud Control Plane has a separate platform database for tenants, subscriptions, license leases, node registry, sync envelopes and optional projections. The cloud must not become an uncontrolled full copy of all local student/finance data. See `14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md` and `15_SUBSCRIPTION_LICENSING_AND_OFFLINE_ENFORCEMENT.md`.
 
 ## 1. Database strategy
@@ -302,7 +306,7 @@ The local operational database may keep a minimal local projection of tenant/nod
 - Finance transaction examples with journal postings.
 
 
-## 7. Cloud Control Plane database catalogue
+## 10. Cloud Control Plane database catalogue
 
 Do not mix the platform billing/licensing database with each Local Node's operational database. The Cloud Control Plane requires its own database (schema catalogue, not final ERD):
 
@@ -328,7 +332,7 @@ Do not mix the platform billing/licensing database with each Local Node's operat
 - `backup.backup_catalogue`
 - Optional reporting projections / parent portal read models with explicit data minimization and retention.
 
-## 8. Local synchronization schema
+## 11. Local synchronization schema
 
 Each Local Node should have a dedicated shared synchronization schema:
 
