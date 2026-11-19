@@ -427,3 +427,29 @@ Do not create new tables merely because a legacy screen or route exists. Each en
 HR/payroll, library, inventory and transport are candidate capabilities discovered in eSchool; they are not silently added to the approved operational schema by this cross-check. They require product requirements, statutory/legal review where applicable, module ownership, pricing/entitlement decisions and task-register approval first. Pakistani payroll calculations must be verified against current qualified sources before implementation.
 
 DOC-61 records the reference scope and non-adoption boundaries. DOC-44 remains the authority for physical PostgreSQL design and migration approval.
+
+## 18. SaaS tenant and operational ownership contract
+
+[DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) defines the v1 implementation contract for tenant ownership and request context. Apply these rules when converting this logical dictionary into physical entities:
+
+| Field | Required meaning |
+|---|---|
+| TenantId | Canonical customer Organization UUID; required on every tenant-owned operational aggregate |
+| SchoolId | Owning legal/operating School; required where the entity is school-owned |
+| CampusId | Owning Campus; required where the workflow or record is campus-scoped |
+| OriginNodeId | Local Node that originated the record/event; required where the entity is locally created or synchronized |
+| CreatedBy / UpdatedBy | Authenticated user or service actor; never a client-supplied display name |
+| RowVersion / AggregateVersion | Concurrency/version marker where the aggregate supports concurrent change or synchronization |
+
+Rules:
+
+- TenantId on a Local Data Plane row is the same immutable UUID as organizations.Organizations.Id in the Cloud Control Plane. Do not create two distinct IDs for Tenant and Organization.
+- Every operational module entity must be classified as tenant-owned, school-owned, campus-owned, resource-assigned or platform-global. Unclassified ownership is a schema review blocker.
+- Operational records must not have a null TenantId. Truly global catalogues belong in an explicit global schema/table classification; do not use NULL to mean both global and unknown tenant.
+- Every CampusId/SchoolId relationship must be validated against the same TenantId. Physical schema should use composite tenant-aware foreign keys where tables are relationally linked.
+- Query filters are not authorization. The application derives tenant and campus scope from validated server-side identity; RLS provides database defense in depth.
+- TenantId is immutable after creation. Tenant transfer is a controlled, audited migration.
+- File metadata, audit events, imports, exports, notifications, background jobs and sync envelopes retain tenant provenance and repeat authorization at execution time.
+- Local Nodes remain single-tenant in v1, even if the node serves multiple campuses of the same organization.
+
+The field names in existing domain tables remain subject to DOC-44's approved physical ERD and DEC-002 key strategy. This section defines the ownership contract; it does not claim that migrations or RLS policies are implemented.
