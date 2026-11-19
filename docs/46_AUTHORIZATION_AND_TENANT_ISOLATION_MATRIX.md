@@ -274,3 +274,22 @@ The Cloud Control Plane owns the commercial catalogue and subscription state. Th
 A module entitlement cannot grant a user privileges. A user role cannot enable an unlicensed module. Hiding a module in the frontend is not enforcement: APIs and application services must reject unauthorized operations. Disabling an entitlement must preserve the customer's data and historical records.
 
 The module catalogue fields, core/paid split, dependency semantics, compatibility and signed lease claims remain subject to DEC-020 in DOC-60. The underlying tenant/school/campus cardinality and RLS/DB-role implementation remain subject to DEC-001 and DEC-004; this section does not close those decisions. See DOC-61.
+
+## 16. Tenant context resolution and authorization enforcement
+
+[DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) is the implementation companion for the v1 SaaS TenantContext contract. Apply the following order before a protected handler reads or mutates tenant-owned data:
+
+1. Authenticate the correct issuer, audience, signature, expiry and session/device status.
+2. Resolve the requested tenant from a tenant-bound session/token or verified host/route mapping.
+3. Confirm active TenantMembership, or a separately approved platform/support grant with explicit tenant scope and expiry.
+4. Reject host/route/token mismatch; do not silently switch context or disclose the existence of another tenant's resource.
+5. Resolve permitted SchoolId, CampusId, class, assigned-resource and household relationships.
+6. Create an immutable server-side TenantContext and establish transaction-local database tenant scope.
+7. Evaluate module entitlement, user permission, resource relationship, workflow state and Restricted Mode independently.
+8. Execute through a scope-aware application service and write the audit event.
+
+The canonical Organizations.Id UUID is the tenant identity. Cloud OrganizationId and Local TenantId values refer to the same UUID. V1 Local Nodes are single-tenant; a node may serve several campuses only within its own tenant.
+
+Do not authorize from X-Tenant-Id, a request-body tenantId, a frontend selection or a globally unique resource ID. Apply the same tenant context to detail reads, lists/counts, search, exports, attachments, reports, notifications, background jobs, scheduled tasks and sync consumers. Tenant scope must be revalidated when an asynchronous job executes.
+
+A missing tenant context fails closed. Cloud database RLS is defense in depth, not a replacement for this authorization sequence. Use transaction-local tenant context and the restricted database role described in DOC-44 and DOC-62. DEC-001, DEC-004 and DEC-008 remain open until approved and verified.
