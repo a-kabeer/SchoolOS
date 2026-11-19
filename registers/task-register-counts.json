@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "source_package": "SchoolOS_Documentation_Refactor_v2_1_Remediation_Draft",
+  "source_package": "SchoolOS documentation governance refactor",
   "repository": "a-kabeer/SchoolOS",
-  "branch": "docs/refactor-v2.1-reconciliation",
-  "audited_base_commit": "1f84bb022816a91d985c7c0baae77b3a5ca47121",
+  "branch": "docs/finalize-documentation-governance",
+  "audited_base_commit": "8356f248e54d317294c4972d124e26ecc6ae84d9",
   "task_registers": [
     {
       "path": "registers/task-register-hybrid-h0-h3.csv",
@@ -34,14 +34,19 @@
       "path": "registers/task-register-business-customer-platform.csv",
       "data_rows": 53,
       "workstream": "Business & Customer Platform"
+    },
+    {
+      "path": "registers/task-register-staging-qa.csv",
+      "data_rows": 32,
+      "workstream": "Staging QA"
     }
   ],
-  "total_task_register_rows": 265,
+  "total_task_register_rows": 297,
   "requirement_traceability_rows": 36,
   "lineage_fields": [
     "ID Type",
     "Source ID"
   ],
-  "status_note": "All statuses are planning snapshots from the source package; none imply implementation completion.",
-  "evidence_note": "Acceptance-test references are pointers only. No test execution is asserted by these registers."
+  "status_note": "Task-level status is authoritative in the seven CSV partitions; trackers are summaries only.",
+  "evidence_note": "Task/test references are not implementation or test-run evidence."
 }

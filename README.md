@@ -35,50 +35,27 @@ SchoolOS is a proposed multi-tenant, AI-enabled school operating platform for pr
 - **Synchronization:** Event-based hub-and-spoke with transactional Outbox/Inbox, node identity, idempotency and explicit conflict handling.
 - **Topology:** Shared group node or per-campus edge nodes. Every campus that must be independently operable while disconnected needs its own edge node. Also define three deployment profiles: Cloud Centralized, Disconnected Local + Manual Data Exchange, and Hybrid Local + Cloud Sync. The strategic baseline remains Hybrid.
 
-## Suggested reading order
+## Suggested reading paths
 
-1. `docs/00_DECISIONS_AND_ASSUMPTIONS.md`
-2. `docs/01_PRODUCT_REQUIREMENTS.md`
-3. `docs/02_MODULES_AND_WORKFLOWS.md`
-4. `docs/03_MODULAR_MONOLITH_ARCHITECTURE.md`
-5. `docs/04_DATABASE_BLUEPRINT.md`
-6. `docs/05_OFFLINE_PWA_AND_SYNC.md`
-7. `docs/06_AI_INTELLIGENCE_SPEC.md`
-8. `docs/07_SECURITY_AND_QUALITY_REQUIREMENTS.md`
-9. `docs/08_DEVELOPMENT_ROADMAP.md`
-10. `docs/09_PROGRESS_TRACKER.md`, `docs/10_RISK_REGISTER.md` and `docs/11_OPEN_QUESTIONS.md`
-11. `docs/14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md`
-12. `docs/15_SUBSCRIPTION_LICENSING_AND_OFFLINE_ENFORCEMENT.md`
-13. `docs/16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md`
-14. `docs/17_HYBRID_DEPLOYMENT_TASK_PLAN.md`
-15. `docs/18_CAMPUS_DATA_ACCESS_AND_DEPLOYMENT_SCENARIOS.md`
-16. `docs/decisions/ADR-014-CAMPUS-DATA-ACCESS-AND-EXCHANGE.md`
-17. `docs/decisions/ADR-011-HYBRID-CLOUD-LOCAL.md`, `ADR-012-SIGNED-OFFLINE-LICENSE-LEASE.md`, `ADR-013-SYNC-HUB-EVENT-BASED.md`
-18. `docs/19_TECHNICAL_REFERENCES.md`
-19. `docs/20_AI_ARCHITECTURE_AND_HOSTING.md`
-20. `docs/21_AI_PROVIDER_GATEWAY_AND_PRIVACY.md`
-21. `docs/22_AI_RAG_AND_TOOL_CALLING.md`
-22. `docs/23_AI_TRAINING_AND_GOVERNANCE.md`
-23. `docs/24_AI_PRICING_AND_USAGE_METERING.md`
-24. `docs/25_AI_IMPLEMENTATION_TASK_PLAN.md`
-25. `docs/26_AI_PROGRESS_TRACKER.md`
-26. `docs/decisions/ADR-015` through `ADR-018`
-27. `docs/27_COMMERCIAL_PRICING_STRATEGY.md` and `docs/28_COMMERCIAL_BILLING_IMPLEMENTATION_TASK_PLAN.md`
-28. `docs/decisions/ADR-019-ORGANIZATION-SUBSCRIPTION-AND-METERING.md`
-29. `docs/29_BUSINESS_CUSTOMER_PLATFORM_REQUIREMENTS.md`
-30. `docs/30_PUBLIC_WEBSITE_CMS_SPECIFICATION.md`
-31. `docs/31_DEMO_PLATFORM_SPECIFICATION.md`
-32. `docs/32_REGISTRATION_ONBOARDING_SPECIFICATION.md`
-33. `docs/33_CUSTOMER_PORTAL_SPECIFICATION.md`
-34. `docs/34_SUPER_ADMIN_CONSOLE_SPECIFICATION.md`
-35. `docs/35_SUPPORT_CENTER_SPECIFICATION.md`
-36. `docs/36_PLATFORM_DATABASE_BLUEPRINT.md`
-37. `docs/37_PLATFORM_API_CATALOG.md`
-38. `docs/38_PLATFORM_SECURITY_REQUIREMENTS.md`
-39. `docs/39_BUSINESS_CUSTOMER_PLATFORM_TASK_PLAN.md`
-40. `docs/40_BUSINESS_CUSTOMER_PLATFORM_PROGRESS_TRACKER.md`
-41. `docs/decisions/ADR-020-BUSINESS-CUSTOMER-PLATFORM.md`
-42. `docs/41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md` and `docs/decisions/ADR-021-EPHEMERAL-SESSION-BASED-DEMO.md`
+Start with the path that matches your role. Use document 56 for terminology and document 60 for unresolved architecture/security decisions.
+
+| Reader | Recommended path |
+|---|---|
+| Product owner | 00 → 01 → 02 → 11 → 29 → 51 → 60 |
+| Backend developer | 03 → 14–18 → 04 → 43–46 → 47 |
+| Frontend developer | 01–02 → 49 → 45–46 → relevant module specification |
+| DevOps / operations | 14–16 → 48 → 52–53 → H0–H7 detailed plan |
+| AI developer | 20–26 → ADR-015–018 → AI detailed plan and registers |
+| Commercial / BCP | 27–40 → ADR-019–021 → BILL/BCP detailed plans and registers |
+| QA / security | 07 → 38 → 46–48 → 51 → 52–53 → 60 |
+
+### Canonical navigation
+
+- [Product requirements](docs/01_PRODUCT_REQUIREMENTS.md) · [Module workflows](docs/02_MODULES_AND_WORKFLOWS.md)
+- [ADR index](docs/13_ADR_INDEX.md) · [Open questions](docs/11_OPEN_QUESTIONS.md) · [Decision closure register](docs/60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md)
+- [Data dictionary](docs/43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md) · [ERD and migrations](docs/44_POSTGRESQL_ERD_AND_MIGRATION_SPEC.md) · [API/event contracts](docs/45_API_AND_INTEGRATION_EVENT_CONTRACTS.md)
+- [Authorization matrix](docs/46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md) · [Acceptance tests](docs/47_WORKFLOW_ACCEPTANCE_TEST_CATALOGUE.md) · [Operations runbook](docs/48_HYBRID_DEPLOYMENT_OPERATIONS_AND_RECOVERY_RUNBOOK.md)
+- [Task Register guide](docs/59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md) · [Registers](registers/README.md) · [Documentation standards](docs/54_DOCUMENTATION_STANDARDS.md)
 
 ## Important status note
 
@@ -153,7 +130,7 @@ The instant demo is a temporary session-bound workspace rather than a permanent 
 
 ## Documentation completion baseline (v1.8)
 
-The documentation-first supplement is in `docs/42` through `docs/51`. Read these after the original product/architecture baseline and before beginning Phase 1 implementation:
+The documentation-first supplement is in `docs/42` through `docs/60`. Read these after the original product/architecture baseline and before beginning Phase 1 implementation:
 
 - `42_DOCUMENTATION_COMPLETION_AND_GAP_REGISTER.md` — repository evidence, documentation gaps, architecture boundaries and no-code gate.
 - `43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md` — proposed Local Data Plane entities and logical fields.
@@ -170,7 +147,7 @@ The documentation-first supplement is in `docs/42` through `docs/51`. Read these
 
 These specifications are drafts until reviewed and approved. Their existence does not imply implementation. Phase 1 coding must remain blocked until the sign-off checklist in document 51 is complete.
 
-The separate developer/pilot OCI staging pipeline is documented in `docs/52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md` and tracked in `docs/53_STAGING_QA_PROGRESS_TRACKER.md`. It complements document 48 but does not replace production Local Node operations.
+The separate developer/pilot OCI staging pipeline is documented in `docs/52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md` and tracked in the canonical staging-QA task register. It complements document 48 but does not replace production Local Node operations.
 
 
 ## Documentation governance and v2.1 reconciliation
@@ -184,6 +161,6 @@ The v2.1 remediation package has been selectively reconciled with the current re
 - [58 — v2.1 Documentation Migration Report](docs/58_DOCUMENTATION_REFACTOR_V2_1_MIGRATION_REPORT.md)
 - [59 — Task Register and Traceability Guide](docs/59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md)
 
-The four detailed H0–H7, AI-0–AI-7, BILL and BCP task plans are in `docs/task-plans/`. The machine-readable planning and traceability registers are in `registers/`; they complement, rather than replace, documents 09, 51 and 53. Reusable ADR, module-specification, runbook and change-proposal templates are in `docs/templates/`.
+The four detailed H0–H7, AI-0–AI-7, BILL and BCP task plans are in `docs/task-plans/`. The seven CSV partitions under `registers/` are the single task-status source. Documents 09, 26, 40 and 53 are summaries; document 51 and the requirement CSV contain requirement traceability. Reusable ADR, module-specification, runbook and change-proposal templates are in `docs/templates/`.
 
-The new governance and companion documents are review material, not sign-off for unresolved product decisions. The task register is a plan snapshot and does not imply implementation.
+Document 54 is the adopted repository documentation standard. Document 60 consolidates remaining architecture/security gates without silently approving them. Task status and test evidence remain distinct from design approval and implementation.

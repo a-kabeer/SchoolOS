@@ -1,5 +1,8 @@
 # 11 — Open Questions and Decisions Needed
 
+> **Decision status authority:** [60 — Architecture and Security Decision Closure Register](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md) consolidates implementation-blocking decisions, accountable roles, affected specifications and closure evidence. This document retains detailed question context.
+
+
 These questions do not block saving the current product direction. They should be resolved before the related implementation phase.
 
 ## A. Product and customer discovery

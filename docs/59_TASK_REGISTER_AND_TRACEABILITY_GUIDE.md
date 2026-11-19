@@ -7,12 +7,13 @@
 - **Last reviewed:** 2026-11-19
 - **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; task detail restored from the uploaded v2.1 remediation draft and mapped to the current repository
 
-## Canonical registers
+## Canonical registers — one logical task register
 
 - [Hybrid deployment H0–H3](../registers/task-register-hybrid-h0-h3.csv) and [hybrid deployment H4–H7](../registers/task-register-hybrid-h4-h7.csv).
 - [AI AI-0–AI-3](../registers/task-register-ai-ai0-ai3.csv) and [AI AI-4–AI-7](../registers/task-register-ai-ai4-ai7.csv).
 - [Commercial billing](../registers/task-register-commercial-billing.csv).
 - [Business & Customer Platform](../registers/task-register-business-customer-platform.csv).
+- [Staging QA](../registers/task-register-staging-qa.csv).
 - [Requirement traceability](../registers/requirement-traceability.csv) exports the 36 current rows from document 51. Acceptance-test references are pointers only; they do not assert that tests exist or have passed.
 - [Register counts and metadata](../registers/task-register-counts.json).
 - [`registers/task-register-counts.json`](../registers/task-register-counts.json) reports the register row totals and ID categories.
@@ -21,9 +22,9 @@ The detailed plans are under [`docs/task-plans/`](task-plans/). Existing numbere
 
 ## Scope and exclusions
 
-The six CSV task registers cover only the restored hybrid deployment (H0–H7), AI (AI-0–AI-7), commercial billing (BILL) and Business & Customer Platform (BCP) plans. It does **not** replace the project-level tracker in document 09 or the OCI staging/automated-QA tracker in document 53. STQA tasks remain in document 53. Documentation review/sign-off items remain in documents 42 and 51.
+The seven CSV files are partitions of one logical task register covering hybrid deployment, AI, commercial billing, BCP and staging QA. Documents 09, 26, 40 and 53 are summary views only; they do not hold task-level status. Documentation review/sign-off remains in documents 42 and 51. Open decision closure is tracked in document 60.
 
-The register is a planning snapshot, not evidence that tasks are implemented. All statuses are planning/not-started labels inherited from the source. Never infer completion from inclusion in a register.
+The registers are the sole task-level status source, but rows are not proof that application features are implemented. All statuses are planning/not-started labels inherited from the source. Never infer completion from inclusion in a register.
 
 ## ID preservation rules
 
@@ -42,4 +43,4 @@ The register is a planning snapshot, not evidence that tasks are implemented. Al
 
 ## Updating rows
 
-For each task update, retain the stable ID and update status, owner, dependencies, acceptance criteria, test evidence and PR/commit together. Use one row per source task. Do not overwrite source wording with a short title. Add new tasks only with an explicit origin and approval reference.
+For each task update, retain the stable ID and update status, owner, dependencies, acceptance criteria, test evidence and PR/commit together. Do not duplicate task rows in progress trackers. Use one row per source task. Do not overwrite source wording with a short title. Add new tasks only with an explicit origin and approval reference.

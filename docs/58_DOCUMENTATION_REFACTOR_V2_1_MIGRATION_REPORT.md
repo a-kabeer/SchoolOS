@@ -1,7 +1,7 @@
 # 58 — Documentation Refactor v2.1 Migration Report
 
 - **Document ID:** GOV-MIGRATION-001
-- **Status:** Implemented on a review branch; pending PR review and owner sign-off
+- **Status:** Reconciled on main; follow-up governance refactor is tracked in a separate PR
 - **Decision maturity:** Migration disposition recorded; no product policy or architecture decision is newly approved here
 - **Owner:** Technical lead (named accountable owner TBD)
 - **Last reviewed:** 2026-11-19
@@ -62,4 +62,9 @@ The ZIP's pinned source commit `66e0d35416a7f556ecb2aead4a8580bd3a0ed686` predat
 
 ## 7. Review required
 
-Product owner and technical lead should review the proposed governance standard, guardian rules, offline workflow semantics and register scope. The existing PR #2 and PR #3 merges remain unchanged.
+Product owner and technical lead should review unresolved decisions in document 60, including guardian authority, offline workflow semantics, legal/privacy controls and commercial policies. This migration report does not approve those product decisions.
+
+
+## 8. Follow-up governance refactor
+
+The follow-up refactor consolidates duplicate task-plan content, makes seven CSV partitions the task-level status authority, adds requirement-to-task mappings and exact test IDs, standardizes canonical metadata and ADR templates, shortens role-based navigation, and adds GitHub Actions validation. It does not mark tasks or product features implemented. Decision closure and product/technical sign-off remain explicit gates.
