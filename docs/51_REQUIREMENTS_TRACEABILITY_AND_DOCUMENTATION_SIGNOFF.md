@@ -107,6 +107,9 @@ Existing docs 00–41 remain the source decision and requirements baseline. The 
 | Migration source templates and financial opening method | Migration + finance | 43, 47, 50 |
 | English/Urdu/Roman Urdu interface launch scope | Product owner | 01, 49 |
 | Final tariff, tax, cancellation and export policy | Commercial + legal | 27, 28, 36, 50 |
+| Tenant-specific restore/recovery from shared Cloud PostgreSQL | Operations + DBA/technical + security | 07, 14, 36, 44, 48, 50, 62 |
+| Tenant data residency, hosting region, subprocessors and dedicated isolation placement | Security + legal + operations + commercial | 07, 14, 36, 38, 48, 62 |
+| Tenant usage metering, quotas, API/sync/AI limits and fair-use/overage policy | Product + commercial + technical/operations | 27, 28, 36, 37, 45, 46, 48, 62 |
 
 Each decision must be recorded in an ADR or approved decision log with context, options, selected outcome, consequences, owner and date.
 
