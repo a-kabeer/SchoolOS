@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "README.md"
+      - "AGENTS.md"
+      - ".agents/skills/README.md"
       - "docs/**"
       - "registers/**"
       - "templates/**"

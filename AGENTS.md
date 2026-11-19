@@ -2,7 +2,7 @@
 
 This file is the repository-wide source of truth for how people and AI coding assistants contribute to SchoolOS. Read it before changing source code, tests, configuration, dependencies, documentation that changes requirements, or CI/CD.
 
-The numbered documents under `docs/`, approved ADRs, and the canonical task registers remain authoritative for product requirements, architecture, security policy, and implementation status. This guide explains how to work within those decisions; it does not replace them.
+The categorized [documentation index](docs/README.md), numbered documents under `docs/`, approved ADRs, and the canonical task registers remain authoritative for product requirements, architecture, security policy, and implementation status. This guide explains how to work within those decisions; it does not replace them.
 
 ## 1. Project invariants
 
@@ -21,7 +21,7 @@ Do not silently replace these choices with a shared operational database, Angula
 
 ### Repo-local agent skills (supplemental only)
 
-Repo-local agent skills are installed under `.agents/skills/`, with each entry point at `.agents/skills/<skill-name>/SKILL.md`. These skills provide optional, task-specific guidance only; they are subordinate to this guide and MUST NOT override `AGENTS.md`, canonical documents `docs/00`–`docs/62`, approved ADRs, or the seven canonical CSV task-register partitions under `registers/`. When a skill conflicts with a canonical source, follow the canonical source and report the conflict.
+Repo-local agent skills are installed under `.agents/skills/`, with each entry point at `.agents/skills/<skill-name>/SKILL.md`. These skills provide optional, task-specific guidance only; they are subordinate to this guide and MUST NOT override `AGENTS.md`, canonical documents `docs/00`–`docs/62`, approved ADRs, or the eight canonical CSV task-register partitions under `registers/`. When a skill conflicts with a canonical source, follow the canonical source and report the conflict.
 
 Skills do not change SchoolOS's approved direction: it remains a .NET 10 / ASP.NET Core Modular Monolith with separate Cloud Control Plane and Local Data Plane PostgreSQL databases. Do not reinterpret a skill as approval for microservices, a single shared operational database, or a different technology/topology.
 
@@ -30,8 +30,10 @@ Skills do not change SchoolOS's approved direction: it remains a .NET 10 / ASP.N
 
 Read the relevant parts of:
 
-- `README.md` — project status and canonical navigation.
+- `README.md` — project status and project-level navigation.
+- `docs/README.md` — categorized catalogue of canonical documents and supporting indexes.
 - `docs/54_DOCUMENTATION_STANDARDS.md` — documentation authority and change control.
+- `docs/task-plans/README.md` and `registers/README.md` — canonical plans and task-status register locations.
 - `docs/03_MODULAR_MONOLITH_ARCHITECTURE.md` — module and host boundaries.
 - `docs/07_SECURITY_AND_QUALITY_REQUIREMENTS.md` — security and quality baseline.
 - `docs/46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md` — permission and scope rules.
@@ -94,7 +96,7 @@ A passing unit test does not prove tenant isolation, financial integrity, offlin
 - Do not invent answers for items marked Open in document 60 or the open-question register.
 - Material architecture, security, data ownership, licensing, commercial or AI-governance changes require an ADR or approved amendment to the existing ADR.
 - Update affected canonical specifications, acceptance tests, requirement mappings and navigation in the same change.
-- Keep implementation status in the seven canonical CSV task-register partitions. Do not create a competing Markdown status tracker.
+- Keep implementation status in the eight canonical CSV task-register partitions. Do not create a competing Markdown status tracker.
 - A design document, scaffold, placeholder directory or roadmap does not prove implementation.
 - Clearly label proposed, accepted, implemented and verified states separately.
 

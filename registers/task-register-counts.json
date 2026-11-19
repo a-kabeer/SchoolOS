@@ -1,9 +1,8 @@
 {
   "schema_version": 1,
-  "source_package": "SchoolOS documentation governance refactor",
+  "source_package": "SchoolOS documentation arrangement and alignment",
   "repository": "a-kabeer/SchoolOS",
-  "branch": "docs/finalize-documentation-governance",
-  "audited_base_commit": "8356f248e54d317294c4972d124e26ecc6ae84d9",
+  "audited_base_commit": "9d8d27caa65f9bd0a68764671d451495df28df77",
   "task_registers": [
     {
       "path": "registers/task-register-hybrid-h0-h3.csv",
@@ -39,14 +38,20 @@
       "path": "registers/task-register-staging-qa.csv",
       "data_rows": 32,
       "workstream": "Staging QA"
+    },
+    {
+      "path": "registers/task-register-documentation-governance.csv",
+      "data_rows": 12,
+      "workstream": "Documentation governance"
     }
   ],
-  "total_task_register_rows": 297,
-  "requirement_traceability_rows": 36,
+  "total_task_register_rows": 309,
+  "requirement_traceability_rows": 37,
   "lineage_fields": [
     "ID Type",
     "Source ID"
   ],
-  "status_note": "Task-level status is authoritative in the seven CSV partitions; trackers are summaries only.",
-  "evidence_note": "Task/test references are not implementation or test-run evidence."
+  "status_note": "Task-level status is authoritative in the eight CSV partitions; trackers are summaries only.",
+  "evidence_note": "Task/test references are not implementation or test-run evidence.",
+  "validation_note": "scripts/validate-docs.mjs reconciles these counts against the actual CSV data rows."
 }

@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed documentation gap baseline; owner sign-off pending
 - **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `9d8d27caa65f9bd0a68764671d451495df28df77` (pre-alignment post-PR #7 audit baseline; earlier reviewed refs retained below)
 **Version:** v1.8 draft  
 **Created:** 18 November 2026  
 **Repository reviewed:** `a-kabeer/SchoolOS`  
@@ -201,3 +201,48 @@ Documentation is complete for a module only when:
 - `docs/36_PLATFORM_DATABASE_BLUEPRINT.md`
 - `docs/37_PLATFORM_API_CATALOG.md`
 - `docs/38_PLATFORM_SECURITY_REQUIREMENTS.md`
+
+
+## 12. Post-merge documentation reconciliation
+
+**Current reconciliation baseline:** `main` at `9d8d27caa65f9bd0a68764671d451495df28df77` (19 November 2026), after PRs #5, #6 and #7. This section supplements, and does not rewrite, the original implementation inventory and reviewed commit recorded above.
+
+### 12.1 Changes incorporated by merged pull requests
+
+| Change | Repository evidence | Documentation disposition |
+|---|---|---|
+| PR #5 — documentation governance | Canonical task plans, seven task-register partitions, DOC-54, DOC-59, DOC-60 and documentation-quality validator/workflow | Adopted. The flat DOC-00–62 paths remain stable. Remaining count and validator gaps are handled by the documentation alignment workstream. |
+| PR #6 — SaaS tenant and reference adoption | DOC-61, DOC-62, TEN-001–003, SAAS-001–014 and cross-document updates | Documented proposal and traceability are present. DEC-001, DEC-004, DEC-008 and DEC-020 remain open; no SaaS implementation is implied. |
+| PR #7 — repo-local agent skills | 51 skills under `.agents/skills/`, catalogue README and precedence subsection in `AGENTS.md` | Supplemental engineering guidance only. It does not alter canonical requirements, approved ADRs or task-status authority. |
+
+### 12.2 Current documentation and register state
+
+At the pre-alignment baseline, the seven canonical task-register CSV partitions contained 297 task rows and the requirement traceability CSV contained 37 data rows. The current alignment change adds a dedicated documentation-governance partition with 12 DOCALIGN tasks; on this branch the register model therefore contains eight partitions and 309 task rows, while the requirement count remains 37.
+
+The new [categorized documentation catalogue](README.md) preserves all numbered file paths and provides a single browsable entry point. Detailed implementation plans remain under `docs/task-plans/`; ADR records remain under `docs/decisions/`; templates remain under `docs/templates/`; machine-readable status remains under `registers/`.
+
+### 12.3 Specification existence is not approval or implementation
+
+| Deliverable | Current canonical documents | Documentation state | Remaining gate |
+|---|---|---|---|
+| Product scope and glossary | 00–02, 56 | Documented | Product-owner review and approval |
+| Requirements traceability | 51 and `registers/requirement-traceability.csv` | 37 current requirement rows mapped or explicitly unassigned | Product, technical and QA sign-off |
+| Operational data dictionary | 43 | Draft specification exists | Domain-owner review; field-level completeness |
+| Domain ERD and migrations | 44 | Draft specification exists | Technical/DBA/security review and migration verification |
+| Cloud platform data model | 36 | Draft specification exists | Tenant cardinality and ownership decisions remain open |
+| API and event contracts | 37, 45 | Catalogues/specification exist | Contract review and implementation evidence |
+| Authorization and tenant isolation | 07, 38, 46, 62 | Requirements and proposed SaaS controls documented | DEC-004/008 approval and executable security tests |
+| Workflow acceptance tests | 47 and SaaS cases in 62 | Scenarios documented | Test implementation and execution evidence |
+| Hybrid operations and recovery | 16, 48, 52 | Runbooks documented | Pilot-specific operating approval and restore drills |
+| UI/UX and screen catalogue | 49 | Catalogue documented | Product/design review and usability/RTL verification |
+| Data migration and portability | 50 | Specification documented | Pilot mapping, dry-run and reconciliation evidence |
+| SaaS tenant foundation | 61–62 | Adoption plan and implementation proposal documented | DEC-001/004/008/020 plus code, migrations, tests and operational evidence |
+| External integrations and legal/privacy | 19, 37, 45, 50, 60 | Dependencies and verification needs identified | Provider contracts and legal/security verification |
+
+The existence of these files establishes documentation coverage only. It does not establish approval, feature completion, test implementation, successful test execution or legal compliance.
+
+### 12.4 Remaining documentation-governance actions
+
+The current alignment work is tracked in [DOCUMENTATION_ALIGNMENT_TASK_PLAN.md](task-plans/DOCUMENTATION_ALIGNMENT_TASK_PLAN.md) and `registers/task-register-documentation-governance.csv`. Its tasks cover the DOC-60 table, current counts, navigation, historical reconciliation, metadata semantics and validator expansion. The plan's task statuses are authoritative only in the CSV partition.
+
+The original document 42 implementation snapshot remains tied to its recorded reviewed commit. Do not reinterpret that snapshot as a new code audit of the post-PR #7 repository.

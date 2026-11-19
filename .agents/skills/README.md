@@ -2,7 +2,11 @@
 
 This directory contains the curated SchoolOS Tier 1 and Tier 2 agent skill bundle. The skills are flattened for automatic discovery: **every skill lives directly at `.agents/skills/<skill-name>/SKILL.md`**. Companion `references/`, `scripts/`, and `resources/` folders remain inside their owning skill directory.
 
-These skills are supplemental guidance only. Follow the precedence and architecture boundaries in the repository root `AGENTS.md`; a skill never overrides canonical SchoolOS requirements, approved ADRs, or the seven CSV task-register partitions.
+These skills are supplemental guidance only. Follow the precedence and architecture boundaries in the repository root `AGENTS.md`; a skill never overrides canonical SchoolOS requirements, approved ADRs, or the eight CSV task-register partitions.
+
+## Documentation authority
+
+For SchoolOS-specific requirements and architecture, start with the [categorized documentation index](../../docs/README.md) and the repository-wide [AGENTS.md](../../AGENTS.md). Skills are supplemental; they do not define requirements, approve ADRs or own task status.
 
 ## Discovery and layout
 

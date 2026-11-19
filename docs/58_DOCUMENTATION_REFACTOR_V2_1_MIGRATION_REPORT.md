@@ -68,3 +68,26 @@ Product owner and technical lead should review unresolved decisions in document 
 ## 8. Follow-up governance refactor
 
 The follow-up refactor consolidates duplicate task-plan content, makes seven CSV partitions the task-level status authority, adds requirement-to-task mappings and exact test IDs, standardizes canonical metadata and ADR templates, shortens role-based navigation, and adds GitHub Actions validation. It does not mark tasks or product features implemented. Decision closure and product/technical sign-off remain explicit gates.
+
+
+## 9. Follow-up reconciliation after PRs #5–#7
+
+This section records the subsequent repository changes; it does not alter the original v2.1 migration results in sections 1–8.
+
+| Merged PR | Follow-up outcome | Relationship to the original migration |
+|---|---|---|
+| [PR #5 — Documentation governance](https://github.com/a-kabeer/SchoolOS/pull/5) | Consolidated task-plan summaries, established seven canonical task-register partitions, clarified task-status authority, added DOC-60 and documentation validation | Follow-up governance work after this report's original six-partition/265-row snapshot |
+| [PR #6 — SaaS tenant and reference adoption](https://github.com/a-kabeer/SchoolOS/pull/6) | Added DOC-61 and DOC-62, SaaS requirements TEN-001–003, SaaS acceptance references and related platform-specification alignment | Added the SaaS tenant proposal and adoption traceability without closing its open decisions |
+| [PR #7 — Repo-local agent skills](https://github.com/a-kabeer/SchoolOS/pull/7) | Added 51 skills under `.agents/skills/` and precedence guidance in `AGENTS.md` | Did not change `docs/`, `registers/` or the documentation-quality workflow; the PR description explicitly states that the documentation validator was not run for that diff |
+
+### 9.1 Reconciled counts
+
+At the PR #7 base commit `f614eae6d63cf9d1f4a7d12bfd1dc0e32c0f5102` (post-PR #6 and pre-PR #7), the canonical registers contained 297 task rows across seven CSV partitions and 37 requirement rows. The prior 265 task rows and 36 requirement rows recorded in section 3 remain the correct result of the original v2.1 migration and are not overwritten.
+
+PR #7 then merged as `9d8d27caa65f9bd0a68764671d451495df28df77` without changing `docs/` or `registers/`, so the seven-partition/297-task/37-requirement documentation baseline remained unchanged. The follow-up documentation-arrangement work adds 12 DOCALIGN tasks in an eighth partition. Its branch therefore contains 309 task rows across eight partitions and still 37 requirement rows. The counts JSON and validator are updated together to derive/verify these values from the actual CSV files.
+
+### 9.2 Current navigation and governance
+
+The categorized [documentation catalogue](README.md) is added without moving or renumbering DOC-00–62. The existing focused indexes remain: [ADR index](13_ADR_INDEX.md), [task-plan index](task-plans/README.md), and [register guide](../registers/README.md). The repo-local skill catalogue remains subordinate to `AGENTS.md`, canonical documents and task registers.
+
+The new [Documentation Arrangement and Alignment Task Plan](task-plans/DOCUMENTATION_ALIGNMENT_TASK_PLAN.md) and [DOCALIGN task register](../registers/task-register-documentation-governance.csv) track remaining review and sign-off work. A documentation file or successful structural validator does not approve product policy or prove feature implementation.

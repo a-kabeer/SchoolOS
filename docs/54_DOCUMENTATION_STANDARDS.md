@@ -4,7 +4,7 @@
 - **Decision maturity:** Accepted project documentation standard for this repository
 - **Owner:** Technical lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `9d8d27caa65f9bd0a68764671d451495df28df77`; reference sources pinned in DOC-61
 
 **Applies to:** All canonical product, engineering, security, AI, operations, commercial, delivery and architecture-decision documents. Templates, indexes, generated manifests, CSV/JSON registers and changelogs have their own metadata rules below.
 
@@ -25,7 +25,7 @@ New and materially revised canonical Markdown documents MUST begin immediately a
 
 The field `Owner` identifies one accountable role. When the accountable role has not been established, write `Unassigned (accountable owner TBD)`; do not guess a person. A list of contributing authors may be retained in an additional `Owners` field, but it does not replace `Owner`.
 
-`Source baseline` MUST identify a reproducible source. For this migration, use the current audited base `a-kabeer/SchoolOS main @ 1f84bb022816a91d985c7c0baae77b3a5ca47121` and add source paths where useful. Retain older pinned baselines in historical records when they are required to reproduce an earlier audit. A product-version label such as “Blueprint v1.7” by itself is insufficient. For branch-specific content, name the branch and full SHA and explicitly label it unmerged/WIP. If a canonical document is intentionally source-independent, state `Not applicable — rationale: ...`; do not omit the field.
+`Source baseline` MUST identify the reproducible source snapshot used to author or materially review the document; it does not have to equal the repository's newest HEAD after every unrelated merge. For a document materially updated in a branch, identify the target branch and full base commit SHA used for that update, and label branch-only content unmerged/WIP. Historical audit and migration reports MUST retain the original reviewed commit and add a dated follow-up when they are reconciled against a later repository state. A product-version label alone is insufficient. If a canonical document is intentionally source-independent, state `Not applicable — rationale: ...`; do not omit the field.
 
 ## 2. ADR-specific metadata
 
@@ -55,7 +55,7 @@ Historical ADR-001 through ADR-010 are index-only summaries in the inspected mai
 The following are not canonical Markdown specification documents and are exempt from the seven-line opening header, but MUST be discoverable through the root README, the relevant numbered-document references, or a register guide:
 
 - `docs/templates/**` — contain metadata placeholders and usage instructions, not current requirements.
-- `README.md` and `docs/13_ADR_INDEX.md` — navigation indexes; they are exempt from the canonical specification header but must link to the current documents.
+- `README.md`, `docs/README.md` and `docs/13_ADR_INDEX.md` — navigation indexes; they are exempt from the canonical specification header but must link to current canonical documents.
 - `registers/*.csv`, `registers/*.json` — use stable column/property names and include source baseline in the register guide or adjacent metadata.
 - Root `README.md`, `CHANGELOG.md`, `MIGRATION_MAP.md`, `REFACTOR_CHECKLIST.md`, `REFACTOR_REVIEW_NOTES.md` and `FILE_MANIFEST.json` — package artefacts; they identify the package version and pinned baseline in their content.
 
@@ -78,7 +78,7 @@ A decision can be accepted while implementation remains `Not Started`. Every fea
 - Requirements live in product/module specifications and the requirement traceability register.
 - Architecture choices live in ADRs and architecture documents.
 - API and schema contracts live in their respective canonical specifications.
-- Task-level implementation status lives in seven canonical workstream-partitioned CSV files named `registers/task-register-*.csv`. Together they form one logical register; `registers/README.md` and `registers/task-register-counts.json` define membership and counts.
+- Task-level implementation status lives in eight canonical workstream-partitioned CSV files named `registers/task-register-*.csv`. Together they form one logical register; `registers/README.md` and `registers/task-register-counts.json` define membership and counts.
 - Progress trackers (documents 09, 26, 40 and 53) are summary views only and MUST NOT duplicate task-level status.
 - Risks live in the risk register.
 - Unresolved decisions live in `docs/11_OPEN_QUESTIONS.md` and any scoped open-decision register.
@@ -96,7 +96,7 @@ Distinguish:
 - **Inference:** reasoned interpretation; label it.
 - **Recommendation:** proposed future behaviour; label it.
 
-The traceability register must identify missing task/test evidence as `Unassigned`, `Not yet authored` or `Not run`; never use a fabricated test result or task link to make a row appear complete. See [Task Register and Traceability Guide](59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md), [Decision Closure Register](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md) and the [register README](../registers/README.md).
+The traceability register must identify missing task/test evidence as `Unassigned`, `Not yet authored` or `Not run`; never use a fabricated test result or task link to make a row appear complete. See [Task Register and Traceability Guide](59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md) and [Documentation Arrangement and Alignment Task Plan](task-plans/DOCUMENTATION_ALIGNMENT_TASK_PLAN.md), [Decision Closure Register](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md) and the [register README](../registers/README.md).
 
 ## 8. Links, diagrams and examples
 
@@ -122,6 +122,9 @@ A documentation-only change uses `docs:` Conventional Commit scope. A material a
 - [ ] No conflicting duplicate rule is introduced.
 - [ ] Relative links and heading anchors resolve.
 - [ ] Task IDs are unique across partitions.
+- [ ] Canonical Document IDs are unique across specification documents.
+- [ ] Register count metadata matches the actual CSV data rows.
+- [ ] The categorized documentation index links every canonical numbered document.
 - [ ] Requirements map to task IDs or explicitly state Unassigned.
 - [ ] Acceptance-test references resolve to document 47.
 - [ ] Progress trackers do not duplicate task statuses.

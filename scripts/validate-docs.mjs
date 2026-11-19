@@ -65,17 +65,26 @@ function headingIds(text) {
 
 const docsDir = path.join(root, "docs");
 const docs = (await walk(docsDir)).filter(p => p.endsWith(".md"));
+const navigationFiles = ["README.md", "AGENTS.md", ".agents/skills/README.md", "registers/README.md"].map(p => path.join(root, p));
 const textByPath = new Map();
-for (const file of docs) textByPath.set(file, await readFile(file, "utf8"));
+for (const file of [...docs, ...navigationFiles]) textByPath.set(file, await readFile(file, "utf8"));
+const documentIds = new Map();
 
 for (const [file, source] of textByPath) {
   const rel = path.relative(root, file).split(path.sep).join("/");
-  const exempt = rel === "docs/13_ADR_INDEX.md" || rel.startsWith("docs/templates/");
+  const exempt = rel === "README.md" || rel === "AGENTS.md" || rel === ".agents/skills/README.md" || rel === "registers/README.md" || rel === "docs/README.md" || rel === "docs/13_ADR_INDEX.md" || rel.startsWith("docs/templates/");
   if (!exempt) {
     const opening = source.split(/\r?\n/).slice(0, 24).join("\n");
     for (const field of requiredMetadata) {
       const pattern = new RegExp(`^\\s*- \\*\\*${field}:\\*\\*\\s*\\S`, "m");
       if (!pattern.test(opening)) errors.push(`${rel}: missing metadata field "${field}"`);
+    }
+    const idMatch = opening.match(/^\s*-\s+\*\*Document ID:\*\*\s*(.+?)\s*$/m);
+    if (!idMatch) errors.push(`${rel}: missing canonical Document ID`);
+    else {
+      const documentId = idMatch[1].trim();
+      if (documentIds.has(documentId)) errors.push(`duplicate canonical Document ID "${documentId}": ${documentIds.get(documentId)} and ${rel}`);
+      else documentIds.set(documentId, rel);
     }
   }
   const fenceCount = (source.match(/^\s*```/gm) || []).length;
@@ -124,10 +133,19 @@ for (const [file, source] of textByPath) {
   }
 }
 
+
+// Ensure the categorized catalogue links every numbered specification.
+const docIndex = textByPath.get(path.join(root, "docs", "README.md")) || "";
+for (const file of docs.filter(p => /^\d{2}_[A-Z0-9_]+\.md$/.test(path.basename(p)))) {
+  const name = path.basename(file);
+  if (!docIndex.includes("](" + name + ")")) errors.push("docs/README.md does not index " + name);
+}
+if (!(textByPath.get(path.join(root, "README.md")) || "").includes("docs/README.md")) errors.push("root README.md does not link to docs/README.md");
 const registerFiles = (await walk(path.join(root, "registers")))
   .filter(p => /^task-register-.*\.csv$/.test(path.basename(p)));
 const expectedHeader = ["Task ID","ID Type","Workstream","Work Package","Task","Source Document","Source ID","Priority","Status","Owner"];
 const allTaskIds = new Set();
+const registerRowCounts = new Map();
 let taskCount = 0;
 for (const file of registerFiles) {
   const rel = path.relative(root, file).split(path.sep).join("/");
@@ -146,8 +164,9 @@ for (const file of registerFiles) {
     if (!row[8]) errors.push(`${rel}: ${id} has no status`);
     if (!row[5]) errors.push(`${rel}: ${id} has no source document`);
   }
+  registerRowCounts.set(rel, rows.length - 1);
 }
-if (registerFiles.length !== 7) errors.push(`expected 7 task-register partitions; found ${registerFiles.length}`);
+if (registerFiles.length !== 8) errors.push(`expected 8 task-register partitions; found ${registerFiles.length}`);
 
 let requirementCount = 0;
 const requirementIds = new Set();
@@ -182,6 +201,41 @@ try {
   errors.push(`requirement traceability validation failed: ${error.message}`);
 }
 
+
+// Reconcile counts.json with the actual CSV source rows.
+try {
+  const counts = JSON.parse(await readFile(path.join(root, "registers", "task-register-counts.json"), "utf8"));
+  if (!Array.isArray(counts.task_registers)) errors.push("task-register-counts.json must contain task_registers");
+  if ((counts.task_registers || []).length !== registerFiles.length) errors.push("task-register-counts.json partition count does not match CSV partitions");
+  for (const item of counts.task_registers || []) {
+    const actual = registerRowCounts.get(item.path);
+    if (actual === undefined) errors.push("task-register-counts.json references missing partition: " + item.path);
+    else if (actual !== item.data_rows) errors.push(item.path + ": manifest says " + item.data_rows + " rows but CSV has " + actual);
+  }
+  for (const rel of registerRowCounts.keys()) if (!(counts.task_registers || []).some(item => item.path === rel)) errors.push("task-register-counts.json omits partition: " + rel);
+  if (counts.total_task_register_rows !== taskCount) errors.push("task-register-counts.json total task rows do not match CSVs");
+  if (counts.requirement_traceability_rows !== requirementCount) errors.push("task-register-counts.json requirement rows do not match CSV");
+  if (taskCount !== 309) errors.push("expected 309 task rows in the current documentation baseline");
+  if (requirementCount !== 37) errors.push("expected 37 requirement rows in the current documentation baseline");
+} catch (error) { errors.push("task-register-counts.json validation failed: " + error.message); }
+
+// DEC-001 through DEC-023 must occupy one consistent six-column primary table.
+try {
+  const source = await readFile(path.join(root, "docs", "60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md"), "utf8");
+  const start = source.indexOf("## Decision closure register");
+  const end = source.indexOf("## SaaS tenant implementation baseline proposal", start);
+  if (start < 0 || end < 0) errors.push("DOC-60 primary decision table boundaries are missing");
+  else {
+    const lines = source.slice(start, end).split(/\r?\n/).filter(line => /^\s*\|/.test(line));
+    if (lines.length < 25) errors.push("DOC-60 primary decision table is incomplete");
+    if (lines.length >= 2 && (lines[0].trim().replace(/^\|/, "").replace(/\|$/, "").split("|").length !== 6 || lines[1].trim().replace(/^\|/, "").replace(/\|$/, "").split("|").length !== 6)) errors.push("DOC-60 primary decision table header must have six columns");
+    const rows = lines.filter(line => /^\s*\|\s*DEC-\d{3}\s*\|/.test(line));
+    const ids = rows.map(line => line.trim().replace(/^\|/, "").split("|")[0].trim());
+    if (rows.length !== 23) errors.push("DOC-60 primary decision table must contain exactly 23 rows; found " + rows.length);
+    for (const line of rows) if (line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").length !== 6) errors.push("DOC-60 decision row must have six columns: " + line.slice(0, 80));
+    for (let i = 1; i <= 23; i++) { const id = "DEC-" + String(i).padStart(3, "0"); if (ids.filter(value => value === id).length !== 1) errors.push("DOC-60 must contain " + id + " exactly once"); }
+  }
+} catch (error) { errors.push("DOC-60 table validation failed: " + error.message); }
 const adrIndex = await readFile(path.join(root,"docs","13_ADR_INDEX.md"),"utf8");
 for (const file of (await walk(path.join(root,"docs","decisions"))).filter(p=>/^ADR-\d{3}-.*\.md$/.test(path.basename(p)))) {
   const name = path.basename(file);
@@ -194,6 +248,6 @@ if (errors.length) {
   if (warnings.length) console.error(`Non-blocking anchor warnings: ${warnings.length}`);
   process.exitCode = 1;
 } else {
-  console.log(`Documentation validation passed: ${docs.length} Markdown files; ${registerFiles.length} task-register partitions; ${taskCount} unique tasks; ${requirementCount} requirements.`);
+  console.log(`Documentation validation passed: ${docs.length} Markdown files; ${registerFiles.length} task-register partitions; ${taskCount} unique tasks; ${requirementCount} requirements; ${documentIds.size} unique canonical Document IDs.`);
   if (warnings.length) console.log(`Non-blocking heading-anchor warnings: ${warnings.length}`);
 }
