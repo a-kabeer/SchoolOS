@@ -19,6 +19,13 @@ Contributors MUST preserve these approved direction choices unless an approved A
 
 Do not silently replace these choices with a shared operational database, Angular, microservices, or a cloud-only runtime model.
 
+### Repo-local agent skills (supplemental only)
+
+Repo-local agent skills are installed under `.agents/skills/`, with each entry point at `.agents/skills/<skill-name>/SKILL.md`. These skills provide optional, task-specific guidance only; they are subordinate to this guide and MUST NOT override `AGENTS.md`, canonical documents `docs/00`–`docs/62`, approved ADRs, or the seven canonical CSV task-register partitions under `registers/`. When a skill conflicts with a canonical source, follow the canonical source and report the conflict.
+
+Skills do not change SchoolOS's approved direction: it remains a .NET 10 / ASP.NET Core Modular Monolith with separate Cloud Control Plane and Local Data Plane PostgreSQL databases. Do not reinterpret a skill as approval for microservices, a single shared operational database, or a different technology/topology.
+
+
 ## 2. Required reading before a change
 
 Read the relevant parts of:
