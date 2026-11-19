@@ -108,14 +108,14 @@ Detailed delivery plans: [task-plan catalogue](task-plans/README.md). Canonical 
 | [60 — Architecture and Security Decision Closure Register](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md) | Open decision authority and closure evidence |
 | [61 — Reference Project Adoption and Integration Plan](61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) | Adopted/adapted/excluded reference-project practices |
 
-All standalone decision records: [decisions/](decisions/). The ADR index, rather than this catalogue, is authoritative for decision status.
+Standalone decision records: [ADR-011](decisions/ADR-011-HYBRID-CLOUD-LOCAL.md), [ADR-012](decisions/ADR-012-SIGNED-OFFLINE-LICENSE-LEASE.md), [ADR-013](decisions/ADR-013-SYNC-HUB-EVENT-BASED.md), [ADR-014](decisions/ADR-014-CAMPUS-DATA-ACCESS-AND-EXCHANGE.md), [ADR-015](decisions/ADR-015-AI-HYBRID-HOSTING-AND-OFFLINE.md), [ADR-016](decisions/ADR-016-AI-PROVIDER-GATEWAY-AND-PRIVACY-ROUTING.md), [ADR-017](decisions/ADR-017-AI-RAG-AND-TOOL-CALLING.md), [ADR-018](decisions/ADR-018-AI-TRAINING-AND-CUSTOMER-DATA-GOVERNANCE.md), [ADR-019](decisions/ADR-019-ORGANIZATION-SUBSCRIPTION-AND-METERING.md), [ADR-020](decisions/ADR-020-BUSINESS-CUSTOMER-PLATFORM.md) and [ADR-021](decisions/ADR-021-EPHEMERAL-SESSION-BASED-DEMO.md). The ADR index, rather than this catalogue, is authoritative for decision status.
 
 ## 8. Engineering guides, templates and supplemental skills
 
 - [Development Environment and Tooling](DEVELOPMENT_ENVIRONMENT_AND_TOOLING.md)
 - [Git Workflow and Branching Strategy](GIT_WORKFLOW_AND_BRANCHING_STRATEGY.md)
 - [Canonical detailed task plans](task-plans/README.md)
-- [Reusable documentation templates](templates/)
+- Reusable documentation templates: [ADR](templates/ADR_TEMPLATE.md), [change proposal](templates/CHANGE_PROPOSAL_TEMPLATE.md), [module specification](templates/MODULE_SPEC_TEMPLATE.md) and [runbook](templates/RUNBOOK_TEMPLATE.md).
 - [Repository-wide contributor and AI-agent authority](../AGENTS.md)
 - [Supplemental repo-local agent skills](../.agents/skills/README.md) — subordinate to AGENTS.md and canonical SchoolOS documents.
 
