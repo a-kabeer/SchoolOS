@@ -1,5 +1,11 @@
 # 25 — AI Implementation Task Plan
 
+- **Document ID:** DOC-25
+- **Status:** Current
+- **Decision maturity:** Not applicable — implementation task plan
+- **Owner:** Delivery lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 - **Canonical detailed plan:** [AI Implementation Plan AI-0–AI-7](task-plans/AI_IMPLEMENTATION_TASK_PLAN.md)
 - **Canonical task status:** [AI task registers](../registers/README.md#task-registers)
 - **Related decisions:** ADR-015, ADR-016, ADR-017, ADR-018

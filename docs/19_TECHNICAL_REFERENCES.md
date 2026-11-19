@@ -1,5 +1,11 @@
 # 19 — Technical References
 
+- **Document ID:** DOC-19
+- **Status:** Current
+- **Decision maturity:** Not applicable — technical reference catalogue
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 The following official documentation supports selected implementation constraints. Verify the current page and supported package versions again when implementation begins.
 
 ## .NET lifecycle

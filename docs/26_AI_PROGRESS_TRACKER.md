@@ -1,5 +1,11 @@
 # 26 — AI Progress Tracker
 
+- **Document ID:** DOC-26
+- **Status:** Current
+- **Decision maturity:** Not applicable — progress tracker
+- **Owner:** Delivery lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 - **Canonical task plan:** [AI Implementation Plan](task-plans/AI_IMPLEMENTATION_TASK_PLAN.md)
 - **Canonical task registers:** [AI-0–AI-3](../registers/task-register-ai-ai0-ai3.csv) and [AI-4–AI-7](../registers/task-register-ai-ai4-ai7.csv)
 - **Related decisions:** ADR-015 through ADR-018

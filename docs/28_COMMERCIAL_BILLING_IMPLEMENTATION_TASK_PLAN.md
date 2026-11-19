@@ -1,5 +1,11 @@
 # 28 — Commercial Billing and Pricing Implementation Task Plan
 
+- **Document ID:** DOC-28
+- **Status:** Current
+- **Decision maturity:** Not applicable — implementation task plan
+- **Owner:** Delivery lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 - **Canonical detailed plan:** [Commercial Billing Plan](task-plans/COMMERCIAL_BILLING_TASK_PLAN.md)
 - **Canonical task status:** [Commercial billing task register](../registers/task-register-commercial-billing.csv)
 - **Related decision:** [ADR-019 — Organization Subscription and Metering](decisions/ADR-019-ORGANIZATION-SUBSCRIPTION-AND-METERING.md)

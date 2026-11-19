@@ -1,5 +1,12 @@
 # 23 — AI Training, Data Governance and Evaluation
 
+- **Document ID:** DOC-23
+- **Status:** Current
+- **Decision maturity:** Accepted governance direction; legal and evaluation thresholds open
+- **Owner:** AI/technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+
 ## 1. Default training policy
 
 School/student/guardian/staff/finance/examination data is **not automatically used to train shared foundation models**. Retrieval-augmented generation (RAG) is retrieval at request time; it is not model training.

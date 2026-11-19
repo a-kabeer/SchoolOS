@@ -1,5 +1,12 @@
 # 21 — AI Provider Gateway, Privacy Classification and Security
 
+- **Document ID:** DOC-21
+- **Status:** Current
+- **Decision maturity:** Accepted privacy gateway direction; vendor and contract choices open
+- **Owner:** AI/technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+
 ## 1. Design objectives
 
 The Provider Gateway is the single backend-controlled entry point for model inference, embedding, speech and other AI provider capabilities. Feature modules must not call third-party SDKs directly. This keeps provider changes, privacy policy, metering and reliability controls centralized.
