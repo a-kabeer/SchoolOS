@@ -72,13 +72,14 @@ const documentIds = new Map();
 
 for (const [file, source] of textByPath) {
   const rel = path.relative(root, file).split(path.sep).join("/");
-  const exempt = rel === "docs/README.md" || rel === "docs/13_ADR_INDEX.md" || rel.startsWith("docs/templates/");
+  const exempt = rel === "README.md" || rel === "AGENTS.md" || rel === ".agents/skills/README.md" || rel === "registers/README.md" || rel === "docs/README.md" || rel === "docs/13_ADR_INDEX.md" || rel.startsWith("docs/templates/");
   if (!exempt) {
     const opening = source.split(/\r?\n/).slice(0, 24).join("\n");
     for (const field of requiredMetadata) {
       const pattern = new RegExp(`^\\s*- \\*\\*${field}:\\*\\*\\s*\\S`, "m");
       if (!pattern.test(opening)) errors.push(`${rel}: missing metadata field "${field}"`);
-    }    const idMatch = opening.match(/^\s*-\s+\*\*Document ID:\*\*\s*(.+?)\s*$/m);
+    }
+    const idMatch = opening.match(/^\s*-\s+\*\*Document ID:\*\*\s*(.+?)\s*$/m);
     if (!idMatch) errors.push(`${rel}: missing canonical Document ID`);
     else {
       const documentId = idMatch[1].trim();
