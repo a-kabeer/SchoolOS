@@ -5,11 +5,11 @@
 - **Decision maturity:** Not applicable — delivery plan; no product or architecture decisions are approved here
 - **Owner:** Technical lead (named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `9d8d27caa65f9bd0a68764671d451495df28df77`
+- **Source baseline:** `a-kabeer/SchoolOS` `docs/complete-ai-agent-docs-refactor` @ `3cc2a02342f60af124e04aeb86563c331b497a1f` (unmerged documentation update; WIP)
 
 ## 1. Purpose and authority
 
-This plan implements the post-PR #5–#7 documentation arrangement and alignment audit. It preserves all existing numbered document IDs and paths, existing product/architecture decisions, and the principle that task-level implementation status has one canonical machine-readable source.
+This plan governs the documentation arrangement and alignment workstream following PRs #5–#8. It preserves all existing numbered document IDs and paths, approved product/architecture decisions, the existing skill bundle and the principle that task-level implementation status has one canonical machine-readable source. The post-PR #8 agent-first knowledge/workflow improvements extend this plan; they do not create a new competing plan.
 
 **Task status authority:** `registers/task-register-documentation-governance.csv`. This plan describes scope and acceptance criteria only. Update the CSV row in the same pull request whenever a task status changes. Tasks remain `In Progress` until this change is merged and the final validation evidence is available.
 
@@ -21,9 +21,15 @@ Audited `main` before this change: `9d8d27caa65f9bd0a68764671d451495df28df77`.
 |---|---|---|
 | [PR #5 — documentation governance](https://github.com/a-kabeer/SchoolOS/pull/5) | Consolidated plan summaries, seven task-register partitions, documentation standard and validator | Preserve the flat numbered documents; reconcile remaining count/validation gaps |
 | [PR #6 — SaaS tenant and reference adoption](https://github.com/a-kabeer/SchoolOS/pull/6) | DOC-61/DOC-62, SaaS tenant blueprint and related traceability | Surface the new reference and tenant documents in navigation; keep proposed decisions open |
-| [PR #7 — repo-local skills](https://github.com/a-kabeer/SchoolOS/pull/7) | 51 skills and precedence guidance in AGENTS.md | Index the skills guide as supplemental; skills cannot override canonical requirements or task registers |
+| [PR #7 — repo-local skills](https://github.com/a-kabeer/SchoolOS/pull/7) | 51 skills and precedence guidance in AGENTS.md | Preserve the skills catalogue as supplemental; skills cannot override canonical requirements or task registers |\n| [PR #8 — documentation arrangement](https://github.com/a-kabeer/SchoolOS/pull/8) | Updated documentation index, register alignment, metadata/validator governance and task-plan organization | Re-audit the merged main state; do not assume the earlier branch snapshot remains current |
 
 The pre-change repository had 297 task rows in seven CSV partitions and 37 actual requirement rows. DOC-59 and the register counts JSON still said 36. DEC-021–023 were outside the primary decision table. There was no `docs/README.md`. The validator did not reconcile count metadata, enforce unique canonical document IDs, or scan all key navigation files.
+
+### 2.1 Post-PR #8 audit baseline
+
+The post-merge implementation audit is recorded in [DOC-42 §13](../42_DOCUMENTATION_COMPLETION_AND_GAP_REGISTER.md). It inspected `main` at `3cc2a02342f60af124e04aeb86563c331b497a1f`. The repository now has 309 task rows in eight CSV partitions, 37 requirement rows and 51 repo-local skill entry points. The numbered `docs/00–62` structure, flat skill-discovery layout and canonical workstream plans are valid and remain in place.
+
+The audit justifies targeted improvements rather than a mass move: publish the seven-source knowledge map, add one ordered agent execution protocol to `AGENTS.md`, map the existing skills to task activation conditions, clarify DOC-08 as the phase-level master implementation plan, and keep DOC-09/26/40/53 summary-only. The source remains a foundation scaffold; this documentation audit does not authorize runtime or schema changes.
 
 Historical DOC-58 figures (265 tasks / 36 requirements) describe its earlier migration snapshot and must remain unchanged as historical evidence. DOC-42's original implementation inventory is also a historical snapshot and must be supplemented, not rewritten as if it were performed against the current commit.
 
@@ -62,9 +68,9 @@ The following IDs are registered in the eighth task-register partition. All are 
 | DOCALIGN-007 | P1 | Align README and focused indexes | Root README; DOC-13; task-plan and register indexes | DOCALIGN-004 | Root README links docs index; reading paths include DOC-61/62 where relevant; remove repeated commercial narrative; cross-links stay canonical. |
 | DOCALIGN-008 | P1 | Standardize source baseline and lifecycle semantics | DOC-54; touched docs and register metadata; AGENTS.md; skills guide | DOCALIGN-005/006 | Define baseline as the reproducible source used for authoring/review; preserve historical baselines; distinguish document status, decision maturity and implementation evidence. |
 | DOCALIGN-009 | P1 | Expand automated validation | Validator and GitHub Actions workflow | DOCALIGN-003/004/008 | Validate all eight partitions, per-file and total counts, 37 requirements, unique canonical Document IDs, links in key navigation files, ADR coverage and DOC-60 table structure. Fail CI on violations. |
-| DOCALIGN-010 | P1 | Align repo-local skill navigation | docs index; skills guide; AGENTS.md | DOCALIGN-004 | Link one skills catalogue as supplemental engineering guidance; retain PR #7 precedence and update partition count to eight. |
+| DOCALIGN-010 | P1 | Align repo-local skill navigation and activation guidance | docs index; skills guide; AGENTS.md | DOCALIGN-004 | Link one skills catalogue as supplemental guidance; map existing skill names to task triggers for architecture, .NET, React, PostgreSQL, SaaS tenancy, security, testing and documentation; retain all 51 skills and PR #7 precedence. |
 | DOCALIGN-011 | P1 | Reconcile SaaS traceability | DOC-51, requirement CSV, DOC-47 and DOC-62 | DOCALIGN-003/009 | TEN-001–003 and SAAS-001–014 references remain consistent. Do not imply tests ran or close DEC-001/004/008/020 through documentation edits. |
-| DOCALIGN-012 | P0 | Complete quality review and sign-off gate | All touched files and GitHub Actions | DOCALIGN-002–011 | Validator passes on the PR branch; links and counts reconcile; no duplicate IDs/status authorities; no application runtime/schema or unresolved product policy changed. |
+| DOCALIGN-012 | P0 | Complete quality review and sign-off gate | All touched files, post-PR #8 audit, agent workflow, skills index and GitHub Actions | DOCALIGN-002–011 | DOC-42 records the post-PR #8 audit; seven-source map and ordered execution protocol are discoverable; skill activation guidance preserves all 51 skills; validator passes on the PR branch; links/counts reconcile; no duplicate authority, runtime/schema or unresolved product policy changed. |
 
 ## 5. Execution sequence
 
@@ -80,11 +86,11 @@ The following IDs are registered in the eighth task-register partition. All are 
 5. DOCALIGN-005 and DOCALIGN-006 append current-state reconciliation to DOC-42 and DOC-58.
 6. DOCALIGN-007 and DOCALIGN-008 align the README, indexes, metadata and lifecycle conventions.
 
-**Exit gate:** Every canonical document is discoverable; historical and current baselines are explicitly distinguishable.
+Publish the seven-source map in the catalogue, clarify DOC-08 as the master roadmap, retain focused indexes and preserve historical/current audit baselines.\n\n**Exit gate:** Every canonical document is discoverable; historical/current baselines are distinct; agents can locate the primary authority for each knowledge area.
 
 ### Phase C — Automated enforcement and final review
 7. DOCALIGN-009 expands the validator and CI path filters.
-8. DOCALIGN-010 and DOCALIGN-011 align skills and SaaS traceability.
+8. DOCALIGN-010 and DOCALIGN-011 align task-scoped skill activation and SaaS traceability.\n9. Add the ordered agent execution protocol to AGENTS.md and align it with the seven-source map.
 9. DOCALIGN-012 closes only after the PR validation and owner review.
 
 **Exit gate:** The validator enforces the same rules described by DOC-54; no open decision is silently approved.

@@ -4,6 +4,22 @@ This is the categorized index for canonical SchoolOS documentation. The numbered
 
 **Authority:** The root [README](../README.md) is the project overview. [AGENTS.md](../AGENTS.md) governs contributor and AI-agent workflow. Product/engineering requirements live in the canonical numbered documents; approved architecture decisions live in [the ADR index](13_ADR_INDEX.md) and `decisions/`; task status lives only in [the machine-readable task registers](../registers/README.md). Repo-local skills are supplemental guidance, not policy.
 
+## Seven canonical project knowledge sources
+
+Use this map as the stable starting point. Each row identifies one primary authority for the subject; linked supporting specifications retain their narrower responsibilities and must not be copied into another competing source.
+
+| Knowledge source | Primary authority | Supporting sources and boundaries |
+|---|---|---|
+| Project overview | [Root README](../README.md) | [00 — Decisions and Assumptions](00_DECISIONS_AND_ASSUMPTIONS.md) records product direction and assumptions; DOC-01/02 provide product and workflow detail. |
+| System architecture | [03 — Modular Monolith Architecture](03_MODULAR_MONOLITH_ARCHITECTURE.md) | [14 — Hybrid Cloud/Local Architecture](14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md), data, API, security and operations documents retain their specialist responsibilities. Cloud Control Plane and Local Data Plane remain separate. |
+| Functional requirements | [01 — Product Requirements](01_PRODUCT_REQUIREMENTS.md) | [02 — Modules and Workflows](02_MODULES_AND_WORKFLOWS.md) and domain-specific specifications define detailed workflows and acceptance behavior. |
+| Multi-tenancy architecture | [62 — SaaS Tenant Implementation Blueprint](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) | [46 — Authorization and Tenant Isolation Matrix](46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md), DOC-14/36/43/44/45 and related contracts define data, authorization and deployment boundaries. DOC-62 remains a proposal wherever DOC-60 decisions remain Open. |
+| Master implementation plan | [08 — Development Roadmap](08_DEVELOPMENT_ROADMAP.md) | [Detailed workstream plans](task-plans/README.md) contain work-package checklists; DOC-08 owns phase sequencing, dependencies and release gates. |
+| Implementation and task status | [Machine-readable registers](../registers/README.md) | The eight CSV partitions under `registers/` form one logical task register. The counts JSON is a manifest; DOC-09/26/40/53 are summary views only, not task-status authorities. |
+| AI-agent workflow | [AGENTS.md](../AGENTS.md) | This catalogue routes agents to canonical knowledge; the [skills index](../.agents/skills/README.md) maps task triggers to supplemental skills. Skills never override AGENTS.md, canonical requirements, ADRs or registers. |
+
+**Authority rule:** Start with the primary source, then follow only the supporting references relevant to the task. A plan is not implementation evidence; a task row is not proof of completion; an accepted design is not proof that code or tests exist.
+
 ## 1. Getting started and product foundation
 
 | Document | Purpose |
@@ -44,7 +60,7 @@ This is the categorized index for canonical SchoolOS documentation. The numbered
 | [23 — AI Training and Governance](23_AI_TRAINING_AND_GOVERNANCE.md) | Training, data governance and human review |
 | [24 — AI Pricing and Usage Metering](24_AI_PRICING_AND_USAGE_METERING.md) | AI commercial usage model |
 | [25 — AI Implementation Task Plan Summary](25_AI_IMPLEMENTATION_TASK_PLAN.md) | Entry point to AI delivery work |
-| [26 — AI Progress Tracker](26_AI_PROGRESS_TRACKER.md) | AI workstream progress summary |
+| [26 — AI Progress Tracker](26_AI_PROGRESS_TRACKER.md) | AI workstream context summary only; task status remains in the AI CSV partitions |
 
 Related decisions: [ADR-015](decisions/ADR-015-AI-HYBRID-HOSTING-AND-OFFLINE.md), [ADR-016](decisions/ADR-016-AI-PROVIDER-GATEWAY-AND-PRIVACY-ROUTING.md), [ADR-017](decisions/ADR-017-AI-RAG-AND-TOOL-CALLING.md), [ADR-018](decisions/ADR-018-AI-TRAINING-AND-CUSTOMER-DATA-GOVERNANCE.md).
 
@@ -63,7 +79,7 @@ Related decisions: [ADR-015](decisions/ADR-015-AI-HYBRID-HOSTING-AND-OFFLINE.md)
 | [34 — Super Admin Console](34_SUPER_ADMIN_CONSOLE_SPECIFICATION.md) | Platform operations interface |
 | [35 — Support Center](35_SUPPORT_CENTER_SPECIFICATION.md) | Support workflows and channels |
 | [39 — BCP Task Plan Summary](39_BUSINESS_CUSTOMER_PLATFORM_TASK_PLAN.md) | Entry point to BCP delivery work |
-| [40 — BCP Progress Tracker](40_BUSINESS_CUSTOMER_PLATFORM_PROGRESS_TRACKER.md) | BCP progress summary |
+| [40 — BCP Progress Tracker](40_BUSINESS_CUSTOMER_PLATFORM_PROGRESS_TRACKER.md) | BCP context summary only; task status remains in the BCP CSV partition |
 | [41 — Ephemeral Session-Based Demo](41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md) | Temporary synthetic demo workspace |
 | [55 — Guardian and Household Requirements](55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md) | Guardian, household and payer requirements |
 
@@ -81,7 +97,7 @@ Related decisions: [ADR-019](decisions/ADR-019-ORGANIZATION-SUBSCRIPTION-AND-MET
 | [49 — Operational UI/UX and Screen Catalogue](49_OPERATIONAL_UI_UX_AND_SCREEN_CATALOGUE.md) | Screens, states, responsive behavior and RTL requirements |
 | [50 — Data Migration, Import and Export](50_DATA_MIGRATION_IMPORT_EXPORT_SPECIFICATION.md) | Customer data migration and portability |
 | [52 — OCI Staging and Automated QA Runbook](52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md) | Developer/pilot staging and automated QA |
-| [53 — Staging QA Progress Tracker](53_STAGING_QA_PROGRESS_TRACKER.md) | Staging workstream progress summary |
+| [53 — Staging QA Progress Tracker](53_STAGING_QA_PROGRESS_TRACKER.md) | Staging QA context summary only; task status remains in the CSV partition |
 | [57 — Offline Sync and Manual Data Exchange](57_OFFLINE_SYNC_AND_MANUAL_DATA_EXCHANGE.md) | Device-to-node and node-to-cloud exchange |
 
 ## 6. Delivery and project controls
@@ -89,7 +105,7 @@ Related decisions: [ADR-019](decisions/ADR-019-ORGANIZATION-SUBSCRIPTION-AND-MET
 | Document | Purpose |
 |---|---|
 | [08 — Development Roadmap](08_DEVELOPMENT_ROADMAP.md) | Phased delivery roadmap and gates |
-| [09 — Progress Tracker](09_PROGRESS_TRACKER.md) | Project-level progress summary |
+| [09 — Progress Tracker](09_PROGRESS_TRACKER.md) | Phase-level context summary only; it is not a task-status register |
 | [10 — Risk Register](10_RISK_REGISTER.md) | Project risk tracking |
 | [17 — Hybrid Deployment Task Plan Summary](17_HYBRID_DEPLOYMENT_TASK_PLAN.md) | Entry point to hybrid delivery work |
 | [42 — Documentation Completion and Gap Register](42_DOCUMENTATION_COMPLETION_AND_GAP_REGISTER.md) | Historical baseline and current documentation gap assessment |

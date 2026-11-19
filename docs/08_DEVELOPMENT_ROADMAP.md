@@ -1,12 +1,37 @@
-# 08 — Phase-Wise Development Task Plan
+# 08 — Master Development Roadmap and Phase-Wise Implementation Plan
 
 - **Document ID:** DOC-08
 - **Status:** Current
 - **Decision maturity:** Planning baseline; release scope and dependencies remain subject to review
 - **Owner:** Product owner (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `docs/complete-ai-agent-docs-refactor` @ `3cc2a02342f60af124e04aeb86563c331b497a1f` (unmerged documentation update; WIP)
 **Planning rule:** Do not set calendar duration until team capacity, product scope, integrations and acceptance criteria have been assessed. Each phase must finish with working software, tests, documentation and a demo.
+
+## Master-plan authority and traceability
+
+This document is the single phase-level master implementation plan for SchoolOS. It owns delivery sequence, phase dependencies, milestone outcomes and release gates. It does not replace functional specifications, architecture decisions, work-package checklists or task-status records.
+
+- **Product scope:** root [project overview](../README.md), [01 — Product Requirements](01_PRODUCT_REQUIREMENTS.md) and [02 — Modules and Workflows](02_MODULES_AND_WORKFLOWS.md).
+- **Architecture baseline:** [03 — Modular Monolith Architecture](03_MODULAR_MONOLITH_ARCHITECTURE.md), [14 — Hybrid Cloud/Local Architecture](14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md), [46 — Authorization and Tenant Isolation Matrix](46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md) and [62 — SaaS Tenant Implementation Blueprint](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md). DOC-60 remains authoritative for Open decisions.
+- **Detailed work packages:** the five canonical [workstream plans](task-plans/README.md) contain the detailed checklists; numbered documents 17, 25, 28 and 39 remain concise entry points.
+- **Task and requirement status:** the eight CSV partitions and requirement traceability file under [registers](../registers/README.md). This roadmap must not duplicate task-level status.
+- **Acceptance and release evidence:** [47 — Workflow Acceptance Test Catalogue](47_WORKFLOW_ACCEPTANCE_TEST_CATALOGUE.md), [48 — Hybrid Operations and Recovery Runbook](48_HYBRID_DEPLOYMENT_OPERATIONS_AND_RECOVERY_RUNBOOK.md), [50 — Migration and Import/Export](50_DATA_MIGRATION_IMPORT_EXPORT_SPECIFICATION.md), [51 — Requirements Traceability and Sign-off](51_REQUIREMENTS_TRACEABILITY_AND_DOCUMENTATION_SIGNOFF.md), [52 — Staging QA Runbook](52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md) and [60 — Decision Closure Register](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md).
+
+### Cross-phase dependency gates
+
+| Delivery gate | Prerequisites | Exit evidence before dependent release |
+|---|---|---|
+| Phase 0 → Phase 1 | Product scope, workflows, data ownership, security and topology decisions reviewed; documentation-first gate completed | Owner approvals, decisions closed or explicitly accepted as blockers, reviewed contracts/data model and acceptance criteria |
+| Phase 1 → school operational modules | Modular boundaries, identity, tenant/campus authorization, database ownership, API contracts and audit foundation | Architecture/security tests, persistence and migration evidence, tenant/campus negative tests and API contract checks |
+| Operational modules → offline/hybrid release | Local Node ownership, offline command rules, signed licence/lease policy, synchronization and recovery procedures | Replay/idempotency/conflict tests, node/lease verification, backup/restore evidence and approved operating runbooks |
+| Platform billing/BCP → customer activation | Separate platform identity, approval, billing, subscription, node enrollment and entitlement/licence gates | Commercial reconciliation, separation-of-duties tests, customer/node lifecycle acceptance and support readiness |
+| Business data → AI release | Authorized data projections, privacy classification, provider routing, human review and usage metering | Privacy/security review, evaluation evidence, access-control tests, cost limits and human-approval acceptance |
+| Pilot → launch | Critical security, financial-integrity, data-loss, migration and operational risks addressed | Customer acceptance, restore drill, monitoring/incident readiness, support ownership and release sign-off |
+
+**Traceability chain:** Requirement → canonical specification → approved ADR (where required) → detailed implementation task → source code/migration → acceptance test → reviewer and release evidence. If a link is missing, record the gap; do not invent a task ID, approval or test result.
+
+
 
 ## Phase 0 — Product discovery and design
 
@@ -264,7 +289,7 @@ A task is not Done merely because code was written. It must have:
 - Code review completed.
 - Documentation/API contract updated.
 - Audit and error-handling behaviour reviewed.
-- Progress tracker and work log updated.
+- The applicable canonical CSV task-register row is updated with the required evidence when task status changes; phase-level summaries are updated only after their gates are reviewed. Do not duplicate task rows in Markdown progress trackers.
 - No unresolved critical defect.
 
 
