@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { LocaleProvider } from '@/context/LocaleContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { AppDataProvider } from '@/context/AppDataContext';
@@ -10,15 +11,17 @@ import { AppRoutes } from '@/App';
 function renderAt(route: string) {
   return render(
     <MemoryRouter initialEntries={[route]}>
-      <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <AppDataProvider>
-              <AppRoutes />
-            </AppDataProvider>
-          </ToastProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <LocaleProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <AppDataProvider>
+                <AppRoutes />
+              </AppDataProvider>
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </LocaleProvider>
     </MemoryRouter>
   );
 }

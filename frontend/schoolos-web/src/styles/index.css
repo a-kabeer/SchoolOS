@@ -30,9 +30,18 @@
     background-color: var(--mm-bg-app);
   }
 
+  html[lang='ur'] {
+    font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, sans-serif;
+    line-height: 1.75;
+  }
+
+  html[lang='ar'] {
+    font-family: 'Noto Sans Arabic', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  }
+
   body {
     min-height: 100%;
-    font-family: var(--font-sans);
+    font-family: inherit;
     background-color: var(--mm-bg-app);
     color: var(--mm-text-primary);
     -webkit-font-smoothing: antialiased;

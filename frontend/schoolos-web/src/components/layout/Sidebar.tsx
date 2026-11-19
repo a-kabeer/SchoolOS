@@ -161,7 +161,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
                       </button>
 
                       {isExpanded && item.children && (
-                        <ul className="mt-1 space-y-1 pl-4">
+                        <ul className="mt-1 space-y-1 ps-4">
                           {item.children.map((child) => {
                             const childActive = pathname === child.path;
                             return (
@@ -237,7 +237,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         }`}
       >
         <div
-          className={`fixed left-0 top-0 z-30 h-screen transition-[width] duration-300 ${
+          className={`fixed start-0 top-0 z-30 h-screen transition-[width] duration-300 ${
             sidebarCollapsed ? 'w-[80px]' : 'w-[265px]'
           }`}
         >

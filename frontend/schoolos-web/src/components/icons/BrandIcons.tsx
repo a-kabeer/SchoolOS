@@ -185,7 +185,27 @@ export function TransactionMerchantIcon({ iconKey }: { iconKey: 'netflix' | 'upw
   );
 }
 
-export function LanguageFlag({ code }: { code: 'en' | 'es' | 'fr' | 'de' }) {
+export function LanguageFlag({ code }: { code: 'en' | 'ur' | 'ar' | 'es' | 'fr' | 'de' }) {
+  if (code === 'ur') {
+    return (
+      <span
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#01411C] text-[9px] font-bold text-white"
+        aria-hidden="true"
+      >
+        PK
+      </span>
+    );
+  }
+  if (code === 'ar') {
+    return (
+      <span
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#006C35] text-[9px] font-bold text-white"
+        aria-hidden="true"
+      >
+        AR
+      </span>
+    );
+  }
   if (code === 'en') {
     return (
       <svg className="h-5 w-5 rounded-full overflow-hidden" viewBox="0 0 24 24" aria-hidden="true">

@@ -20,6 +20,7 @@ import {
   Users,
 } from 'lucide-react';
 import { LanguageFlag } from '@/components/icons/BrandIcons';
+import { useLocale, type SupportedLocale } from '@/context/LocaleContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useAppData } from '@/context/AppDataContext';
@@ -51,15 +52,15 @@ const APP_TONE_BG = {
   info: 'bg-light-info text-info',
 };
 
-const LANGUAGES: { code: 'en' | 'es' | 'fr' | 'de'; label: string }[] = [
-  { code: 'en', label: 'English (UK)' },
-  { code: 'es', label: 'Español (ES)' },
-  { code: 'fr', label: 'Français (FR)' },
-  { code: 'de', label: 'Deutsch (DE)' },
+const LANGUAGES: { code: SupportedLocale; label: string }[] = [
+  { code: 'en', label: 'English' },
+  { code: 'ur', label: 'اردو (Urdu)' },
+  { code: 'ar', label: 'العربية (Arabic)' },
 ];
 
 export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
-  const { mode, toggleMode, language, setLanguage } = useTheme();
+  const { mode, toggleMode } = useTheme();
+  const { locale, setLocale, t } = useLocale();
   const { user, logout } = useAuth();
   const { notifications, markAllNotificationsRead, messages, markAllMessagesRead } = useAppData();
   const { showToast } = useToast();
@@ -121,7 +122,7 @@ export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
           </button>
 
           {openMenu === 'apps' && (
-            <div className="absolute left-0 top-12 z-40 w-[340px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
+            <div className="absolute start-0 top-12 z-40 w-[340px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-ink">Quick Applications</h3>
                 <StatusBadge label="6 modules" tone="primary" />
@@ -196,14 +197,14 @@ export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
           >
             <Mail className="h-[19px] w-[19px]" />
             {unreadMessages > 0 && (
-              <span className="absolute right-1.5 top-1.5 inline-flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+              <span className="absolute end-1.5 top-1.5 inline-flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
                 {unreadMessages}
               </span>
             )}
           </button>
 
           {openMenu === 'messages' && (
-            <div className="absolute right-0 top-12 z-40 w-[320px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
+            <div className="absolute end-0 top-12 z-40 w-[320px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-ink">Messages</h3>
                 <button
@@ -258,14 +259,14 @@ export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
           >
             <Bell className="h-[19px] w-[19px]" />
             {unreadNotifications > 0 && (
-              <span className="absolute right-1.5 top-1.5 inline-flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-error px-1 text-[10px] font-bold text-white">
+              <span className="absolute end-1.5 top-1.5 inline-flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-error px-1 text-[10px] font-bold text-white">
                 {unreadNotifications}
               </span>
             )}
           </button>
 
           {openMenu === 'notifications' && (
-            <div className="absolute right-0 top-12 z-40 w-[330px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
+            <div className="absolute end-0 top-12 z-40 w-[330px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-semibold text-ink">Notifications</h3>
@@ -311,26 +312,26 @@ export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
           <button
             type="button"
             onClick={() => toggle('language')}
-            aria-label="Select language"
+            aria-label={t('language.label')}
             aria-expanded={openMenu === 'language'}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-light-primary"
           >
-            <LanguageFlag code={language} />
+            <LanguageFlag code={locale} />
           </button>
 
           {openMenu === 'language' && (
-            <div className="absolute right-0 top-12 z-40 w-48 rounded-2xl border border-border bg-surface py-1.5 shadow-[var(--mm-shadow-dropdown)]">
+            <div className="absolute end-0 top-12 z-40 w-48 rounded-2xl border border-border bg-surface py-1.5 shadow-[var(--mm-shadow-dropdown)]">
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
                   type="button"
                   onClick={() => {
-                    setLanguage(lang.code);
+                    setLocale(lang.code);
                     setOpenMenu(null);
-                    showToast(`Language set to ${lang.label}`, 'info');
+                    showToast(`${t('language.label')}: ${lang.label}`, 'info');
                   }}
-                  className={`flex w-full items-center gap-3 px-4 py-2 text-left text-xs font-medium hover:bg-subtle ${
-                    language === lang.code ? 'text-primary font-semibold' : 'text-ink'
+                  className={`flex w-full items-center gap-3 px-4 py-2 text-start text-xs font-medium hover:bg-subtle ${
+                    locale === lang.code ? 'text-primary font-semibold' : 'text-ink'
                   }`}
                 >
                   <LanguageFlag code={lang.code} />
@@ -346,15 +347,15 @@ export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
           <button
             type="button"
             onClick={() => toggle('profile')}
-            aria-label="User profile menu"
+            aria-label={t('topbar.accountMenu')}
             aria-expanded={openMenu === 'profile'}
-            className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#00a1ff] to-[#00ceb6] text-xs font-bold text-white shadow-xs ring-2 ring-surface transition-transform hover:scale-105"
+            className="ms-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#00a1ff] to-[#00ceb6] text-xs font-bold text-white shadow-xs ring-2 ring-surface transition-transform hover:scale-105"
           >
             {user.avatarInitials}
           </button>
 
           {openMenu === 'profile' && (
-            <div className="absolute right-0 top-12 z-40 w-[280px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
+            <div className="absolute end-0 top-12 z-40 w-[280px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
               <div className="flex items-center gap-3 border-b border-border pb-4">
                 <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#00a1ff] to-[#00ceb6] text-sm font-bold text-white">
                   {user.avatarInitials}
