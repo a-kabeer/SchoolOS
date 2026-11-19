@@ -396,3 +396,8 @@ Before generating EF migrations, approve:
 - Migration, rollback and seed/reference-data strategy.
 
 This document is a logical dictionary; it is not yet a substitute for reviewed DDL or generated EF Core migrations.
+
+
+## 16. Guardian and household requirements companion
+
+The focused guardian/household cardinality, open policy decisions and downstream acceptance criteria are maintained in [55 — Guardian and Household Requirements](55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md). This data dictionary remains the proposed logical model reference; it does not approve legal custody, payer authority or communication permissions.

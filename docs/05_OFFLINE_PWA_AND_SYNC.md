@@ -1,6 +1,6 @@
 # 05 — PWA and Offline Synchronization Architecture
 
-> **Architecture update (v1.1):** This document originally described browser/PWA local caching. The selected product now uses a **Local Data Plane server** for broad offline operation. PWA/IndexedDB remains useful for browser drafts, short-lived caches and device-side resilience, but it is not the authoritative offline backend. Approved operations should be written to the Local Node's PostgreSQL database over the school LAN, even when the internet is unavailable. Read `14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md`, `15_SUBSCRIPTION_LICENSING_AND_OFFLINE_ENFORCEMENT.md` and `16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md` first.
+> **Architecture update (v1.1):** This document originally described browser/PWA local caching. The selected product now uses a **Local Data Plane server** for broad offline operation. PWA/IndexedDB remains useful for browser drafts, short-lived caches and device-side resilience, but it is not the authoritative offline backend. Approved operations should be written to the Local Node's PostgreSQL database over the school LAN, even when the internet is unavailable. Read `14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md`, `15_SUBSCRIPTION_LICENSING_AND_OFFLINE_ENFORCEMENT.md` and `16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md` first. The detailed two-stage queue lifecycle, workflow-level policy matrix and disconnected-campus exchange specification is maintained in [57 — Offline Sync and Manual Data Exchange](57_OFFLINE_SYNC_AND_MANUAL_DATA_EXCHANGE.md).
 
 ## 1. Goal
 
@@ -141,3 +141,8 @@ Local writes are allowed only while the node has a valid signed license lease or
 ## 13. AI outage behaviour
 
 Cloud-hosted AI providers are unavailable during an internet outage. Core school operations continue; AI requests may be queued. Local model execution is a separate optional package and must be benchmarked before being advertised as offline-capable.
+
+
+## 14. Detailed state and disconnected-campus exchange specification
+
+Document 57 is the detailed companion to this overview. It distinguishes device/PWA-to-Local-Node submission from Local-Node-to-Cloud-Sync-Hub delivery, defines the meaning of local acceptance versus cloud acknowledgement, and documents signed/encrypted disconnected-campus export/import requirements. Its open policy items remain open until approved; this overview does not silently resolve them.

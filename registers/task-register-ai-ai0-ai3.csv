@@ -1,0 +1,34 @@
+Task ID,ID Type,Workstream,Work Package,Task,Source Document,Source ID,Priority,Status,Owner
+AI-0,Source work package,AI,AI-0,"Discovery, privacy and provider evaluation",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-0-01,Refactor tracking ID (new),AI,AI-0,Define detailed acceptance criteria for all six AI features.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-0-02,Refactor tracking ID (new),AI,AI-0,Create feature-to-data-class matrix and approved hosting routes.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-0-03,Refactor tracking ID (new),AI,AI-0,"Identify provider candidates, contract terms, region, retention and training settings.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-0-04,Refactor tracking ID (new),AI,AI-0,"Build cost/quality benchmark set for Urdu, Roman Urdu and English tasks.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-0-05,Refactor tracking ID (new),AI,AI-0,"Decide data retention, customer controls and deletion workflow.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-0-06,Refactor tracking ID (new),AI,AI-0,Define human approval and incident response policy.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-0-07,Refactor tracking ID (new),AI,AI-0,Complete architecture and privacy review.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-0,Not specified in source,Not Started,Unassigned
+AI-1,Source work package,AI,AI-1,Provider Gateway and usage foundation,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-01,Refactor tracking ID (new),AI,AI-1,Implement provider capability/adapter interfaces.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-02,Refactor tracking ID (new),AI,AI-1,Implement tenant-aware gateway and deterministic routing policy.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-03,Refactor tracking ID (new),AI,AI-1,Add server-side secrets storage and key rotation.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-04,Refactor tracking ID (new),AI,AI-1,"Add budgets, quotas, rate limits and usage/credit ledger.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-05,Refactor tracking ID (new),AI,AI-1,Add model/prompt versioning and background job status.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-06,Refactor tracking ID (new),AI,AI-1,"Add provider timeout, retry, circuit breaker and outage behavior.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-07,Refactor tracking ID (new),AI,AI-1,Add privacy-safe audit metadata and observability.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-1-08,Refactor tracking ID (new),AI,AI-1,Test that prohibited data classes cannot reach disallowed providers.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-1,Not specified in source,Not Started,Unassigned
+AI-2,Source work package,AI,AI-2,Secure tool calling,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-2,Not specified in source,Not Started,Unassigned
+AI-2-01,Refactor tracking ID (new),AI,AI-2,Define typed allow-listed tool contracts.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-2,Not specified in source,Not Started,Unassigned
+AI-2-02,Refactor tracking ID (new),AI,AI-2,Implement server-side tenant/campus scope derivation.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-2,Not specified in source,Not Started,Unassigned
+AI-2-03,Refactor tracking ID (new),AI,AI-2,Connect first read-only finance/attendance/reporting tools.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-2,Not specified in source,Not Started,Unassigned
+AI-2-04,Refactor tracking ID (new),AI,AI-2,"Add tool argument validation, row limits and freshness metadata.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-2,Not specified in source,Not Started,Unassigned
+AI-2-05,Refactor tracking ID (new),AI,AI-2,Add tool execution audit and prompt-injection tests.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-2,Not specified in source,Not Started,Unassigned
+AI-2-06,Refactor tracking ID (new),AI,AI-2,Add approval flow for draft/action tools (not automatic consequential writes).,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-2,Not specified in source,Not Started,Unassigned
+AI-3,Source work package,AI,AI-3,RAG foundation,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-01,Refactor tracking ID (new),AI,AI-3,Validate PostgreSQL + pgvector in cloud and local environments.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-02,Refactor tracking ID (new),AI,AI-3,Implement private document ingestion and malware/file validation.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-03,Refactor tracking ID (new),AI,AI-3,Add PDF/DOCX extraction and OCR path for image documents.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-04,Refactor tracking ID (new),AI,AI-3,Add language-aware chunking and source-page references.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-05,Refactor tracking ID (new),AI,AI-3,"Add embeddings, tenant/campus ACL filters and citations.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-06,Refactor tracking ID (new),AI,AI-3,"Implement document versioning, deletion and re-indexing.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-07,Refactor tracking ID (new),AI,AI-3,Separate cloud-approved and local-only indexes.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
+AI-3-08,Refactor tracking ID (new),AI,AI-3,Evaluate Urdu/English/Roman Urdu retrieval quality.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-3,Not specified in source,Not Started,Unassigned
