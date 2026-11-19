@@ -36,6 +36,7 @@ Every item remains Open unless an approved ADR or external evidence is linked. A
 | DEC-017 | Backup schedule, RPO/RTO, off-site copy, key custody and recovery ownership | Open per service tier | Operations owner + commercial owner | 07, 16, 48, 52 | Restore drills and approved customer-facing service commitments |
 | DEC-018 | Final tariffs, tax/withholding, cancellation, refunds and customer exit policy | Open / external verification | Commercial owner + finance + legal | 27, 28, 36, 50 | Pilot cost evidence, tax/legal review and approved price book/contract |
 | DEC-019 | Support hours, SLA, node replacement and support-access operating policy | Open | Operations owner + commercial owner + security | 16, 35, 38, 48 | Staffing model, customer contract, time-limited support-access tests |
+| DEC-020 | Module catalogue semantics: core/paid classification, dependency rules, compatibility, subscription entitlement and signed Local Node lease claims | Open | Product owner + technical lead + finance owner | 15, 27, 36, 37, 43, 45, 46, 61 | Approved catalogue model, plan mapping, offline lease claims, compatibility rules and entitlement acceptance tests |
 
 ## Closure workflow
 
@@ -46,6 +47,8 @@ Every item remains Open unless an approved ADR or external evidence is linked. A
 5. Update requirement/task mappings and evidence links where relevant.
 6. Change a row from Open only when its approved ADR or external evidence is linked.
 7. Keep implementation status separate: an accepted design is not implemented until code, migrations, tests and operational evidence exist.
+
+The reference-project adoption in [DOC-61](61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) does not close DEC-020. Core/paid classifications, dependency rules, compatibility and signed local lease claims require explicit approval and acceptance evidence.
 
 ## Relationship to other registers
 
