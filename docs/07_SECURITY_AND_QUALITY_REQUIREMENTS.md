@@ -137,3 +137,20 @@ The hybrid deployment introduces local servers and a cloud-to-node trust relatio
 - A local customer administrator may be able to tamper with the host if granted root access; managed-appliance terms and threat model must address this.
 
 See `16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md` for the operational baseline.
+
+
+## 10. Secure contribution and AI-assisted development baseline
+
+Root [`AGENTS.md`](../AGENTS.md) is the authoritative repository-wide contributor and AI-agent guide. It defines mandatory controls for server-derived scope, tenant isolation, secrets/PII, offline command validation, AI safety, test evidence and pull-request review. DOC-61 records why these practices were adopted and how they fit the two-plane deployment.
+
+Minimum execution rules:
+
+- Never weaken authorization, tenant filters, validation, antiforgery, audit or security tests to make a feature/build pass.
+- Never put credentials, signing keys, tokens, connection strings with secrets, or identifiable student/guardian/staff data in source, tests, logs, documentation, screenshots or prompts.
+- Derive tenant/campus/resource scope server-side and check both user permission and resource relationship.
+- Review every external provider, telemetry destination, CDN, payment integration and AI route for the data it receives, retention and security before enabling it.
+- Run and report actual build/test results; do not infer production readiness from scaffolds, placeholder modules or a documentation checklist.
+- Use pull requests and human review. AI agents must not approve or merge their own changes or bypass repository controls.
+- Use secret/dependency scanning, analyzers, build/test and selected security checks as CI controls only after their workflows are implemented and successful runs are available as evidence.
+
+Security-framework mappings are a control-discovery aid only. They do not establish that SchoolOS is certified or compliant. See DOC-61 and DOC-54.
