@@ -18,8 +18,8 @@ Use PostgreSQL with EF Core/Npgsql. Suggested schemas are logical module ownersh
 
 | Schema | Main entities | Purpose |
 |---|---|---|
-| `identity` | Users, UserCredentials, UserSessions, MfaFactors, Roles, Permissions, RolePermissions, UserRoleAssignments, Invitations, LoginAudits | Platform identity and authorization |
-| `organizations` | Organizations, OrganizationProfiles, OrganizationContacts, Campuses, CampusContacts, LocalNodes, NodeCertificates, NodeHeartbeats, NodeHealthSnapshots, NodeSyncSummaries | Customer and node registry metadata |
+| `identity` | Users, UserCredentials, UserSessions, MfaFactors, Roles, Permissions, RolePermissions, UserRoleAssignments, TenantMemberships, MembershipRoleAssignments, TenantInvitations, LoginAudits | Global identity and tenant membership/authorization |
+| `organizations` | Organizations, OrganizationProfiles, OrganizationContacts, Schools, Campuses, CampusContacts, LocalNodes, NodeCampusAssignments, NodeCertificates, NodeHeartbeats, NodeHealthSnapshots, NodeSyncSummaries | Tenant, legal-school, campus and node registry metadata |
 | `crm` | Leads, LeadContacts, LeadActivities, LeadAssignments, LeadTasks, LeadPipelineHistory | Sales pipeline and lead management |
 | `demo` | DemoTemplates, DemoTemplateVersions, DemoSessions, DemoSessionUsers, DemoSessionClients, DemoSessionResources, DemoSessionEvents, DemoEnvironments, DemoResetJobs, DemoRequests, SalesAppointments | Safe demo and appointment management |
 | `registration` | RegistrationApplications, RegistrationContacts, VerificationChallenges, OrganizationReviews, ReviewDecisions, OnboardingCases, OnboardingChecklistItems, OrganizationInvitations, TrialEntitlements | Customer registration and approval |
@@ -44,8 +44,8 @@ Organization-owned entities must carry `OrganizationId` directly or through a ri
 
 ## 4. Key relationships
 
-- One Organization has many Campuses, Contacts, LocalNodes, Subscriptions, Tickets and PortalMemberships.
-- A Campus belongs to one Organization and may be served by one or more registered node identities over time; node history must preserve replacement/deactivation events.
+- One Organization/Tenant has many Schools, Contacts, LocalNodes, Subscriptions, Tickets and PortalMemberships. Each School belongs to exactly one Organization/Tenant and owns one or more Campuses.
+- A Campus belongs to exactly one School and therefore one Organization/Tenant. It may be served over time by one or more registered Local Nodes, but each Local Node is bound to exactly one Tenant. A NodeCampusAssignment must enforce same-tenant ownership and preserve effective dates and node replacement/deactivation history.
 - One Organization has a commercial subscription at a time under the initial model, with history and effective-dated changes.
 - One subscription has plan/entitlement assignments and one or more invoices.
 - Payments allocate to invoices through `PaymentAllocations`; payment verification is a separate workflow.
