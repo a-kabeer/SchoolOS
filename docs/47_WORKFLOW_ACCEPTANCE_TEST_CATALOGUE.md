@@ -412,7 +412,7 @@ Test data must be synthetic. Never use real student/guardian records in CI or pu
 **When** one tab closes, another refreshes, then the user explicitly logs out.  
 **Then** refresh/multi-tab continuity works before logout; logout revokes access immediately and starts idempotent cleanup; old tokens cannot read the workspace.
 
-## Privileged access, AI safety and migration
+## 11. Privileged access, AI safety and migration
 
 ### SEC-007 — Privileged action requires MFA/step-up (P0)
 
@@ -480,7 +480,7 @@ Test data must be synthetic. Never use real student/guardian records in CI or pu
 **When** a portability export is requested.  
 **Then** only authorized records are included, IDs and relationships are preserved, a versioned manifest is supplied, and secrets are excluded.
 
-## 11. Backups, privacy, accessibility and performance
+## 12. Backups, privacy, accessibility and performance
 
 ### OPS-001 — Restore drill (P0 before pilot)
 
