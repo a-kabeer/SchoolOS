@@ -14,6 +14,7 @@
 - [Commercial billing](../registers/task-register-commercial-billing.csv).
 - [Business & Customer Platform](../registers/task-register-business-customer-platform.csv).
 - [Staging QA](../registers/task-register-staging-qa.csv).
+- [Documentation governance](../registers/task-register-documentation-governance.csv).
 - [Requirement traceability](../registers/requirement-traceability.csv) exports the 37 current rows from document 51. Acceptance-test references are pointers only; they do not assert that tests exist or have passed.
 - [Register counts and metadata](../registers/task-register-counts.json).
 - [`registers/task-register-counts.json`](../registers/task-register-counts.json) reports the register row totals and ID categories.
@@ -24,7 +25,7 @@ The detailed plans are under [`docs/task-plans/`](task-plans/), including the [D
 
 The eight CSV files are partitions of one logical task register covering hybrid deployment, AI, commercial billing, BCP and staging QA. Documents 09, 26, 40 and 53 are summary views only; they do not hold task-level status. Documentation review/sign-off remains in documents 42 and 51. Open decision closure is tracked in document 60.
 
-The registers are the sole task-level status source, but rows are not proof that application features are implemented. All statuses are planning/not-started labels inherited from the source. Never infer completion from inclusion in a register.
+The registers are the sole task-level status source, but rows are not proof that application features are implemented. Imported workstream tasks retain their source planning statuses; DOCALIGN tasks are marked In Progress while the alignment pull request and its validation are in review. Never infer application-feature completion from inclusion in a register.
 
 ## ID preservation rules
 
