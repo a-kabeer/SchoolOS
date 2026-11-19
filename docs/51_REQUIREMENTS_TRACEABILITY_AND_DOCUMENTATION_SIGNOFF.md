@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed traceability and sign-off baseline; review pending
 - **Owner:** Product owner (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `898812f89e0ec7f03aff6c3b1408e46782814dfd` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Review pending  
 **Purpose:** Link SchoolOS requirements to specifications, data/API contracts and acceptance tests before implementation.
 
@@ -28,8 +28,9 @@ A specification approved for implementation does not mean the feature is impleme
 | PLAT-001 | .NET Modular Monolith | 00, 03 | 42 | Unassigned (Unassigned — no clearly matching task) | ARC-001 | Documented | Reference only; test execution not verified |
 | PLAT-002 | Cloud Control Plane + Local Data Plane | 14, ADR-011 | 44, 45, 48 | H1-01; H2-01 (Mapped — confirm scope) | HYB-001 | Confirmed direction | Reference only; test execution not verified |
 | PLAT-003 | Separate platform and operational DBs | 14, 36 | 44 | H1-01; H2-03 (Mapped — confirm scope) | DB-001; SEC-001 | Confirmed direction | Reference only; test execution not verified |
-| TEN-001 | Tenant → School → Campus hierarchy | 00, 04 | 43, 44 | H1-02; H6-01; H6-02 (Mapped — confirm scope) | SEC-001; SEC-002 | Open exact cardinality | Reference only; test execution not verified |
-| TEN-002 | Server-derived scope and tenant isolation | 07, 38 | 45, 46 | BCP-007; H7-08 (Mapped — confirm scope) | SEC-001; SEC-002; SEC-003; SEC-004; SEC-005; SEC-006 | Documented | Reference only; test execution not verified |
+| TEN-001 | Tenant → School → Campus and single-tenant Local Node hierarchy | 00, 04, 14, 36 | 14, 36, 43, 44, 62 | H1-02; H6-01; H6-02; BCP-005; BCP-021 (Mapped — confirm scope) | SEC-001; SEC-002; SAAS-002; SAAS-009 | Proposed v1 baseline; DEC-001 approval pending | Reference only; implementation and test execution not verified |
+| TEN-002 | Server-derived TenantContext, authorization and tenant isolation | 07, 38 | 44, 45, 46, 62 | BCP-007; H7-08 (Mapped — confirm scope) | SEC-001; SEC-002; SEC-003; SEC-004; SEC-005; SEC-006; SAAS-003; SAAS-004; SAAS-005; SAAS-006; SAAS-007; SAAS-014 | Documented proposal; DEC-004 approval and implementation evidence pending | Reference only; implementation and test execution not verified |
+| TEN-003 | SaaS tenant provisioning, membership lifecycle, node enrollment and entitlement binding | 14, 15, 29, 36 | 14, 36, 45, 46, 47, 48, 62 | BCP-005; BCP-006; BCP-017; BCP-018; BCP-019; BCP-021; BCP-024; H1-02 (Mapped — confirm scope) | SAAS-001; SAAS-003; SAAS-008; SAAS-009; SAAS-010; SAAS-011; SAAS-012; SAAS-013 | Proposed v1 baseline; DEC-001/008/020 approval pending | Reference only; implementation and test execution not verified |
 | ID-001 | Separate Person from User credentials | 04 | 43 | Unassigned (Unassigned — no clearly matching task) | ID-001 | Proposed | Reference only; test execution not verified |
 | ID-002 | Permission + scope + resource relationship | 07, 38 | 46 | BCP-007; H7-08 (Mapped — confirm scope) | SEC-001; SEC-002; SEC-003; SEC-004; SEC-005; SEC-006 | Documented | Reference only; test execution not verified |
 | ADM-001 | Admission-to-enrollment workflow | 02, 08 | 43, 45, 47 | Unassigned (Unassigned — no clearly matching task) | ADM-001; ADM-002; ADM-003; ADM-004; ADM-005 | Documented | Reference only; test execution not verified |
@@ -80,6 +81,7 @@ The machine-readable `registers/requirement-traceability.csv` is the canonical r
 | 49 — Operational UI/UX & Screen Catalogue | Navigation, dashboards, screens, states, forms, RTL and accessibility | Product owner, design/QA | Draft |
 | 50 — Data Migration & Import/Export Specification | Templates, mappings, validation, reconciliation, dry-run and portability | Product owner, migration/finance | Draft |
 | 51 — Requirements Traceability & Sign-off | Requirement-to-spec/test mapping and sign-off process | Product owner, technical lead, QA | Draft |
+| 62 — SaaS Tenant Architecture and Implementation Blueprint | Tenant hierarchy, identity/membership, TenantContext, Cloud RLS, Local Node binding, provisioning, entitlement, sync and SaaS acceptance gates | Product owner, technical lead, security, QA | Draft |
 
 Existing docs 00–41 remain the source decision and requirements baseline. The new documents supplement them; they do not silently supersede ADRs or mark implementation tasks complete.
 
@@ -144,4 +146,4 @@ Each decision must be recorded in an ADR or approved decision log with context, 
 
 ## 8. Supplemental machine-readable requirement register
 
-The root `registers/requirement-traceability.csv` exports the 36 requirement rows in this document 51 matrix into a machine-readable supplement. Its acceptance-test references are copied from this matrix and remain references only; they do not prove that the corresponding test exists or has passed. This CSV is not a substitute for this sign-off matrix.
+The root `registers/requirement-traceability.csv` exports the 37 requirement rows in this document 51 matrix into a machine-readable supplement. Its acceptance-test references are copied from this matrix and remain references only; they do not prove that the corresponding test exists or has passed. This CSV is not a substitute for this sign-off matrix.
