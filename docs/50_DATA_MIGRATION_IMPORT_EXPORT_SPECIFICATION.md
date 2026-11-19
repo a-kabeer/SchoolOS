@@ -332,3 +332,24 @@ The school signs that:
 - Export archive encryption and expiry method.
 - Customer data export window after cancellation.
 - Manual exchange package size limit and removable-media policy.
+
+
+## 16. Legacy ERP discovery and adapter rules
+
+The eSchool reverse-engineering work is a reference for the depth of source-system discovery that may be needed. It is not permission to copy legacy application code or to assume that observed screens reveal all server-side business rules.
+
+For each legacy ERP or school database, the migration discovery record should include:
+
+- Customer authorization, source owner, permitted access method and extraction date.
+- Observed modules, roles, workflows, report outputs and user-facing state transitions.
+- Source tables/entities, primary/business keys, relationships, constraints and indexes where legitimately available.
+- API/endpoint inventory and request/response shapes where authorized and documented.
+- Confirmed facts, inferred behavior, unknown backend logic and gaps requiring customer/vendor clarification.
+- Source technology/version, encoding, timezone, date/currency formats and known data-quality limitations.
+- Mapping version, source record key, target SchoolOS entity, transformation, validation, exception and reconciliation rule.
+
+Prefer a documented export/API or customer-authorized database extract. Use an adapter/transform layer to map source data into the approved SchoolOS import contract; do not couple the operational domain model to legacy table names or endpoint behavior.
+
+Never place source credentials, real student/guardian data, vendor-owned code, private screenshots or raw production database dumps in this repository. Keep source extracts in an approved restricted migration workspace and use synthetic/anonymized fixtures for tests.
+
+The existing dry-run, idempotency, financial reconciliation and customer acceptance requirements in sections 8–15 remain mandatory. DOC-61 records the eSchool source evidence and the limit on what is adopted.
