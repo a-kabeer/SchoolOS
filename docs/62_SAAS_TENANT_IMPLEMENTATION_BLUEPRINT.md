@@ -758,3 +758,40 @@ V1 does not:
 - Claim SaaS tenant code is implemented until the Definition of Done and test evidence are satisfied.
 
 This document is the v1 implementation baseline proposal for the SchoolOS SaaS tenant foundation. Update it through reviewed ADRs and linked evidence as implementation decisions are approved.
+
+
+## 21. Remaining SaaS documentation and product decisions
+
+The v1 tenant foundation is described above, but the following cross-cutting SaaS concerns are not fully closed by this blueprint. Some are already partially covered by existing documents and DEC rows; this section states the missing tenant-specific decisions so that a general backup, billing or security requirement is not mistaken for a complete SaaS design.
+
+### 21.1 Production decisions still required
+
+| Gap | Why it matters | Required specification / decision | Existing relationship |
+|---|---|---|---|
+| Tenant-specific restore from a shared Cloud database | Restoring one customer's records from a shared PostgreSQL backup must not overwrite or expose other tenants, break cross-table relationships, or lose audit/financial history | Define tenant-level point-in-time restore, recovery into quarantine, consistency checks, event replay/cursor reset, customer approval, export fallback, measured RPO/RTO and restore evidence | Extend DEC-017; add DEC-021 |
+| Data residency and hosting/isolation tiers | Customer data location, backups, telemetry, support access and subprocessors may have different jurisdictional or contractual constraints | Approve initial hosting region(s), permitted data-transfer boundaries, backup/DR region, subprocessor inventory, tenant placement, and when a customer can require a dedicated database or deployment | Extend DEC-009/011/017; add DEC-022 |
+| Per-tenant usage metering, quotas and fair use | A tenant can consume disproportionate storage, users, student capacity, nodes, sync traffic, API requests or AI resources in a shared SaaS service | Define metering dimensions, authoritative counters, aggregation windows, warning thresholds, hard/soft limits, rate limits, overage policy, plan change behavior and protection against noisy-neighbor workloads | Extend DEC-020 and commercial pricing/terms; add DEC-023 |
+| Service tiers and tenant-facing SLO/SLA | Cloud Control Plane availability, local node uptime, sync freshness, support response and restore objectives are different service promises | Publish separately measured service objectives and exclusions per tier; do not promise Cloud availability as a condition of approved offline Local operations | DEC-017 and DEC-019 |
+
+These decisions are required before committing to production recovery, data-location or commercial service-level promises. A successful generic backup restore does not prove selective tenant recovery from a shared Cloud database.
+
+### 21.2 Later enterprise and scale capabilities
+
+The following are not required for the first tenant-isolation vertical slice. They should remain explicit product backlog items and be scoped before enterprise contracts promise them:
+
+- **Enterprise identity federation:** tenant-configured OIDC/SAML SSO, verified email domains, domain discovery, optional just-in-time provisioning, SCIM user/group provisioning, identity-provider rotation and emergency local owner access.
+- **Tenant-specific branding and domains:** verified custom domains, brand assets, theme settings, domain ownership checks, certificate issuance/renewal, host-to-tenant mapping and anti-takeover protection.
+- **Dedicated isolation / scale-out tier:** a future placement model for selected tenants on dedicated Cloud databases, schemas or shards, with stable TenantId, controlled data movement, key management, observability and tested migration/rollback. V1 remains shared Cloud PostgreSQL plus single-tenant Local Node databases.
+- **Tenant legal/operational changes:** controlled tenant ownership change, school transfer between tenants, merge/split and cross-tenant migration. These operations are not supported by ordinary edits and require explicit data, financial, legal, licence and audit migration rules.
+- **Tenant configuration lifecycle:** supported timezone, language/locale, academic calendar defaults, notification policy, branding and feature settings with versioned propagation to Local Nodes.
+- **Tenant-aware disaster and security recovery:** customer communication, incident isolation, credential/key rotation, legal holds, breach evidence and post-incident tenant verification.
+
+Do not market these as available until they have approved contracts, implementation tasks and acceptance evidence. Tenant branding/configuration must not become a security boundary or allow a tenant administrator to alter platform-controlled security policies.
+
+### 21.3 Required disposition before launch claims
+
+- Before production: close DEC-001, DEC-004, DEC-008, DEC-009, DEC-010, DEC-011, DEC-017, DEC-020 and the applicable new DEC-021–023; complete the DOC-51 sign-off and DOC-38 security acceptance gates.
+- Before a data-residency or dedicated-isolation contract: close DEC-022 and prove placement, backup, telemetry, support and recovery boundaries.
+- Before usage-based billing or hard quotas: close DEC-023 and prove that metering is authoritative, idempotent, auditable and consistent across Cloud and offline Local Nodes.
+- Before SSO/SCIM/custom-domain enterprise commitments: approve the relevant identity/domain threat model and service lifecycle.
+- Until implemented and measured, describe these capabilities as planned or customer-specific design work, not as available features.
