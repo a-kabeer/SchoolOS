@@ -1,5 +1,11 @@
 # 29 — SchoolOS Business & Customer Platform (BCP): Product Requirements
 
+- **Document ID:** DOC-29
+- **Status:** Current
+- **Decision maturity:** Accepted BCP planning scope; detailed implementation decisions open
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version added:** v1.6 · **Date:** 9 November 2026 · **Status:** Requirements baseline; implementation Not Started
 
 ## 1. Purpose and boundary

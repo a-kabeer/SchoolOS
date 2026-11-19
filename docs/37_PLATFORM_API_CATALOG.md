@@ -1,5 +1,11 @@
 # 37 — Business & Customer Platform API Catalog
 
+- **Document ID:** DOC-37
+- **Status:** Current
+- **Decision maturity:** Proposed API catalogue; endpoint contracts pending
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.7 · **Status:** Illustrative API families; contracts Not Started
 
 ## 1. Conventions

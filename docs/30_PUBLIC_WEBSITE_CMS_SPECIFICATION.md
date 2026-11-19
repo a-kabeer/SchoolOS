@@ -1,5 +1,11 @@
 # 30 — Public Website and CMS Specification
 
+- **Document ID:** DOC-30
+- **Status:** Current
+- **Decision maturity:** Proposed website/CMS specification
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.6 · **Status:** Proposed specification; Not Started
 
 ## 1. Website information architecture
