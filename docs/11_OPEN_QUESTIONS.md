@@ -1,5 +1,12 @@
 # 11 — Open Questions and Decisions Needed
 
+- **Document ID:** DOC-11
+- **Status:** Current
+- **Decision maturity:** Open decisions
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+> **Decision status authority:** [60 — Architecture and Security Decision Closure Register](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md) consolidates implementation-blocking decisions, accountable roles, affected specifications and closure evidence. This document retains detailed question context.
 These questions do not block saving the current product direction. They should be resolved before the related implementation phase.
 
 ## A. Product and customer discovery

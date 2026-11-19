@@ -1,6 +1,11 @@
 # 24 — AI Pricing, Entitlements and Usage Metering
 
-**Status:** Pricing architecture selected; numeric prices, included quotas and credit weights are not finalized.
+- **Document ID:** DOC-24
+- **Status:** Current
+- **Decision maturity:** Accepted pricing architecture direction; numeric quotas and tariffs open
+- **Owner:** AI/technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 
 ## 1. Confirmed commercial direction
 

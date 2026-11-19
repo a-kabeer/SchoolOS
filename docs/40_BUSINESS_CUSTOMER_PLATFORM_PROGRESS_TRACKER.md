@@ -1,62 +1,57 @@
 # 40 — Business & Customer Platform Progress Tracker
 
-**Version:** v1.7 · **Last updated:** 9 November 2026 · **Overall status:** Planning / Not Started
+- **Document ID:** DOC-40
+- **Status:** Current
+- **Decision maturity:** Not applicable — progress tracker
+- **Owner:** Delivery lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Canonical task plan:** [BCP Implementation Plan](task-plans/BCP_IMPLEMENTATION_TASK_PLAN.md)
+- **Canonical task register:** [BCP task register](../registers/task-register-business-customer-platform.csv)
+- **Requirements:** [29 — BCP Product Requirements](29_BUSINESS_CUSTOMER_PLATFORM_REQUIREMENTS.md)
+- **Decision:** [ADR-020](decisions/ADR-020-BUSINESS-CUSTOMER-PLATFORM.md)
 
-## Status definitions
+## Overall status
 
-`Not Started` · `In Progress` · `Blocked` · `In Review` · `Completed`
+**Planning / Not Started.** Individual BCP task statuses are maintained only in the canonical CSV task register.
 
-No implementation evidence has been supplied for the BCP work packages. Therefore all tasks are initialized as **Not Started**.
+## Confirmed product direction
 
-## Work package status
+- Instant synthetic demo and personalized sales demo request.
+- Session-bound ephemeral demo workspaces, with server-authoritative revocation and cleanup.
+- Self-registration and manual company review/approval.
+- Built-in ticketing/live chat/help center and WhatsApp integration.
+- Public product/pricing website and internal Super Admin Console.
+- BCP in the Cloud Control Plane, with separate identity audiences and no unrestricted access to campus operational data.
 
-| Work package | Description | Status | Owner | Evidence / notes |
-|---|---|---|---|---|
-| BCP-0 | Discovery & architecture | Not Started | Product + technical lead | Requirements baseline captured; design approval pending |
-| BCP-1 | Identity, permissions & audit foundation | Not Started | Technical lead | Permission matrix and threat model pending |
-| BCP-2 | Public website & CMS | Not Started | Frontend + content | |
-| BCP-3 | Lead & CRM | Not Started | Product + backend | |
-| BCP-4 | Demo platform | Not Started | Backend + QA | Ephemeral session-bound workspace direction accepted; storage mechanism and TTL values pending design/testing |
-| BCP-5 | Registration & onboarding | Not Started | Backend + operations | |
-| BCP-6 | Super Admin Console | Not Started | Frontend + backend | |
-| BCP-7 | Subscription, billing & licensing integration | Not Started | Backend + finance | Uses existing BILL plan; no implementation claimed |
-| BCP-8 | Customer Portal | Not Started | Frontend + backend | |
-| BCP-9 | Support Center | Not Started | Backend + support | WhatsApp provider not selected |
-| BCP-10 | Notifications & monitoring | Not Started | Backend + operations | Providers/SLAs open |
-| BCP-11 | QA, security & production readiness | Not Started | QA + security + operations | |
+## Work-package map
 
-## Task-level tracker
-
-Use `docs/39_BUSINESS_CUSTOMER_PLATFORM_TASK_PLAN.md` as the task register. Update status only with evidence: PR/commit, migration, test result, reviewed UX or operational artifact. A discussion or design note alone does not mark an implementation task complete.
-
-## Decision confirmations captured
-
-- Instant self-service demo **and** personalized sales demo request: confirmed.
-- Instant demo should be ephemeral and session-bound: logout revokes immediately; closing the last tab, inactivity or absolute lifetime ends the session and triggers cleanup. Refresh/multiple tabs must reconnect safely.
-- Demo data must be synthetic, isolated from production and removed through retryable cleanup; browser close is best-effort and server-side leases/expiry sweeps are mandatory.
-- Self-registration **and** manual company review/approval: confirmed.
-- Built-in ticketing/live chat/help center **and** WhatsApp integration: confirmed.
-- Public product/pricing website and internal Super Admin Console: required.
+| Work package | Scope |
+|---|---|
+| BCP-0 | Discovery and architecture |
+| BCP-1 | Identity, permissions and audit |
+| BCP-2 | Public website and CMS |
+| BCP-3 | Lead and CRM |
+| BCP-4 | Demo platform |
+| BCP-5 | Registration and onboarding |
+| BCP-6 | Super Admin Console |
+| BCP-7 | Subscription, billing and licensing |
+| BCP-8 | Customer Portal |
+| BCP-9 | Support Center |
+| BCP-10 | Notifications and monitoring |
+| BCP-11 | QA, security and production readiness |
 
 ## Open dependencies
 
-- Final hostnames/domain and hosting topology.
-- BCP identity provider/session strategy and MFA enforcement.
-- Customer/staff role-permission matrix and separation of duties.
-- Approved production pricing and payment method/provider.
-- Demo storage isolation, session timeouts/concurrency, client lease and cleanup completion targets.
-- WhatsApp Business provider and template/consent policy.
-- Support hours, SLAs, staffing and escalation rules.
-- Data retention, deletion, export and privacy/legal requirements.
-- Customer support remote-access policy and implementation mechanism.
+- Identity provider, session strategy and MFA policy.
+- Customer/staff permission matrix and separation of duties.
+- Demo storage isolation, concurrency limits and timeout values.
+- WhatsApp provider, consent and template policy.
+- Support staffing, hours and service levels.
+- Data retention, deletion, export and legal review.
+- Approved commercial pricing and payment provider.
+- Production node and customer-support access policy.
 
-## Work log
+## Status governance
 
-| Date | Contributor | Completed | In progress | Blockers | Decisions / links |
-|---|---|---|---|---|---|
-| 2026-11-09 | Product planning | v1.6 BCP requirements and task plan documented | Discovery | Detailed design and approval | ADR-020 |
-
-
-## Demo session lifecycle work (v1.7)
-
-The product direction is captured in `docs/41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md` and ADR-021. BCP-013, BCP-014 and BCP-036–BCP-041 remain **Not Started**. Proposed test values are heartbeat 30s, client lease 90s, last-client reconnect grace 60s, inactivity 15m, absolute lifetime 2h and cleanup sweep 1m; none is a final SLA.
+Do not copy task-level statuses into this document. Update the canonical CSV register and detailed plan in the same PR. A discussion or design note alone does not mark implementation complete.

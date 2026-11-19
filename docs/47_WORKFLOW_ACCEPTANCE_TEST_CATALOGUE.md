@@ -1,5 +1,11 @@
 # 47 — Workflow and Acceptance Test Catalogue
 
+- **Document ID:** DOC-47
+- **Status:** Draft
+- **Decision maturity:** Proposed acceptance-test catalogue; execution evidence not implied
+- **Owner:** QA lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Proposed acceptance baseline; pilot-specific values and policies require approval  
 **Companion:** docs/02_MODULES_AND_WORKFLOWS.md, docs/08_DEVELOPMENT_ROADMAP.md, docs/45_API_AND_INTEGRATION_EVENT_CONTRACTS.md, docs/46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md
 
@@ -13,6 +19,26 @@ Priority:
 - **P2:** Later module or advanced capability.
 
 Test data must be synthetic. Never use real student/guardian records in CI or public demo environments.
+
+## Architecture, schema and identity boundaries
+
+### ARC-001 — Modular Monolith dependency boundaries (P0)
+
+**Given** the solution and module projects.  
+**When** architecture tests inspect project references and module dependencies.  
+**Then** module dependency rules are enforced, prohibited references are rejected, and violations are reported.
+
+### DB-001 — Cloud/local database separation (P0)
+
+**Given** the Cloud Control Plane and a Local Data Plane deployment.  
+**When** database schemas, migrations and connection configuration are reviewed.  
+**Then** platform/commercial data and campus operational data use their approved database boundaries, with no cross-database foreign key or shared operational store.
+
+### ID-001 — Person and login identity remain distinct (P0)
+
+**Given** one person who may hold more than one school role and a separate credentialed login identity.  
+**When** the person or login is created, linked, disabled or merged.  
+**Then** person data and credentials remain separate, and disabling a login does not delete historical school records.
 
 ## 2. Admission-to-enrollment
 
@@ -386,7 +412,75 @@ Test data must be synthetic. Never use real student/guardian records in CI or pu
 **When** one tab closes, another refreshes, then the user explicitly logs out.  
 **Then** refresh/multi-tab continuity works before logout; logout revokes access immediately and starts idempotent cleanup; old tokens cannot read the workspace.
 
-## 11. Backups, privacy, accessibility and performance
+## 11. Privileged access, AI safety and migration
+
+### SEC-007 — Privileged action requires MFA/step-up (P0)
+
+**Given** a staff account assigned a privileged role.  
+**When** the user performs a configured high-impact action without satisfying required MFA/step-up.  
+**Then** the action is denied, no state changes occur, and the denial is auditable without logging secrets.
+
+### AI-001 — Provider route respects data classification (P1)
+
+**Given** an AI request with a classified payload and tenant routing policy.  
+**When** the Provider Gateway selects a provider/runtime.  
+**Then** only a route approved for that data class, region and contract is selected.
+
+### AI-002 — RAG enforces tenant, campus and document ACLs (P1)
+
+**Given** documents belonging to different tenants, campuses and user ACLs.  
+**When** a user performs retrieval.  
+**Then** filtering occurs before model context construction and no unauthorized chunk, citation or cache entry is exposed.
+
+### AI-003 — Tool calls use allow-listed application services (P1)
+
+**Given** a model-proposed tool call with typed arguments.  
+**When** the server validates and executes it.  
+**Then** only an allow-listed tool runs through its owning application service; arbitrary SQL, code execution and client-supplied tenant authority are rejected.
+
+### AI-004 — Consequential AI actions require human approval (P1)
+
+**Given** an AI-generated mark, financial recommendation or consequential notification draft.  
+**When** the model proposes an action.  
+**Then** no official posting, mark publication or message delivery occurs without the owning module's normal human approval workflow.
+
+### AI-005 — AI feature release has evaluated quality evidence (P1)
+
+**Given** a versioned AI feature/model/prompt and an approved evaluation set.  
+**When** a release candidate is evaluated.  
+**Then** quality, safety, language coverage, false-positive and cost results are recorded, and a failed gate blocks release.
+
+### MIG-001 — Import dry-run does not change live records (P1)
+
+**Given** a school migration file with valid and invalid rows.  
+**When** an authorized operator runs validation/dry-run.  
+**Then** row errors, duplicates, unmapped values and totals are reported without modifying operational records.
+
+### MIG-002 — Repeating an approved import is idempotent (P1)
+
+**Given** a previously applied import batch and stable source keys.  
+**When** the same logical batch is retried.  
+**Then** no duplicate student, relationship, invoice, payment or event is created.
+
+### MIG-003 — Financial migration reconciles to source evidence (P1)
+
+**Given** source balances, payment history and an approved opening-balance policy.  
+**When** finance migration is reconciled.  
+**Then** invoice, payment, allocation, receivable and control totals reconcile or have approved exceptions.
+
+### MIG-004 — Failed import can resume or recover safely (P1)
+
+**Given** an import that fails after a partial batch.  
+**When** the operator resumes or invokes the approved recovery path.  
+**Then** checkpoints and idempotency prevent duplicate effects; posted financial history uses reversal/adjustment entries.
+
+### MIG-005 — Customer export preserves relationships and scope (P1)
+
+**Given** a user authorized for a defined school/campus scope.  
+**When** a portability export is requested.  
+**Then** only authorized records are included, IDs and relationships are preserved, a versioned manifest is supplied, and secrets are excluded.
+
+## 12. Backups, privacy, accessibility and performance
 
 ### OPS-001 — Restore drill (P0 before pilot)
 
@@ -430,7 +524,7 @@ Test data must be synthetic. Never use real student/guardian records in CI or pu
 **When** report cards are generated and parents read results.  
 **Then** queues, database capacity and application responsiveness remain within approved operational thresholds.
 
-## 12. Release acceptance gates
+## 13. Release acceptance gates
 
 ### First pilot (minimum P0)
 - No unresolved critical/high tenant isolation finding.
@@ -448,7 +542,7 @@ Test data must be synthetic. Never use real student/guardian records in CI or pu
 - Operations/support staffing and escalation are ready.
 - Legal/privacy review is completed.
 
-## 13. Evidence recording
+## 14. Evidence recording
 
 For each accepted test, keep:
 - Test ID and specification version.

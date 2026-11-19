@@ -4,7 +4,7 @@
 - **Decision maturity:** AI product direction selected; rollout dependencies and implementation details remain subject to review
 - **Owner:** AI/technical lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
 
 > Preservation note: AI-0 through AI-7, checklist items, dependencies and exit criteria are retained. Source marks the overall plan Not Started and does not assign per-task priorities or named owners. No implementation is implied.
 

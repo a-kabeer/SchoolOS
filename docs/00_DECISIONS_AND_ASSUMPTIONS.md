@@ -1,5 +1,11 @@
 # 00 — Decisions and Assumptions
 
+- **Document ID:** DOC-00
+- **Status:** Current
+- **Decision maturity:** Confirmed decisions recorded; assumptions remain open
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `91cd4355e68d1b37e1943aeae1db58b4ff34c53f` (documentation refactor base)
 **Status legend**
 - **Confirmed:** Explicitly selected in discussion.
 - **Recommended:** Proposed architecture or product decision, pending technical/business review.
@@ -138,7 +144,7 @@ Tenant and scope identifiers must be enforced server-side. A client-supplied `te
 - Guaranteeing that every feature works offline.
 - Claiming full board/curriculum content coverage before syllabus data is validated and loaded.
 
-## 10. Commercial pricing direction under validation (v1.5)
+## 11. Commercial pricing direction under validation (v1.5)
 
 The owner selected an organization-level hybrid pricing model for analysis: one organization subscription, unique active students counted across campuses, first Local Node included, additional nodes potentially charged, school-owned server hardware, all standard core modules in all packages, monthly student snapshots, paid one-time onboarding, and monthly plus annual billing. The starting numeric preference is Rs. 2,500/month including 200 students, with Rs. 10 per additional student/month.
 
@@ -147,7 +153,7 @@ The owner selected an organization-level hybrid pricing model for analysis: one 
 Important distinction: organization-wide student billing is separate from campus access scope. A campus is not automatically a billable Local Node. Meter separately deployed, registered Local Data Plane installations; an organization that requires independent disconnected operation at each campus generally needs a node at each such campus.
 
 
-## 11. Business & Customer Platform decisions (v1.6)
+## 12. Business & Customer Platform decisions (v1.6)
 
 | Topic | Decision | Status |
 |---|---|---|

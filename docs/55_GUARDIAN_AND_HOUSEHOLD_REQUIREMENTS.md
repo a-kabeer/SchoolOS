@@ -1,10 +1,11 @@
 # Guardian and Household Requirements
+
 - **Document ID:** PRD-STU-REL-001
-- **Status:** Current source requirement; relationship rules partly open
-- **Decision maturity:** Confirmed cardinality direction; detailed authority and communication rules open
-- **Owner:** Product owner (named assignee TBD)
+- **Status:** Current
+- **Decision maturity:** Confirmed relationship-cardinality requirement; detailed authority rules open
+- **Owner:** Product owner (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `91cd4355e68d1b37e1943aeae1db58b4ff34c53f` (documentation refactor base)
 
 ## 1. Requirements
 
@@ -35,7 +36,7 @@ The data model MUST NOT assume:
 4. Which guardian may view attendance, marks, health/safeguarding data, fee statements and notices?
 5. How are custody restrictions, court orders, consent withdrawal and emergency contacts recorded and enforced?
 6. Can a guardian make payments across siblings without receiving access to all sibling academic or personal data?
-7. What hatpens to guardian/household links when a student transfers, withdraws or ages out?
+7. What happens to guardian/household links when a student transfers, withdraws or ages out?
 
 ## 4. Acceptance criteria for downstream implementation
 

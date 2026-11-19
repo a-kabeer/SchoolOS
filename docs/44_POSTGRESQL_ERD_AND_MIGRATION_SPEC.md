@@ -1,5 +1,11 @@
 # 44 — PostgreSQL ERD, Constraints and Migration Specification
 
+- **Document ID:** DOC-44
+- **Status:** Draft
+- **Decision maturity:** Proposed ERD and migration baseline; approval required
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Proposed physical-design baseline; approval required before migrations  
 **Applies to:** Local Data Plane operational database  
 **Companion:** docs/04_DATABASE_BLUEPRINT.md, docs/43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md

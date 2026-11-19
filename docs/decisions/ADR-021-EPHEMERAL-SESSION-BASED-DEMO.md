@@ -1,7 +1,12 @@
 # ADR-021 — Ephemeral Session-Based Demo
 
+- **Document ID:** ADR-021
+- **Status:** Accepted
+- **Decision maturity:** Accepted direction
+- **Owner:** Technical lead (accountable role; named assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 - **Date:** 9 November 2026
-- **Status:** Accepted product direction; implementation design details pending
 - **Related:** `docs/31_DEMO_PLATFORM_SPECIFICATION.md`, `docs/41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md`, BCP-4
 
 ## Context

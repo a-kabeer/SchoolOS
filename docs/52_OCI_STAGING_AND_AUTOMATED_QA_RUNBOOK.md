@@ -1,10 +1,14 @@
 # 52 — OCI Staging Deployment and Automated QA Runbook
 
+- **Document ID:** DOC-52
+- **Status:** Draft
+- **Decision maturity:** Proposed staging QA runbook; deployment not implemented
+- **Owner:** DevOps/operations lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `91cd4355e68d1b37e1943aeae1db58b4ff34c53f` (documentation refactor base)
 **Version:** 1.0  
 **Prepared:** 19 November 2026  
-**Status:** Proposed implementation runbook; repository audit completed, deployment not yet implemented.  
 **Scope:** SchoolOS cloud-hosted development/pilot staging, continuous deployment, browser regression testing and optional AI-assisted QA.
-
 > This is a staging environment for validating the current SchoolOS web application. It does **not** replace the Hybrid Cloud Control Plane + Local Data Plane architecture or the Local Node deployment requirements in documents 14, 16 and 17. A staging website is not a production Local Node.
 
 ## 1. Target delivery path
@@ -68,7 +72,7 @@ Therefore:
 | Existing file | Keep its responsibility | This runbook's relationship |
 |---|---|---|
 | `docs/07_SECURITY_AND_QUALITY_REQUIREMENTS.md` | Product security, tenant isolation, privacy and quality requirements | Adds a concrete staging QA execution path; does not replace security requirements |
-| `docs/09_PROGRESS_TRACKER.md` | Overall product and hybrid workstream tracker | Links to the dedicated staging QA tracker in document 43 |
+| `docs/09_PROGRESS_TRACKER.md` | Overall product and hybrid workstream tracker | Links to the dedicated staging QA tracker in document 53 |
 | `docs/14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md` | Long-term Cloud Control Plane and Local Data Plane design | Staging is explicitly a separate cloud-hosted QA environment |
 | `docs/16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md` | Production Local Node hardening, synchronization, backup and operations | Its network/secret/database principles are reused; Local Node deployment is not replaced |
 | `docs/17_HYBRID_DEPLOYMENT_TASK_PLAN.md` | Product-level hybrid deployment work packages H0–H7 | This document handles the separate developer staging pipeline and browser QA |

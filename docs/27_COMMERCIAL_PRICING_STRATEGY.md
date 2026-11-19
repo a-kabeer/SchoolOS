@@ -1,8 +1,13 @@
 # 27 — Commercial Pricing Strategy and Profitability Analysis
 
+- **Document ID:** DOC-27
+- **Status:** Current
+- **Decision maturity:** Proposed commercial direction; numeric prices are not approved
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Document version:** 1.0 (introduced in Blueprint v1.5)  
 **Prepared:** 9 November 2026  
-**Status:** Commercial analysis baseline — **not final pricing approval**  
 **Currency:** Pakistani Rupees (PKR)
 
 ## 1. Purpose and decision status

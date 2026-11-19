@@ -1,5 +1,11 @@
 # 32 — Registration and Onboarding Specification
 
+- **Document ID:** DOC-32
+- **Status:** Current
+- **Decision maturity:** Proposed registration/onboarding specification
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.6 · **Status:** Proposed specification; Not Started
 
 ## 1. Supported paths (both selected)

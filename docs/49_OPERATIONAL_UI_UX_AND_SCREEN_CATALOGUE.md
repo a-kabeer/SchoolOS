@@ -1,5 +1,11 @@
 # 49 — SchoolOS Operational UI/UX and Screen Catalogue
 
+- **Document ID:** DOC-49
+- **Status:** Draft
+- **Decision maturity:** Proposed screen catalogue; design approval pending
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Screen inventory and interaction baseline; wireframes/design system approval pending  
 **Applies to:** Local Data Plane staff, teacher, parent and student experiences  
 **Companion:** docs/01_PRODUCT_REQUIREMENTS.md, docs/02_MODULES_AND_WORKFLOWS.md, docs/33_CUSTOMER_PORTAL_SPECIFICATION.md, docs/34_SUPER_ADMIN_CONSOLE_SPECIFICATION.md

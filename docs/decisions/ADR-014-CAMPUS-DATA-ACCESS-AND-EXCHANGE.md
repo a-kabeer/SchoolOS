@@ -1,6 +1,11 @@
 # ADR-014 — Campus Data Access and Disconnected Data Exchange
 
-**Status:** Accepted as a product/architecture direction; exact release order remains open.  
+- **Document ID:** ADR-014
+- **Status:** Accepted
+- **Decision maturity:** Accepted direction
+- **Owner:** Technical lead (accountable role; named assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Date:** 9 November 2026  
 **Related:** ADR-011 Hybrid Cloud + Local, ADR-013 Event-Based Synchronization, `docs/18_CAMPUS_DATA_ACCESS_AND_DEPLOYMENT_SCENARIOS.md`.
 

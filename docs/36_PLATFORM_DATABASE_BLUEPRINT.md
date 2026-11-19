@@ -1,5 +1,11 @@
 # 36 — Business & Customer Platform Database Blueprint
 
+- **Document ID:** DOC-36
+- **Status:** Current
+- **Decision maturity:** Proposed Cloud Control Plane logical data catalogue
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.7 · **Status:** Preliminary entity catalogue; detailed ERD and migrations Not Started
 
 ## 1. Database boundary

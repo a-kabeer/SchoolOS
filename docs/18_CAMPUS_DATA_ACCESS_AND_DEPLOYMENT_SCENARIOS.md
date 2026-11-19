@@ -1,7 +1,12 @@
 # 18 — Campus Data Access and Deployment Scenarios
 
+- **Document ID:** DOC-18
+- **Status:** Current
+- **Decision maturity:** Accepted deployment profiles; pilot selection and release sequence open
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** 1.2  
-**Status:** Product/architecture design captured; exact release sequencing and customer topology remain to be validated.  
 **Context:** One main campus plus five additional campuses. The additional campuses may be disconnected from one another and from the main campus.
 
 ## 1. Executive summary

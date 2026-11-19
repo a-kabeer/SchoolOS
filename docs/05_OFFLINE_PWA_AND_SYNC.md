@@ -1,5 +1,11 @@
 # 05 — PWA and Offline Synchronization Architecture
 
+- **Document ID:** DOC-05
+- **Status:** Current
+- **Decision maturity:** Accepted Local Node/offline direction; workflow semantics partly open
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 > **Architecture update (v1.1):** This document originally described browser/PWA local caching. The selected product now uses a **Local Data Plane server** for broad offline operation. PWA/IndexedDB remains useful for browser drafts, short-lived caches and device-side resilience, but it is not the authoritative offline backend. Approved operations should be written to the Local Node's PostgreSQL database over the school LAN, even when the internet is unavailable. Read `14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md`, `15_SUBSCRIPTION_LICENSING_AND_OFFLINE_ENFORCEMENT.md` and `16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md` first. The detailed two-stage queue lifecycle, workflow-level policy matrix and disconnected-campus exchange specification is maintained in [57 — Offline Sync and Manual Data Exchange](57_OFFLINE_SYNC_AND_MANUAL_DATA_EXCHANGE.md).
 
 ## 1. Goal

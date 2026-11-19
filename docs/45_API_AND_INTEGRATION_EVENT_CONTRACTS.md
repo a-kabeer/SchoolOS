@@ -1,5 +1,11 @@
 # 45 — API and Integration Event Contract Specification
 
+- **Document ID:** DOC-45
+- **Status:** Draft
+- **Decision maturity:** Proposed API/event contracts; DTO and OpenAPI review required
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Proposed contract baseline; endpoint names and DTOs require review  
 **API base:** /api/v1  
 **Companion:** docs/03_MODULAR_MONOLITH_ARCHITECTURE.md, docs/05_OFFLINE_PWA_AND_SYNC.md, docs/14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md, docs/37_PLATFORM_API_CATALOG.md

@@ -1,10 +1,15 @@
 # SchoolOS — Git Workflow & Branching Strategy
 
+- **Document ID:** GOV-GIT-001
+- **Status:** Current
+- **Decision maturity:** Accepted repository branching and review workflow
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Target Audience:** SchoolOS Engineering Team  
 **Canonical Remote:** `origin = https://github.com/a-kabeer/SchoolOS.git`  
 **Primary Production Branch:** `main`  
 **Approved Phase 0 Feature Branch:** `setup/phase-0-foundation`  
-
 ---
 
 ## 1. Branching Model

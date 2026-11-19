@@ -1,5 +1,12 @@
 # 22 — AI Retrieval-Augmented Generation (RAG) and Tool Calling
 
+- **Document ID:** DOC-22
+- **Status:** Current
+- **Decision maturity:** Accepted RAG/tool-calling direction; implementation contracts open
+- **Owner:** AI/technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+
 ## 1. Why both patterns are needed
 
 RAG supplies relevant content from school documents and approved knowledge sources. Tool calling retrieves current structured operational facts or invokes a narrowly approved application action. They solve different problems and must share the same tenant, campus and permission policy.

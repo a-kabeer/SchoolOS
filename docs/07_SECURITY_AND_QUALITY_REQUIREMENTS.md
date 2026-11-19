@@ -1,5 +1,12 @@
 # 07 — Security, Privacy and Non-Functional Requirements
 
+- **Document ID:** DOC-07
+- **Status:** Current
+- **Decision maturity:** Proposed security and quality baseline
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+
 ## 1. Security baseline
 
 - Authentication through ASP.NET Core Identity or a reviewed identity provider.

@@ -1,5 +1,11 @@
 # 10 — Risk Register
 
+- **Document ID:** DOC-10
+- **Status:** Current
+- **Decision maturity:** Not applicable — risk register
+- **Owner:** Delivery lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 | ID | Risk | Impact | Likelihood (initial estimate) | Mitigation | Owner | Status |
 |---|---|---|---|---|---|---|
 | R-01 | Cross-tenant data leakage | Critical | Medium | Server-side scope enforcement, RLS where suitable, automated penetration/access tests | Technical lead | Open |

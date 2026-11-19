@@ -1,6 +1,11 @@
 # 20 — SchoolOS AI Architecture and Hosting Strategy
 
-**Status:** Architecture direction accepted; detailed provider, contract, model and deployment choices remain open.
+- **Document ID:** DOC-20
+- **Status:** Current
+- **Decision maturity:** Accepted AI product direction; provider and implementation choices open
+- **Owner:** AI/technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 
 ## 1. Purpose and product boundary
 

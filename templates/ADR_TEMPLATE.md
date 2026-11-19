@@ -1,39 +1,7 @@
-# ADR-XXX — Decision Title
+# Deprecated ADR Template
 
-- **Status:** Proposed / Accepted / Superseded / Rejected
-- **Date:** YYYY-MM-DD
-- **Owner:**
-- **Reviewers:**
+This file is retained for backward compatibility only. Do not create new ADRs from this template.
 
-## Context
-What problem or design choice requires a decision?
+Use the canonical [ADR Template](../docs/templates/ADR_TEMPLATE.md), which includes Document ID, lifecycle status, decision maturity, accountable owner, review date and reproducible source baseline.
 
-## Decision drivers
--
-
-## Options considered
-1.
-2.
-3.
-
-## Decision
-What option was selected and why?
-
-## Consequences
-### Positive
--
-
-### Negative / trade-offs
--
-
-## Security / privacy impact
--
-
-## Operational impact
--
-
-## Follow-up tasks
-- [ ]
-
-## References
--
+Existing ADRs remain valid historical records and should be brought into the current metadata standard when substantively revised.

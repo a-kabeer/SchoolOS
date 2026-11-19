@@ -4,7 +4,7 @@
 - **Decision maturity:** Accepted planning direction; detailed design and implementation remain pending
 - **Owner:** Platform/product lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
 
 > Preservation note: BCP-0 through BCP-11 work packages and BCP-001 through BCP-041 detailed task IDs, wording, dependencies, priorities, statuses and acceptance evidence are retained. Every implementation task remains Not Started in the current repository baseline at the time of this reconciliation.
 

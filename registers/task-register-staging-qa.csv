@@ -1,0 +1,33 @@
+Task ID,ID Type,Workstream,Work Package,Task,Source Document,Source ID,Priority,Status,Owner
+STQA-001,Source task ID,Staging QA,0 — Audit,"Inspect repository structure, docs, Docker config, tests and app readiness",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-001,Critical,Completed,Unassigned
+STQA-002,Source task ID,Staging QA,0 — Scope,Confirm cloud-hosted preview staging is separate from production Local Nodes,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-002,Critical,Not Started,Unassigned
+STQA-003,Source task ID,Staging QA,0 — Readiness,Confirm staging Cloud API/frontend scope and smoke-test endpoints,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-003,Critical,In Progress,Unassigned
+STQA-004,Source task ID,Staging QA,1 — App readiness,"Implement or identify working authentication, school create/list/detail and role permissions",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-004,Critical,Blocked,Unassigned
+STQA-005,Source task ID,Staging QA,1 — Containerization,Add and verify ARM64-compatible .NET Cloud API Dockerfile,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-005,Critical,Not Started,Unassigned
+STQA-006,Source task ID,Staging QA,1 — Containerization,Add frontend Dockerfile and reviewed static-serving configuration,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-006,High,Not Started,Unassigned
+STQA-007,Source task ID,Staging QA,1 — Containerization,Add separate staging Compose stack; keep local Compose unchanged,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-007,Critical,Not Started,Unassigned
+STQA-008,Source task ID,Staging QA,1 — Readiness,Implement dependency-aware readiness checks and migration status,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-008,High,Not Started,Unassigned
+STQA-009,Source task ID,Staging QA,2 — OCI,"Verify OCI account, home region, quota, free eligibility and cost boundaries",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-009,Critical,Not Started,Unassigned
+STQA-010,Source task ID,Staging QA,2 — OCI,Provision Ubuntu 24.04 ARM64 A1 Flex VM with approved allocation,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-010,Critical,Not Started,Unassigned
+STQA-011,Source task ID,Staging QA,2 — Security,"Configure SSH key access, restricted ingress and least-privilege deploy user",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-011,Critical,Not Started,Unassigned
+STQA-012,Source task ID,Staging QA,2 — Security,Configure OCI network rules/UFW; keep PostgreSQL private,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-012,Critical,Not Started,Unassigned
+STQA-013,Source task ID,Staging QA,2 — Host,Install Docker Engine/Compose and apply host baseline,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-013,High,Not Started,Unassigned
+STQA-014,Source task ID,Staging QA,3 — Staging,"Configure staging-only secrets, PostgreSQL volume and synthetic seed data",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-014,Critical,Not Started,Unassigned
+STQA-015,Source task ID,Staging QA,3 — Staging,"Configure DNS, reverse proxy and HTTPS",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-015,High,Not Started,Unassigned
+STQA-016,Source task ID,Staging QA,4 — GitHub,Create protected staging Environment and configure deployment variables/secrets,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-016,Critical,Not Started,Unassigned
+STQA-017,Source task ID,Staging QA,4 — CI,Add PR CI for .NET restore/build/test and frontend lint/build,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-017,Critical,Not Started,Unassigned
+STQA-018,Source task ID,Staging QA,4 — Deploy,Add main deployment workflow and publish immutable ARM64 image tags,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-018,Critical,Not Started,Unassigned
+STQA-019,Source task ID,Staging QA,4 — Deploy,"Deploy staging Compose stack, apply migration/backup gate and verify health",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-019,Critical,Not Started,Unassigned
+STQA-020,Source task ID,Staging QA,5 — Playwright,Create isolated Playwright E2E project under qa/e2e,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-020,High,Not Started,Unassigned
+STQA-021,Source task ID,Staging QA,5 — Playwright,Add landing-page and current API health smoke tests,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-021,Critical,Not Started,Unassigned
+STQA-022,Source task ID,Staging QA,5 — Playwright,Add authenticated login/logout tests,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-022,Critical,Blocked,Unassigned
+STQA-023,Source task ID,Staging QA,5 — Playwright,Add school create/list/detail and validation tests,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-023,Critical,Blocked,Unassigned
+STQA-024,Source task ID,Staging QA,5 — Playwright,Add campus and role/permission regression tests,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-024,High,Blocked,Unassigned
+STQA-025,Source task ID,Staging QA,5 — Reports,"Publish HTML/JUnit reports, screenshots, traces and failure artifacts",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-025,High,Not Started,Unassigned
+STQA-026,Source task ID,Staging QA,5 — Reports,Create/update deduplicated GitHub issues on QA failure,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-026,Medium,Not Started,Unassigned
+STQA-027,Source task ID,Staging QA,6 — Gemini,Install/authenticate Gemini CLI in headless CI with protected API key,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-027,Medium,Not Started,Unassigned
+STQA-028,Source task ID,Staging QA,6 — Gemini,Configure pinned Playwright MCP version and staging-only scope,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-028,Medium,Not Started,Unassigned
+STQA-029,Source task ID,Staging QA,6 — Gemini,Add optional AI exploratory QA/failure summary step,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-029,Medium,Not Started,Unassigned
+STQA-030,Source task ID,Staging QA,7 — Operations,"Add staging DB backup, artifact retention and restore drill",docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-030,High,Not Started,Unassigned
+STQA-031,Source task ID,Staging QA,7 — Operations,Add immutable-image rollback and migration safeguards,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-031,Critical,Not Started,Unassigned
+STQA-032,Source task ID,Staging QA,8 — Acceptance,Complete merge-to-main → deploy → QA → report end-to-end flow,docs/53_STAGING_QA_PROGRESS_TRACKER.md,STQA-032,Critical,Not Started,Unassigned

@@ -1,14 +1,12 @@
 # 56 — SchoolOS Glossary
 
 - **Document ID:** GOV-GLOSSARY-001
-- **Status:** Current reference; terminology baseline
+- **Status:** Current
 - **Decision maturity:** Not applicable — glossary
-- **Owner:** Product owner and technical lead
+- **Owner:** Product owner (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; terminology reconciled with documents 00–53 and the v2.1 remediation draft
-
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `91cd4355e68d1b37e1943aeae1db58b4ff34c53f` (documentation refactor base)
 This glossary defines recurring SchoolOS terms. It does not approve product policy or replace the specifications and ADRs.
-
 | Term | Meaning in SchoolOS |
 |---|---|
 | Tenant | The customer/account boundary used for platform-level tenancy and authorization. Exact mapping to legal organization/school entities remains governed by the approved data and platform specifications. |
@@ -22,7 +20,7 @@ This glossary defines recurring SchoolOS terms. It does not approve product poli
 | Cloud Sync Hub | The cloud service that receives and distributes authorized events/projections between Local Nodes and cloud-side consumers. |
 | PWA | Progressive Web App. In SchoolOS it supports the browser experience, cached assets and limited device-side drafts; it is not the authoritative offline backend. |
 | Outbox / Inbox | Durable integration patterns used to record outgoing events atomically with local business writes and to deduplicate/track incoming events. |
-| Idempotency | A property that makes retryng the same logical operation produce one business effect rather than duplicate records or postings. |
+| Idempotency | A property that makes retrying the same logical operation produce one business effect rather than duplicate records or postings. |
 | Restricted Mode | License-expiry mode after the configured grace period. Historical viewing, approved reports/exports, backup, billing/licence renewal and support remain available while configured new operational writes are blocked. |
 | Guardian | A person linked to a student through an explicitly recorded relationship. Guardian status alone does not automatically grant every data-access or communication right. |
 | Household | A family/grouping abstraction used to relate students and people where approved; membership and data-access rules must not be inferred from surname or phone number alone. |

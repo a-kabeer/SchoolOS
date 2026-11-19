@@ -4,7 +4,7 @@
 - **Decision maturity:** Accepted hybrid direction; per-pilot topology, commercial and implementation details remain open where stated
 - **Owner:** Technical lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
 
 > Preservation note: Work-package IDs H0–H7, source checklist wording and exit criteria below are carried forward from the source baseline captured by the v2.1 remediation draft. The source does not assign individual task IDs, individual priorities, owners or per-checklist acceptance tests; these are not fabricated here. Use the register's additional tracking IDs only as refactor tracking identifiers, not as historical source IDs.
 

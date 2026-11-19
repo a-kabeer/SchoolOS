@@ -1,5 +1,11 @@
 # 43 — Operational Domain Data Dictionary
 
+- **Document ID:** DOC-43
+- **Status:** Draft
+- **Decision maturity:** Proposed logical data dictionary; DDL approval pending
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Logical data dictionary for review, not an approved migration script  
 **Database boundary:** Local Data Plane operational PostgreSQL database  
 **Companion:** `docs/04_DATABASE_BLUEPRINT.md`, `docs/36_PLATFORM_DATABASE_BLUEPRINT.md`

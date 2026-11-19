@@ -1,7 +1,12 @@
 # ADR-019 — Organization Subscription and Commercial Metering
 
+- **Document ID:** ADR-019
+- **Status:** Proposed
+- **Decision maturity:** Proposed
+- **Owner:** Technical lead (accountable role; named assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Date:** 9 November 2026  
-**Status:** Proposed commercial direction for validation; not final pricing approval  
 **Owners:** Product and commercial leads
 
 ## Context
