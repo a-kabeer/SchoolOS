@@ -39,20 +39,21 @@ SchoolOS is a proposed multi-tenant, AI-enabled school operating platform for pr
 
 Read the repository-wide [contributor and AI-agent guide](AGENTS.md) before changing code, tests, configuration or CI. Use [61 — Reference Project Adoption and Integration Plan](docs/61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) to understand which practices from Education-Portal and eSchool are adopted, adapted or explicitly excluded.
 
-Start with the path that matches your role. Use document 56 for terminology and document 60 for unresolved architecture/security decisions.
+Start with the [categorized documentation catalogue](docs/README.md), then follow the path that matches your role. Use document 56 for terminology, document 60 for unresolved architecture/security decisions, and document 62 for the proposed SaaS tenant implementation baseline.
 
 | Reader | Recommended path |
 |---|---|
-| Product owner | 00 → 01 → 02 → 11 → 29 → 51 → 60 |
-| Backend developer | 03 → 14–18 → 04 → 43–46 → 47 |
-| Frontend developer | 01–02 → 49 → 45–46 → relevant module specification |
-| DevOps / operations | 14–16 → 48 → 52–53 → H0–H7 detailed plan |
-| AI developer | 20–26 → ADR-015–018 → AI detailed plan and registers |
-| Commercial / BCP | 27–40 → ADR-019–021 → BILL/BCP detailed plans and registers |
-| QA / security | 07 → 38 → 46–48 → 51 → 52–53 → 60 |
+| Product owner | 00–02 → 11 → 29 → 51 → 56 → 60–62 |
+| Backend developer | 03–05 → 14–18 → 36 → 43–47 → 60–62 |
+| Frontend developer | 01–02 → 45–46 → 49 → 56 → relevant module specification |
+| DevOps / operations | 14–16 → 48 → 52–53 → 60 → Hybrid and documentation task plans |
+| AI developer | 06, 20–26 → ADR-015–018 → AI detailed plan and registers |
+| Commercial / BCP | 27–41 → ADR-019–021 → BILL/BCP detailed plans and registers |
+| QA / security | 07 → 38 → 46–48 → 51–53 → 60–62 |
 
 ### Canonical navigation
 
+- [Categorized documentation catalogue](docs/README.md) · [Project overview](README.md)
 - [Product requirements](docs/01_PRODUCT_REQUIREMENTS.md) · [Module workflows](docs/02_MODULES_AND_WORKFLOWS.md)
 - [ADR index](docs/13_ADR_INDEX.md) · [Open questions](docs/11_OPEN_QUESTIONS.md) · [Decision closure register](docs/60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md)
 - [Data dictionary](docs/43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md) · [ERD and migrations](docs/44_POSTGRESQL_ERD_AND_MIGRATION_SPEC.md) · [API/event contracts](docs/45_API_AND_INTEGRATION_EVENT_CONTRACTS.md)
@@ -109,10 +110,6 @@ The commercial discussion is captured as a **proposed analysis baseline, not fin
 All AI workstreams (AI-0 to AI-7) are **Not Started**. The archive documents decisions and a proposed implementation plan; it does not claim that the gateway, RAG, AI features, billing or local inference have been implemented.
 
 
-## Commercial pricing analysis added in v1.5
-
-The archive now records the selected pricing direction and implementation plan. The customer preference is organization-wide billing, school-owned hardware, first Local Node included, paid onboarding, all core modules in every package, monthly student snapshots and monthly/annual billing. Numeric prices beyond the initial Rs. 2,500/200/Rs. 10 starting preference remain proposals requiring pilot validation. No billing implementation is claimed.
-
 ## Licence policy decisions added in v1.4
 
 The renewal choice is confirmed as **both** automatic renewal when a Local Node is online and manual signed `.lic` download/import (including approved USB transfer) when it is offline. The expiry choice is confirmed as **Restricted Mode** after grace, not destructive lockout: preserve historical records, read-only viewing, reports/export, backup/restore administration, billing/licence renewal and support; block new operational writes. Both renewal paths use the same signature validation and activation pipeline. A valid renewal restores the existing installation without a software update. Implementation remains Not Started, and the seven-day grace duration remains a proposal pending commercial approval.
@@ -154,7 +151,7 @@ The separate developer/pilot OCI staging pipeline is documented in `docs/52_OCI_
 
 ## Documentation governance and v2.1 reconciliation
 
-The v2.1 remediation package has been selectively reconciled with the current repository baseline. The existing numbered documentation and merged PR #2 / PR #3 changes remain authoritative; the alternate folder hierarchy from the ZIP was not copied as a competing structure.
+The v2.1 remediation package has been selectively reconciled with the current repository baseline. The existing numbered documentation and merged PR #2 / PR #3 changes remain authoritative; the alternate folder hierarchy from the ZIP was not copied as a competing structure. Use [docs/README.md](docs/README.md) as the detailed catalogue; it complements rather than replaces this project overview.
 
 - [54 — Documentation Standards](docs/54_DOCUMENTATION_STANDARDS.md)
 - [55 — Guardian and Household Requirements](docs/55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md)
@@ -163,7 +160,7 @@ The v2.1 remediation package has been selectively reconciled with the current re
 - [58 — v2.1 Documentation Migration Report](docs/58_DOCUMENTATION_REFACTOR_V2_1_MIGRATION_REPORT.md)
 - [59 — Task Register and Traceability Guide](docs/59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md)
 
-The four detailed H0–H7, AI-0–AI-7, BILL and BCP task plans are in `docs/task-plans/`. The seven CSV partitions under `registers/` are the single task-status source. Documents 09, 26, 40 and 53 are summaries; document 51 and the requirement CSV contain requirement traceability. Reusable ADR, module-specification, runbook and change-proposal templates are in `docs/templates/`.
+The detailed H0–H7, AI-0–AI-7, BILL, BCP and documentation-governance task plans are in `docs/task-plans/`. The eight CSV partitions under `registers/` are the single task-status source. Documents 09, 26, 40 and 53 are summaries; document 51 and the requirement CSV contain requirement traceability. Reusable ADR, module-specification, runbook and change-proposal templates are in `docs/templates/`.
 
 Document 54 is the adopted repository documentation standard. Document 60 consolidates remaining architecture/security gates without silently approving them. Task status and test evidence remain distinct from design approval and implementation.
 
