@@ -37,6 +37,8 @@ SchoolOS is a proposed multi-tenant, AI-enabled school operating platform for pr
 
 ## Suggested reading paths
 
+Read the repository-wide [contributor and AI-agent guide](AGENTS.md) before changing code, tests, configuration or CI. Use [61 — Reference Project Adoption and Integration Plan](docs/61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) to understand which practices from Education-Portal and eSchool are adopted, adapted or explicitly excluded.
+
 Start with the path that matches your role. Use document 56 for terminology and document 60 for unresolved architecture/security decisions.
 
 | Reader | Recommended path |
@@ -55,7 +57,7 @@ Start with the path that matches your role. Use document 56 for terminology and 
 - [ADR index](docs/13_ADR_INDEX.md) · [Open questions](docs/11_OPEN_QUESTIONS.md) · [Decision closure register](docs/60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md)
 - [Data dictionary](docs/43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md) · [ERD and migrations](docs/44_POSTGRESQL_ERD_AND_MIGRATION_SPEC.md) · [API/event contracts](docs/45_API_AND_INTEGRATION_EVENT_CONTRACTS.md)
 - [Authorization matrix](docs/46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md) · [Acceptance tests](docs/47_WORKFLOW_ACCEPTANCE_TEST_CATALOGUE.md) · [Operations runbook](docs/48_HYBRID_DEPLOYMENT_OPERATIONS_AND_RECOVERY_RUNBOOK.md)
-- [Task Register guide](docs/59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md) · [Registers](registers/README.md) · [Documentation standards](docs/54_DOCUMENTATION_STANDARDS.md)
+- [Task Register guide](docs/59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md) · [Registers](registers/README.md) · [Documentation standards](docs/54_DOCUMENTATION_STANDARDS.md) · [Reference adoption plan](docs/61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md)
 
 ## Important status note
 
@@ -164,3 +166,15 @@ The v2.1 remediation package has been selectively reconciled with the current re
 The four detailed H0–H7, AI-0–AI-7, BILL and BCP task plans are in `docs/task-plans/`. The seven CSV partitions under `registers/` are the single task-status source. Documents 09, 26, 40 and 53 are summaries; document 51 and the requirement CSV contain requirement traceability. Reusable ADR, module-specification, runbook and change-proposal templates are in `docs/templates/`.
 
 Document 54 is the adopted repository documentation standard. Document 60 consolidates remaining architecture/security gates without silently approving them. Task status and test evidence remain distinct from design approval and implementation.
+
+
+## Reference-project adoption (DOC-61)
+
+SchoolOS adopts selected engineering practices from [Education-Portal](https://github.com/ahmedshahjr/Education-Portal) and operational workflow research from [eSchool](https://github.com/a-kabeer/eSchool) without merging repositories or changing SchoolOS's modular-monolith, React, separate Cloud/Local database and offline-first direction. The adopted practices, exclusions, cross-document mapping and open module-entitlement decision are recorded in [DOC-61](docs/61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md). The root [AGENTS.md](AGENTS.md) is the authoritative contributor and AI-agent guide. Reference adoption is a documented direction, not a claim that the listed capabilities are implemented.
+
+
+## SaaS tenant implementation blueprint (DOC-62)
+
+[DOC-62 — SaaS Tenant Architecture and Implementation Blueprint](docs/62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) specifies the v1 tenant implementation contract: Organization/Tenant → School → Campus hierarchy, global identity and tenant memberships, server-derived TenantContext, shared Cloud PostgreSQL isolation/RLS, one-tenant Local Nodes, tenant provisioning, node enrollment, subscription entitlements, sync validation, acceptance tests and delivery gates.
+
+DOC-62 is a concrete implementation proposal, not a claim that SaaS tenant code is already implemented. DEC-001, DEC-004, DEC-008 and DEC-020 remain open until approved and supported by code, migrations, tests and operational evidence.

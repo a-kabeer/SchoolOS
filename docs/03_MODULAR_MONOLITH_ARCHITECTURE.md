@@ -5,7 +5,7 @@
 - **Decision maturity:** Accepted modular-monolith architecture direction
 - **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 > **Hybrid deployment update (v1.1):** This document's Modular Monolith guidance applies to the **Local Data Plane business application**. The deployment now has two planes: (1) SchoolOS Cloud Control Plane for subscriptions, licenses, releases and sync coordination, and (2) one or more Local Data Plane nodes for school operations. This does not mean turning every business module into a microservice. See `14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md` for the authoritative topology.
 
 ## 1. Architecture choice
@@ -251,3 +251,21 @@ The repository may contain two ASP.NET Core hosts:
 - `SchoolOS.Local.Api`: the school-business Modular Monolith for admissions, students, finance, attendance, academics, examinations and local operations.
 
 They share versioned contracts and selected building blocks, but each has its own database and trust boundary. Do not let the Cloud host directly connect to a customer's local operational database. The Sync Hub exchanges authenticated events and commands instead.
+
+
+## 14. Reference-informed module implementation conventions
+
+The controlled adoption of Clean Architecture practices is recorded in [DOC-61 — Reference Project Adoption and Integration Plan](61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md). Apply the following within SchoolOS's existing module-first modular monolith:
+
+- Use **Domain**, **Application**, **Infrastructure** and **Contracts** as logical boundaries inside each business module. Start with folders where appropriate; split into separate projects only when dependency enforcement, module maturity or team ownership justifies the additional project/build cost.
+- Domain owns business entities, invariants and policies and must not depend on ASP.NET Core, EF Core, React or either host.
+- Application owns use cases, orchestration, validation and authorization requirements.
+- Infrastructure implements persistence and external adapters. Contracts contains only intentionally published module interfaces, DTOs and events.
+- Hosts compose modules and expose APIs; endpoints/controllers do not contain business rules.
+- A module must not access another module's private entity model, DbContext or tables. Use published contracts or explicit events.
+- Keep BuildingBlocks/SharedKernel small; do not move domain-specific concepts there merely to share code.
+- Do not add template-specific frameworks or dependencies (including a mandatory Aspire runtime or mediator library) without an approved need and, where material, an ADR.
+
+The module catalogue and subscription/lease entitlement checks are separate from user authorization. The Cloud Control Plane owns commercial catalogue/subscription decisions; the Local Data Plane validates its signed node-bound entitlement snapshot/lease locally. A user still requires explicit permission and campus/resource scope. See DOC-15, DOC-46 and DEC-020 in DOC-60.
+
+These conventions describe the target boundary; they do not imply that every existing module directory already contains these layers or implemented use cases.

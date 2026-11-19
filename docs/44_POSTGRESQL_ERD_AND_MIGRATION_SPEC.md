@@ -121,13 +121,14 @@ Diagram notation note: this is a conceptual ERD; optional and polymorphic relati
 
 ### 4.1 Tenant, school, campus and node
 
-- Tenant is the SaaS customer organization.
-- School is a school/legal entity owned by a tenant.
-- Campus is a physical/operational location belonging to a school.
-- Local Node is a deployment identity assigned to a site/campus or an approved shared group scope.
+- Tenant is the SaaS customer Organization; Organizations.Id is the canonical TenantId.
+- School is a legal/operating school entity owned by exactly one Tenant.
+- Campus is a physical/operational location belonging to exactly one School and therefore one Tenant.
+- The proposed v1 hierarchy is Tenant 1-to-many Schools and School 1-to-many Campuses. An organization operating one legal school still has a School record.
+- A Local Node is bound to exactly one Tenant. It may serve one or more Campuses of that same Tenant through effective-dated NodeCampusAssignments. A Tenant may have several nodes; a node may not host multiple unrelated tenants in v1.
 - A node may be replaced or deactivated; retain node history and do not reuse node IDs.
-- Every operational record must have enough tenant/school/campus provenance for authorization, reporting and data exchange.
-- The exact Tenant → School → Campus cardinality and node-to-campus assignment model remain open until approved through ADR.
+- Every operational record must have enough Tenant/School/Campus/OriginNode provenance for authorization, reporting and data exchange.
+- This is the proposed implementation baseline in DOC-62. Final approval remains open under DEC-001 until the product owner approves the customer/legal identity model and the ERD cardinalities.
 
 ### 4.2 People and roles
 
@@ -324,3 +325,20 @@ Imports require signature/recipient/tenant/schema verification, dry-run, duplica
 - [ ] Seed/reference-data strategy approved.
 - [ ] Migration lock, backup and rollback/forward-fix plan approved.
 - [ ] Backup/restore acceptance tests defined.
+
+## 12. SaaS tenant implementation companion
+
+Use [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) as the end-to-end implementation companion for the v1 SaaS tenant boundary.
+
+Physical schema and migration work must preserve these invariants:
+
+- Cloud Organizations.Id is the canonical TenantId. Cloud OrganizationId and Local TenantId are the same UUID, not separate identity domains.
+- Organization/Tenant → School → Campus is the proposed v1 hierarchy. A Campus must not reference a School in another tenant.
+- A Local Node binds to one Tenant and may be assigned multiple campuses only when all assignments belong to that Tenant.
+- Every tenant-owned table has a non-null tenant key directly or an enforced same-tenant parent relationship. Prefer direct tenant keys for high-volume and security-sensitive tables.
+- Add composite unique keys and composite foreign keys to prevent cross-tenant references.
+- Cloud runtime roles are restricted and must not own tables, be superusers or have BYPASSRLS. Schema migration credentials are separate.
+- Set app.tenant_id transaction-locally inside every tenant-scoped database unit of work. Never depend on session-level state on a pooled connection.
+- Missing tenant context fails closed. RLS, application authorization and resource-scope checks all remain required.
+
+DOC-62 provides the recommended entity catalogue additions, RLS policy pattern, rollout gates and SAAS acceptance criteria. This does not replace the physical ERD approval checklist in this document. DEC-001 and DEC-004 remain open until owner approval and executable integration/security evidence are linked.

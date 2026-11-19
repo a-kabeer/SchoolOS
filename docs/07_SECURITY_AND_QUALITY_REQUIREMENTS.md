@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed security and quality baseline
 - **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 
 ## 1. Security baseline
 
@@ -137,3 +137,25 @@ The hybrid deployment introduces local servers and a cloud-to-node trust relatio
 - A local customer administrator may be able to tamper with the host if granted root access; managed-appliance terms and threat model must address this.
 
 See `16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md` for the operational baseline.
+
+
+## 10. Secure contribution and AI-assisted development baseline
+
+Root [`AGENTS.md`](../AGENTS.md) is the authoritative repository-wide contributor and AI-agent guide. It defines mandatory controls for server-derived scope, tenant isolation, secrets/PII, offline command validation, AI safety, test evidence and pull-request review. DOC-61 records why these practices were adopted and how they fit the two-plane deployment.
+
+Minimum execution rules:
+
+- Never weaken authorization, tenant filters, validation, antiforgery, audit or security tests to make a feature/build pass.
+- Never put credentials, signing keys, tokens, connection strings with secrets, or identifiable student/guardian/staff data in source, tests, logs, documentation, screenshots or prompts.
+- Derive tenant/campus/resource scope server-side and check both user permission and resource relationship.
+- Review every external provider, telemetry destination, CDN, payment integration and AI route for the data it receives, retention and security before enabling it.
+- Run and report actual build/test results; do not infer production readiness from scaffolds, placeholder modules or a documentation checklist.
+- Use pull requests and human review. AI agents must not approve or merge their own changes or bypass repository controls.
+- Use secret/dependency scanning, analyzers, build/test and selected security checks as CI controls only after their workflows are implemented and successful runs are available as evidence.
+
+Security-framework mappings are a control-discovery aid only. They do not establish that SchoolOS is certified or compliant. See DOC-61 and DOC-54.
+
+
+## 11. SaaS tenant implementation security contract
+
+Use [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) as the implementation companion for SaaS tenant identity, server-derived TenantContext, Cloud RLS/connection-pool controls, single-tenant Local Node binding, tenant provisioning and node enrollment. The baseline security requirements in this document still apply. Before production, close the relevant DOC-60 decisions and verify cross-tenant, missing-context, RLS/pooling, offline identity, sync ownership and tenant restore tests. DOC-62 is a design proposal; it is not evidence of implemented controls or legal compliance.

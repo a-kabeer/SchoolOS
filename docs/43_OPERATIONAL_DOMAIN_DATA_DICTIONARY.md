@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed logical data dictionary; DDL approval pending
 - **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 **Version:** v1.8 draft · **Status:** Logical data dictionary for review, not an approved migration script  
 **Database boundary:** Local Data Plane operational PostgreSQL database  
 **Companion:** `docs/04_DATABASE_BLUEPRINT.md`, `docs/36_PLATFORM_DATABASE_BLUEPRINT.md`
@@ -407,3 +407,49 @@ This document is a logical dictionary; it is not yet a substitute for reviewed D
 ## 16. Guardian and household requirements companion
 
 The focused guardian/household cardinality, open policy decisions and downstream acceptance criteria are maintained in [55 — Guardian and Household Requirements](55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md). This data dictionary remains the proposed logical model reference; it does not approve legal custody, payer authority or communication permissions.
+
+
+## 17. Reference-informed domain coverage review
+
+The eSchool functional inventory is a discovery checklist, not a schema specification and not a mandate to reproduce its module or route count. The SchoolOS logical entities already described in this document remain authoritative subject to the approvals in section 15.
+
+When reviewing domain coverage, verify the end-to-end lifecycle and invariants across:
+
+- Student/person identity, guardian/household relationships, admissions, enrollment history, promotion, transfer and withdrawal.
+- Fee structures, assignments, invoices/challans, payments, allocations, receipts, concessions, refunds and arrears.
+- Finance accounts, journals, journal lines, approvals, posting, cash/bank movements, period locks and reversal history.
+- Attendance sessions/records, staff attendance, correction requests, source/device identifiers and offline operation IDs.
+- Examination sessions, assessments, marks, grading, moderation, result approval, publication and correction history.
+- Role/scope assignments, audit events, communication preferences and permitted parent/teacher/student projections.
+
+Do not create new tables merely because a legacy screen or route exists. Each entity must have one owning module, a documented business purpose, tenant/school/campus scope, retention/classification, constraints, API/event use and acceptance tests.
+
+HR/payroll, library, inventory and transport are candidate capabilities discovered in eSchool; they are not silently added to the approved operational schema by this cross-check. They require product requirements, statutory/legal review where applicable, module ownership, pricing/entitlement decisions and task-register approval first. Pakistani payroll calculations must be verified against current qualified sources before implementation.
+
+DOC-61 records the reference scope and non-adoption boundaries. DOC-44 remains the authority for physical PostgreSQL design and migration approval.
+
+## 18. SaaS tenant and operational ownership contract
+
+[DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) defines the v1 implementation contract for tenant ownership and request context. Apply these rules when converting this logical dictionary into physical entities:
+
+| Field | Required meaning |
+|---|---|
+| TenantId | Canonical customer Organization UUID; required on every tenant-owned operational aggregate |
+| SchoolId | Owning legal/operating School; required where the entity is school-owned |
+| CampusId | Owning Campus; required where the workflow or record is campus-scoped |
+| OriginNodeId | Local Node that originated the record/event; required where the entity is locally created or synchronized |
+| CreatedBy / UpdatedBy | Authenticated user or service actor; never a client-supplied display name |
+| RowVersion / AggregateVersion | Concurrency/version marker where the aggregate supports concurrent change or synchronization |
+
+Rules:
+
+- TenantId on a Local Data Plane row is the same immutable UUID as organizations.Organizations.Id in the Cloud Control Plane. Do not create two distinct IDs for Tenant and Organization.
+- Every operational module entity must be classified as tenant-owned, school-owned, campus-owned, resource-assigned or platform-global. Unclassified ownership is a schema review blocker.
+- Operational records must not have a null TenantId. Truly global catalogues belong in an explicit global schema/table classification; do not use NULL to mean both global and unknown tenant.
+- Every CampusId/SchoolId relationship must be validated against the same TenantId. Physical schema should use composite tenant-aware foreign keys where tables are relationally linked.
+- Query filters are not authorization. The application derives tenant and campus scope from validated server-side identity; RLS provides database defense in depth.
+- TenantId is immutable after creation. Tenant transfer is a controlled, audited migration.
+- File metadata, audit events, imports, exports, notifications, background jobs and sync envelopes retain tenant provenance and repeat authorization at execution time.
+- Local Nodes remain single-tenant in v1, even if the node serves multiple campuses of the same organization.
+
+The field names in existing domain tables remain subject to DOC-44's approved physical ERD and DEC-002 key strategy. This section defines the ownership contract; it does not claim that migrations or RLS policies are implemented.

@@ -4,7 +4,7 @@
 - **Decision maturity:** Accepted planning direction; detailed design and implementation remain pending
 - **Owner:** Platform/product lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `898812f89e0ec7f03aff6c3b1408e46782814dfd`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
 
 > Preservation note: BCP-0 through BCP-11 work packages and BCP-001 through BCP-041 detailed task IDs, wording, dependencies, priorities, statuses and acceptance evidence are retained. Every implementation task remains Not Started in the current repository baseline at the time of this reconciliation.
 
@@ -43,9 +43,9 @@
 | BCP-002 | Define Cloud Control Plane database boundary and module ownership | Critical | Not Started | Reviewed data-flow and context map |
 | BCP-003 | Define public/demo/portal/admin auth audiences and session boundaries | Critical | Not Started | Auth threat model and tested design |
 | BCP-004 | Approve staff/customer role-permission matrix and separation of duties | Critical | Not Started | Permission matrix signed off |
-| BCP-005 | Produce BCP ERD, data dictionary, classification and retention schedule | Critical | Not Started | Reviewed ERD and data dictionary |
-| BCP-006 | Implement platform identity, MFA, session management and account recovery | Critical | Not Started | Automated identity/security tests |
-| BCP-007 | Implement resource-level organization/campus authorization and audit | Critical | Not Started | Tenant isolation and audit test suite |
+| BCP-005 | Produce the Cloud tenant ERD/data dictionary: Organization as canonical tenant root; School → Campus cardinality; memberships/invitations; node-campus assignments; tenant ownership; composite same-tenant keys; global-vs-tenant table inventory and retention/classification | Critical | Not Started | Reviewed ERD, ownership inventory, composite constraints and DEC-001 approval evidence |
+| BCP-006 | Implement global identity, active tenant memberships, multi-tenant membership selection, separate authentication audiences, MFA, session management, revocation and account recovery | Critical | Not Started | Automated identity, membership-switching, audience-isolation and revocation tests |
+| BCP-007 | Implement immutable server-derived TenantContext and default-deny tenant/school/campus/resource authorization; reject client-supplied tenant scope; enforce audit, tenant-aware data access and RLS with restricted DB roles and transaction-local context | Critical | Not Started | Cross-tenant, missing-context, membership, campus-scope, RLS/pooling and audit tests; DEC-004 security approval |
 | BCP-008 | Design website information architecture, responsive UI and accessibility | High | Not Started | Approved sitemap and UX acceptance |
 | BCP-009 | Implement CMS pages, revisions, review, preview and publishing | High | Not Started | CMS workflow tests |
 | BCP-010 | Implement public product/features/pricing/resource pages | High | Not Started | Public pages and SEO checks |
@@ -55,14 +55,14 @@
 | BCP-014 | Implement demo session creation, session-bound expiry, reset and idempotent cleanup | High | Not Started | Logout/close/crash/idle/max-lifetime/refresh/multi-tab and cleanup E2E tests |
 | BCP-015 | Disable real payments, notifications and licence issuance in demo | Critical | Not Started | Negative integration tests |
 | BCP-016 | Implement personalized demo requests and sales appointment workflow | High | Not Started | Lead + appointment E2E test |
-| BCP-017 | Implement self-registration and email/phone verification | Critical | Not Started | Registration verification tests |
-| BCP-018 | Implement organization review, manual approval/rejection and reasons | Critical | Not Started | Staff/customer state-transition tests |
-| BCP-019 | Implement onboarding checklist and trial/production separation | Critical | Not Started | No production licence before gates test |
+| BCP-017 | Implement abuse-controlled self-registration and email/phone verification; create a registration application only, not an active tenant or unrestricted customer account | Critical | Not Started | Verification, replay, rate-limit and no-premature-tenant-activation tests |
+| BCP-018 | Implement tenant/Organization review and controlled lifecycle transitions; create the canonical tenant, initial School/Campus and owner membership only after the approved verification/review gate | Critical | Not Started | Audited approval/rejection/state-transition tests and same-tenant hierarchy constraints |
+| BCP-019 | Implement an idempotent, resumable tenant-provisioning saga for subscription/trial, customer portal, node-enrollment challenge, licence and handover; separate onboarding, subscription and node-health states | Critical | Not Started | Retry/failure-recovery tests prove no duplicate tenant, membership, subscription, invoice or node; no production lease before gates |
 | BCP-020 | Build admin organization directory and Organization 360 | Critical | Not Started | Search/filter/detail authorization tests |
-| BCP-021 | Build admin campus/node registry and operational summaries | High | Not Started | Node lifecycle tests |
+| BCP-021 | Build tenant-scoped School/Campus and Local Node registry; bind each node to exactly one tenant, support multiple same-tenant campuses and effective-dated assignments, and audit key rotation/revocation | High | Not Started | Node enrollment, tenant-binding, campus-assignment, replacement and revocation tests |
 | BCP-022 | Build admin roles, staff management and audit views | Critical | Not Started | Privilege-escalation tests |
 | BCP-023 | Integrate subscription, billing and payment verification workflows | Critical | Not Started | Billing reconciliation and audit tests |
-| BCP-024 | Integrate signed licence issue/renew/revoke/manual download flows | Critical | Not Started | Signature, node binding and replay tests |
+| BCP-024 | Integrate signed node-bound licence/entitlement snapshots; verify tenant/node identity, entitlement version, sequence, validity and compatibility; support automatic/manual renewal and revocation audit | Critical | Not Started | Valid/tampered/wrong-tenant/wrong-node/replay/expiry tests and offline lease acceptance |
 | BCP-025 | Build customer portal organization, campus, node and subscription screens | High | Not Started | Role-scoped portal E2E tests |
 | BCP-026 | Build customer portal invoice, payment, licence and downloads screens | High | Not Started | Cross-org access and file authorization tests |
 | BCP-027 | Build portal team, notifications and security settings | Medium | Not Started | Invitation, revoke and MFA tests |
@@ -73,7 +73,7 @@
 | BCP-032 | Implement knowledge base publishing and search | Medium | Not Started | Article workflow and access tests |
 | BCP-033 | Implement notifications, preferences, consent and delivery logs | High | Not Started | Retry, opt-out and delivery tests |
 | BCP-034 | Implement business and node operations dashboards/read models | Medium | Not Started | Reconciliation of dashboard aggregates |
-| BCP-035 | Complete security review, penetration testing and launch checklist | Critical | Not Started | No unresolved critical/high findings |
+| BCP-035 | Complete independent SaaS tenant-isolation/security review, penetration testing, privacy review, backup/restore and production launch checklist | Critical | Not Started | No unresolved critical/high findings; SAAS and SEC P0 suites pass with linked evidence |
 | BCP-036 | Design demo-specific auth audience, session/client lease state machine, refresh and multi-tab behavior | Critical | Not Started | Reviewed lifecycle/state model and threat model |
 | BCP-037 | Provision a fresh ephemeral workspace from immutable synthetic template in a dedicated Demo Runtime store | Critical | Not Started | Workspace isolation, clean-seed and no-production-data tests |
 | BCP-038 | Implement server-authoritative heartbeat, disconnect hints, inactivity/absolute expiry and explicit logout revocation | Critical | Not Started | Stale-token, close/crash, refresh, multi-tab and expiry tests |

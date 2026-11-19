@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed acceptance-test catalogue; execution evidence not implied
 - **Owner:** QA lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 **Version:** v1.8 draft · **Status:** Proposed acceptance baseline; pilot-specific values and policies require approval  
 **Companion:** docs/02_MODULES_AND_WORKFLOWS.md, docs/08_DEVELOPMENT_ROADMAP.md, docs/45_API_AND_INTEGRATION_EVENT_CONTRACTS.md, docs/46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md
 
@@ -555,3 +555,132 @@ For each accepted test, keep:
 - Reviewer/approver.
 
 A passing test on a developer laptop is not by itself production readiness evidence.
+
+
+## 15. Reference-adoption acceptance scenarios
+
+These scenarios supplement the existing workflow catalogue. They are proposed acceptance requirements, not evidence that the scenarios have been implemented or executed. They use synthetic data.
+
+### MOD-001 — Entitlement and user authorization are independent (P0)
+
+**Given** a Local Node has a valid signed entitlement for a module, but the signed-in user lacks the relevant permission.  
+**When** the user calls the module API directly.  
+**Then** the request is denied, no data changes, and the denial is auditable according to policy.
+
+### MOD-002 — User role cannot enable an unentitled module (P0)
+
+**Given** a user has a role containing a permission for a module, but the node's verified subscription/licence entitlement does not include that module.  
+**When** the user accesses the module API while Cloud is unavailable.  
+**Then** the Local Node denies the operation using its verified local entitlement state; no live Cloud call is required and no customer data is deleted.
+
+### MOD-003 — Module dependency and compatibility gate (P1)
+
+**Given** a module depends on another module or requires a newer compatible contract/schema version.  
+**When** the catalogue/lease configuration is activated with the dependency missing or incompatible.  
+**Then** activation is rejected or the capability is safely unavailable with an explicit diagnostic; no silent partial operation is allowed.
+
+### FEE-009 — Concurrent or retried cashier payment is idempotent (P0)
+
+**Given** the same payment instruction is submitted twice because of a double click, retry or concurrent cashier request using the same idempotency/source key.  
+**When** the Local Node processes the requests.  
+**Then** only one payment/receipt and one corresponding accounting effect are created; subsequent attempts return the existing result or a safe duplicate response.
+
+### FIN-006 — Fee receipt is traceable to finance posting (P0)
+
+**Given** a fee payment is accepted and reaches its approved confirmed/posted state.  
+**When** the finance integration completes.  
+**Then** the receipt, payment allocation, source operation and balanced journal can be traced to each other; retry cannot create a second journal; any failure is visible and recoverable without an unsafe dual-write.
+
+The exact transaction/posting boundary remains governed by DEC-005. Do not mark FIN-006 passed until the chosen contract and persistence-level tests are approved.
+
+Link these scenarios to the canonical task-register IDs before implementation. Do not create a separate Markdown task-status tracker.
+
+## 16. SaaS tenant foundation acceptance scenarios
+
+The detailed implementation contract and full scenario descriptions are maintained in [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md). These scenarios are required for the SaaS tenant foundation and must be added to the canonical requirement-to-task-to-test traceability workflow. They are not considered passed until reproducible automated evidence is linked.
+
+### SAAS-001 — Registration provisions one tenant idempotently (P0)
+
+**Given** an approved, verified registration and a stable idempotency key.  
+**When** the provisioning command is retried after a timeout or worker restart.  
+**Then** exactly one Organization, School, Campus, owner membership and subscription exist.
+
+### SAAS-002 — Organization hierarchy cannot cross tenants (P0)
+
+**Given** two tenants with separate Schools and Campuses.  
+**When** an API or SQL write attaches one tenant's Campus to another tenant's School or Node.  
+**Then** application validation and composite foreign keys reject the relation.
+
+### SAAS-003 — Tenant switch requires an active membership (P0)
+
+**Given** a user belongs to Tenant A but not Tenant B.  
+**When** the user attempts to switch to Tenant B.  
+**Then** no Tenant B session or data is returned.
+
+### SAAS-004 — Route/host and authenticated tenant mismatch is denied (P0)
+
+**Given** a valid Tenant A session.  
+**When** the caller changes the route or host to Tenant B.  
+**Then** the request is denied before tenant-owned data is read.
+
+### SAAS-005 — Missing tenant context fails closed (P0)
+
+**Given** a tenant-owned table and the restricted Cloud runtime role.  
+**When** a query or write runs without transaction-local tenant context.  
+**Then** no tenant rows are readable and writes are rejected.
+
+### SAAS-006 — RLS and connection-pool context do not leak (P0)
+
+**Given** pooled connections are used for Tenant A and then Tenant B.  
+**When** a prior transaction commits, rolls back or throws.  
+**Then** the next tenant transaction sees only its own rows.
+
+### SAAS-007 — Tenant-owned foreign keys are tenant-consistent (P0)
+
+**Given** globally unique IDs belonging to different tenants.  
+**When** a cross-tenant parent/child relationship is attempted.  
+**Then** application validation and database constraints reject it.
+
+### SAAS-008 — Node enrollment is tenant-bound and single-use (P0)
+
+**Given** an enrollment challenge issued for Tenant A.  
+**When** it is expired, replayed, used without proof of key possession or presented for Tenant B.  
+**Then** enrollment and lease issuance are denied.
+
+### SAAS-009 — A Local Node cannot host a second tenant (P0)
+
+**Given** a Local Node already enrolled for Tenant A.  
+**When** configuration or an API attempts to rebind it to Tenant B.  
+**Then** readiness/enrollment fails until the old node is formally decommissioned and re-enrolled.
+
+### SAAS-010 — Entitlement and user authorization are independent (P0)
+
+**Given** either the tenant lacks a module entitlement or the user lacks its permission.  
+**When** the module API is called.  
+**Then** access is denied regardless of frontend visibility.
+
+### SAAS-011 — Local operations survive Cloud outage within valid lease (P0)
+
+**Given** a node has a valid signed lease and synchronized local membership.  
+**When** Cloud connectivity is lost.  
+**Then** approved local operations continue and synchronization is queued locally.
+
+### SAAS-012 — Sync rejects wrong-tenant or wrong-campus node events (P0)
+
+**Given** a node credential is bound to Tenant A and Campus A1.  
+**When** it submits an event for Tenant B or unassigned Campus B1.  
+**Then** Cloud rejects the event before routing or projecting its payload.
+
+### SAAS-013 — Tenant export and offboarding remain tenant-scoped (P1)
+
+**Given** an authorized tenant owner requests export and closure.  
+**When** export and decommission workflows execute.  
+**Then** only that tenant's data is exported, credentials are revoked and retention/legal-hold rules are applied.
+
+### SAAS-014 — Platform support cannot become permanent tenant access (P0)
+
+**Given** a customer-approved, time-limited support grant.  
+**When** the grant expires or is revoked.  
+**Then** the support agent can no longer access tenant records through the grant or a cached session.
+
+Existing SEC-001 and SEC-005 remain required security tests; SAAS-004 through SAAS-007 deepen the explicit SaaS context and database acceptance contract. Existing LIC and HYB scenarios remain mandatory for licence and offline behavior.

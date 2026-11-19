@@ -5,7 +5,7 @@
 - **Decision maturity:** Accepted hybrid architecture direction; pilot topology remains open
 - **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `898812f89e0ec7f03aff6c3b1408e46782814dfd` (base for documentation governance refactor)
 **Version:** 1.1  
 **Decision:** SchoolOS will use a central Cloud Control Plane and one or more Local Data Plane nodes. Local school operations must not depend on a live cloud connection.
 
@@ -283,3 +283,17 @@ Exact CPU, memory, disk and backup retention requirements must be measured durin
 - Local database is not reachable from the public internet.
 - Node credential revocation takes effect on reconnection; offline revocation limitations are documented.
 - Stale cloud read models visibly show last-synchronized time.
+
+## 14. Tenant hierarchy and SaaS implementation contract
+
+DOC-62 is the implementation companion for this hybrid architecture. Its v1 tenant boundary is:
+
+- One customer Organization is one commercial Tenant. The immutable Organizations.Id UUID is the canonical TenantId carried into Local Data Plane records.
+- One Tenant owns one or more Schools/legal entities; each School owns one or more Campuses.
+- A Local Node is bound to exactly one Tenant. It may serve one or more Campuses belonging to that same Tenant. A Tenant may have multiple nodes.
+- A Local Node/database must not host unrelated customer tenants in v1.
+- The Cloud Control Plane is a shared SaaS service and shared PostgreSQL deployment with tenant-scoped rows, composite constraints and RLS. Each Local Node has a separate operational database for its one Tenant.
+- User identity may be global, but tenant membership, role assignment and campus/resource scope are explicit and independently revocable.
+- Node identity, signed licence entitlement and human-user authorization are separate controls.
+
+Tenant provisioning, membership selection, tenant context resolution, node enrollment, entitlement snapshots and their acceptance criteria are specified in [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md). This section does not claim these capabilities are implemented. DEC-001, DEC-004 and DEC-008 remain open until their owners approve the proposal and implementation evidence is produced.

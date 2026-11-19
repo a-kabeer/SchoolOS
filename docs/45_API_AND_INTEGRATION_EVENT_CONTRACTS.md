@@ -369,3 +369,19 @@ Payment gateway/provider selection and exact signature algorithm remain external
 - [ ] Events have versioned schemas, owners and consumers.
 - [ ] Webhook signature/replay handling is specified.
 - [ ] Contract tests and API security tests are approved.
+
+## 12. SaaS tenant context and provisioning contract
+
+[DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) defines the v1 tenant lifecycle and API family outline. All Cloud and Local API implementations must enforce the following:
+
+- Resolve tenant context after authenticating the correct issuer/audience and before any tenant-owned application query.
+- Tenant selection is checked against an active TenantMembership or an explicit, time-limited platform/support grant.
+- A tenant slug/host or explicit tenant switch is only a selector; it is not proof of authorization. If host/route and authenticated tenant context disagree, reject the request.
+- Never use a caller-supplied X-Tenant-Id header or request DTO tenantId field as authorization evidence.
+- Create/update operations derive TenantId from the immutable server-side TenantContext. Supplied SchoolId/CampusId/resource IDs are checked for same-tenant ownership and the caller's narrower scope.
+- Background jobs and sync handlers build tenant context from validated durable job/event envelopes and authenticated service/node identity.
+- Node enrollment challenges are tenant-bound, short-lived, single-use and redeemed only by a node proving possession of its locally generated key.
+- Node sync endpoints verify mTLS/node identity and compare envelope TenantId/CampusId against the registered node and campus assignments.
+- Tenant registration/provisioning operations are idempotent and resumable. Public registration creates a review/application record; it does not automatically grant active tenant access.
+
+The route examples in DOC-62 are functional guidance, not a frozen public API. Final routes, DTOs, errors, authentication audiences, idempotency and OpenAPI contracts must pass this document's approval gate.

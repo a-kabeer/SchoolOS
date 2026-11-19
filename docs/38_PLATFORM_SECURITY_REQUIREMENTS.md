@@ -92,3 +92,8 @@ No production launch until critical/high security findings are resolved or forma
 ## Ephemeral demo session security update (v1.7)
 
 See `docs/41_EPHEMERAL_SESSION_BASED_DEMO_DESIGN.md` and ADR-021. Browser unload callbacks must never be the sole expiry or deletion mechanism. Validate server-side status on every request, revoke immediately on explicit logout, prevent cross-session access through server-derived scope and RLS, and treat physical cleanup as an observable asynchronous process.
+
+
+## 10. SaaS tenant control-plane and node identity controls
+
+[DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) defines the proposed v1 SaaS TenantContext, global identity/tenant membership, separated authentication audiences, tenant provisioning, node enrollment and Cloud/Local trust boundary. Treat each Local Node certificate as a tenant-bound service identity, not a human authorization grant. Require the same default-deny tenant/campus/resource checks for customer portal, platform administration, support, file, reporting, export and background-job paths. RLS and restricted database roles are defense in depth; missing tenant context must fail closed. The specific restore, residency and usage-metering decisions are recorded in DOC-60 and must be closed before relevant production promises are made.

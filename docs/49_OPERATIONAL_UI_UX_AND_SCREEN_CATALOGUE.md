@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed screen catalogue; design approval pending
 - **Owner:** Product owner (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 **Version:** v1.8 draft · **Status:** Screen inventory and interaction baseline; wireframes/design system approval pending  
 **Applies to:** Local Data Plane staff, teacher, parent and student experiences  
 **Companion:** docs/01_PRODUCT_REQUIREMENTS.md, docs/02_MODULES_AND_WORKFLOWS.md, docs/33_CUSTOMER_PORTAL_SPECIFICATION.md, docs/34_SUPER_ADMIN_CONSOLE_SPECIFICATION.md
@@ -264,3 +264,21 @@ Full language scope (English, Urdu and whether Roman Urdu is a complete UI local
 - [ ] Clickable wireframes for admission, fee payment, reconciliation, attendance and result publication.
 - [ ] Parent/guardian multi-child view.
 - [ ] Campus selector and freshness indicators.
+
+
+## 14. Reference-informed cashier and operational workflow
+
+The eSchool fee-counter research is a usability reference, not a requirement to reproduce its legacy screen or mandate a particular scanner/hardware vendor.
+
+The Local cashier workspace should support a fast, keyboard-friendly journey:
+
+1. Find a student or invoice using authorized identifiers (admission/student number, name, challan/invoice number and, where approved, an optional barcode/QR lookup).
+2. Confirm student, campus, academic year, fee heads, billed amount, prior payments, concessions and outstanding balance before accepting money.
+3. Enter amount, payment method and allocation; clearly distinguish unallocated/advance payment from invoice settlement.
+4. Show a final confirmation with currency, receipt state and allocation before submission.
+5. Prevent duplicate submission and display the stable receipt/payment reference.
+6. Provide receipt print/download/reprint and authorized transaction history.
+7. During offline operation, show provisional/pending-sync status and local operation ID. Do not present an offline provisional receipt as a cloud-confirmed bank/payment settlement.
+8. Show rejected, reversed, refunded and corrected transactions with links to their original record; never make a posted receipt disappear.
+
+A barcode scanner is optional input hardware. The core workflow must work with keyboard/search and must not depend on a specific scanner, barcode standard or SignalR connection. UI design must follow server-side permission filtering, idempotent submission and the financial-state rules in sections 9 and 11 and DOC-47/DOC-61.
