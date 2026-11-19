@@ -154,3 +154,8 @@ Minimum execution rules:
 - Use secret/dependency scanning, analyzers, build/test and selected security checks as CI controls only after their workflows are implemented and successful runs are available as evidence.
 
 Security-framework mappings are a control-discovery aid only. They do not establish that SchoolOS is certified or compliant. See DOC-61 and DOC-54.
+
+
+## 11. SaaS tenant implementation security contract
+
+Use [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) as the implementation companion for SaaS tenant identity, server-derived TenantContext, Cloud RLS/connection-pool controls, single-tenant Local Node binding, tenant provisioning and node enrollment. The baseline security requirements in this document still apply. Before production, close the relevant DOC-60 decisions and verify cross-tenant, missing-context, RLS/pooling, offline identity, sync ownership and tenant restore tests. DOC-62 is a design proposal; it is not evidence of implemented controls or legal compliance.
