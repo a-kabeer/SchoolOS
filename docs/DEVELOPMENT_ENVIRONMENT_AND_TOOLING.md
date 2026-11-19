@@ -1,9 +1,13 @@
 # SchoolOS — Development Environment & Tooling Guide
 
+- **Document ID:** DEV-TOOLING-001
+- **Status:** Current
+- **Decision maturity:** Approved Phase 0 developer toolchain reference; revalidate version-sensitive details before upgrade
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Target Audience:** SchoolOS Core Engineering Team  
 **Baseline Date:** 9 November 2026  
-**Status:** Approved Phase 0 Reference  
-
 ---
 
 ## 1. Required Host Toolchain
