@@ -121,13 +121,14 @@ Diagram notation note: this is a conceptual ERD; optional and polymorphic relati
 
 ### 4.1 Tenant, school, campus and node
 
-- Tenant is the SaaS customer organization.
-- School is a school/legal entity owned by a tenant.
-- Campus is a physical/operational location belonging to a school.
-- Local Node is a deployment identity assigned to a site/campus or an approved shared group scope.
+- Tenant is the SaaS customer Organization; Organizations.Id is the canonical TenantId.
+- School is a legal/operating school entity owned by exactly one Tenant.
+- Campus is a physical/operational location belonging to exactly one School and therefore one Tenant.
+- The proposed v1 hierarchy is Tenant 1-to-many Schools and School 1-to-many Campuses. An organization operating one legal school still has a School record.
+- A Local Node is bound to exactly one Tenant. It may serve one or more Campuses of that same Tenant through effective-dated NodeCampusAssignments. A Tenant may have several nodes; a node may not host multiple unrelated tenants in v1.
 - A node may be replaced or deactivated; retain node history and do not reuse node IDs.
-- Every operational record must have enough tenant/school/campus provenance for authorization, reporting and data exchange.
-- The exact Tenant → School → Campus cardinality and node-to-campus assignment model remain open until approved through ADR.
+- Every operational record must have enough Tenant/School/Campus/OriginNode provenance for authorization, reporting and data exchange.
+- This is the proposed implementation baseline in DOC-62. Final approval remains open under DEC-001 until the product owner approves the customer/legal identity model and the ERD cardinalities.
 
 ### 4.2 People and roles
 
