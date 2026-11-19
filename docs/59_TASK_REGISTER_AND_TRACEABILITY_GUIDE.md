@@ -23,7 +23,7 @@ The detailed plans are under [`docs/task-plans/`](task-plans/), including the [D
 
 ## Scope and exclusions
 
-The eight CSV files are partitions of one logical task register covering hybrid deployment, AI, commercial billing, BCP and staging QA. Documents 09, 26, 40 and 53 are summary views only; they do not hold task-level status. Documentation review/sign-off remains in documents 42 and 51. Open decision closure is tracked in document 60.
+The eight CSV files are partitions of one logical task register covering hybrid deployment, AI, commercial billing, BCP, staging QA and documentation governance. Documents 09, 26, 40 and 53 are summary views only; they do not hold task-level status. Documentation review/sign-off remains in documents 42 and 51. Open decision closure is tracked in document 60.
 
 The registers are the sole task-level status source, but rows are not proof that application features are implemented. Imported workstream tasks retain their source planning statuses; DOCALIGN tasks are marked In Progress while the alignment pull request and its validation are in review. Never infer application-feature completion from inclusion in a register.
 
