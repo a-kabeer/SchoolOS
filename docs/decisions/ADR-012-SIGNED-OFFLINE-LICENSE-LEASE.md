@@ -1,6 +1,11 @@
 # ADR-012 — Signed Offline License Lease
 
-- **Status:** Accepted as design direction; cryptographic format pending implementation review
+- **Document ID:** ADR-012
+- **Status:** Accepted
+- **Decision maturity:** Accepted direction
+- **Owner:** Technical lead (accountable role; named assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 - **Date:** 9 November 2026
 - **Decision owners:** Product owner and technical lead
 

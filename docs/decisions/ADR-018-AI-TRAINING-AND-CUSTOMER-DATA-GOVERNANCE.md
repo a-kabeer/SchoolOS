@@ -1,6 +1,11 @@
 # ADR-018 — Customer Data Is Not Used for Shared Model Training by Default
 
-- **Status:** Accepted direction; legal wording and operational controls pending
+- **Document ID:** ADR-018
+- **Status:** Accepted
+- **Decision maturity:** Accepted direction
+- **Owner:** Technical lead (accountable role; named assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 - **Date:** 9 November 2026
 
 ## Context
