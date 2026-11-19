@@ -219,7 +219,7 @@ Documentation is complete for a module only when:
 
 At the pre-alignment baseline, the seven canonical task-register CSV partitions contained 297 task rows and the requirement traceability CSV contained 37 data rows. The current alignment change adds a dedicated documentation-governance partition with 12 DOCALIGN tasks; on this branch the register model therefore contains eight partitions and 309 task rows, while the requirement count remains 37.
 
-The new [categorized documentation catalogue](README.md) preserves all numbered file paths and provides a single browseable entry point. Detailed implementation plans remain under `docs/task-plans/`; ADR records remain under `docs/decisions/`; templates remain under `docs/templates/`; machine-readable status remains under `registers/`.
+The new [categorized documentation catalogue](README.md) preserves all numbered file paths and provides a single browsable entry point. Detailed implementation plans remain under `docs/task-plans/`; ADR records remain under `docs/decisions/`; templates remain under `docs/templates/`; machine-readable status remains under `registers/`.
 
 ### 12.3 Specification existence is not approval or implementation
 
