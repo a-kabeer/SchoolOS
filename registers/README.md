@@ -25,7 +25,7 @@ The eight CSV files below are partitions of the same canonical task register. Ta
 
 ## Authority
 
-- Task-level status: the seven CSV partitions above.
+- Task-level status: the eight CSV partitions above.
 - Requirements and sign-off: document 51 and the requirement CSV.
 - Project/workstream summaries: documents 09, 26, 40 and 53.
 - Detailed plans: `docs/task-plans/`, including the [documentation alignment plan](../docs/task-plans/DOCUMENTATION_ALIGNMENT_TASK_PLAN.md).
