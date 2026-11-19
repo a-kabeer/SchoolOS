@@ -171,3 +171,10 @@ Document 54 is the adopted repository documentation standard. Document 60 consol
 ## Reference-project adoption (DOC-61)
 
 SchoolOS adopts selected engineering practices from [Education-Portal](https://github.com/ahmedshahjr/Education-Portal) and operational workflow research from [eSchool](https://github.com/a-kabeer/eSchool) without merging repositories or changing SchoolOS's modular-monolith, React, separate Cloud/Local database and offline-first direction. The adopted practices, exclusions, cross-document mapping and open module-entitlement decision are recorded in [DOC-61](docs/61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md). The root [AGENTS.md](AGENTS.md) is the authoritative contributor and AI-agent guide. Reference adoption is a documented direction, not a claim that the listed capabilities are implemented.
+
+
+## SaaS tenant implementation blueprint (DOC-62)
+
+[DOC-62 — SaaS Tenant Architecture and Implementation Blueprint](docs/62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) specifies the v1 tenant implementation contract: Organization/Tenant → School → Campus hierarchy, global identity and tenant memberships, server-derived TenantContext, shared Cloud PostgreSQL isolation/RLS, one-tenant Local Nodes, tenant provisioning, node enrollment, subscription entitlements, sync validation, acceptance tests and delivery gates.
+
+DOC-62 is a concrete implementation proposal, not a claim that SaaS tenant code is already implemented. DEC-001, DEC-004, DEC-008 and DEC-020 remain open until approved and supported by code, migrations, tests and operational evidence.
