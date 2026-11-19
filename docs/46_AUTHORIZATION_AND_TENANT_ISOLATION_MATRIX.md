@@ -1,5 +1,11 @@
 # 46 — Authorization, Role and Tenant-Isolation Matrix
 
+- **Document ID:** DOC-46
+- **Status:** Draft
+- **Decision maturity:** Proposed authorization matrix; owner sign-off required
+- **Owner:** Security lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Proposed authorization baseline; owner sign-off required  
 **Companion:** docs/07_SECURITY_AND_QUALITY_REQUIREMENTS.md, docs/38_PLATFORM_SECURITY_REQUIREMENTS.md, docs/43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md
 

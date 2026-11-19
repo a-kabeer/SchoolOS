@@ -1,5 +1,11 @@
 # 50 — Data Migration, Import/Export and Customer Exit Specification
 
+- **Document ID:** DOC-50
+- **Status:** Draft
+- **Decision maturity:** Proposed migration/import/export policy; school templates pending
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Migration contract baseline; school-specific mapping templates pending discovery  
 **Applies to:** Initial school onboarding, ongoing CSV/XLSX imports, campus exchange and customer data export  
 **Companion:** docs/18_CAMPUS_DATA_ACCESS_AND_DEPLOYMENT_SCENARIOS.md, docs/43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md, docs/44_POSTGRESQL_ERD_AND_MIGRATION_SPEC.md

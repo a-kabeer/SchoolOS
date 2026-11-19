@@ -1,11 +1,16 @@
 # 42 — Documentation Completion and Repository Gap Register
 
+- **Document ID:** DOC-42
+- **Status:** Draft
+- **Decision maturity:** Proposed documentation gap baseline; owner sign-off pending
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft  
 **Created:** 18 November 2026  
 **Repository reviewed:** `a-kabeer/SchoolOS`  
 **Reviewed ref:** `main` at `66e0d35416a7f556ecb2aead4a8580bd3a0ed686`  
 **Purpose:** Establish a documentation-first gate before domain implementation.  
-**Status:** Draft for product-owner and technical-lead review. This document does not mark implementation complete.
 
 ## 1. Executive finding
 

@@ -1,5 +1,11 @@
 # 48 — Hybrid Deployment, Operations and Recovery Runbook
 
+- **Document ID:** DOC-48
+- **Status:** Draft
+- **Decision maturity:** Proposed operating procedures; environment-specific approval required
+- **Owner:** Operations lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Operating procedure baseline; environment-specific values require approval  
 **Applies to:** Cloud Control Plane and Local Data Plane  
 **Companion:** docs/14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md, docs/15_SUBSCRIPTION_LICENSING_AND_OFFLINE_ENFORCEMENT.md, docs/16_LOCAL_SECURITY_SYNC_AND_OPERATIONS.md, docs/17_HYBRID_DEPLOYMENT_TASK_PLAN.md

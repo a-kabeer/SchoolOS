@@ -1,5 +1,11 @@
 # 41 — Ephemeral Session-Based Demo Design
 
+- **Document ID:** DOC-41
+- **Status:** Current
+- **Decision maturity:** Accepted ephemeral demo product direction; storage and timeout details open
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version introduced:** v1.7 · **Status:** Accepted product direction; detailed implementation/storage decisions pending · **Implementation:** Not Started
 
 ## 1. Product decision

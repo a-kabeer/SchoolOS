@@ -1,5 +1,11 @@
 # 51 — Requirements Traceability and Documentation Sign-off
 
+- **Document ID:** DOC-51
+- **Status:** Draft
+- **Decision maturity:** Proposed traceability and sign-off baseline; review pending
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** v1.8 draft · **Status:** Review pending  
 **Purpose:** Link SchoolOS requirements to specifications, data/API contracts and acceptance tests before implementation.
 
