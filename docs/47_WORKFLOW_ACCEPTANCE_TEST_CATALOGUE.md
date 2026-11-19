@@ -597,23 +597,90 @@ Link these scenarios to the canonical task-register IDs before implementation. D
 
 ## 16. SaaS tenant foundation acceptance scenarios
 
-The detailed Given/When/Then contracts are maintained in [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md). These identifiers must be included in the canonical requirement-to-task-to-test traceability workflow. They are not considered passed until reproducible automated evidence is linked.
+The detailed implementation contract and full scenario descriptions are maintained in [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md). These scenarios are required for the SaaS tenant foundation and must be added to the canonical requirement-to-task-to-test traceability workflow. They are not considered passed until reproducible automated evidence is linked.
 
-| Test ID | Priority | Acceptance boundary |
-|---|---|---|
-| SAAS-001 | P0 | Registration/provisioning retry creates exactly one Tenant, School, Campus, owner membership and subscription |
-| SAAS-002 | P0 | School/Campus/Node relations cannot cross tenant boundaries |
-| SAAS-003 | P0 | Tenant switch is allowed only for an active membership |
-| SAAS-004 | P0 | Route/host and authenticated tenant mismatch is denied before data access |
-| SAAS-005 | P0 | Missing database tenant context fails closed |
-| SAAS-006 | P0 | RLS transaction context does not leak across pooled connections or exception paths |
-| SAAS-007 | P0 | Tenant-owned composite foreign keys reject cross-tenant references |
-| SAAS-008 | P0 | Node enrollment challenge is tenant-bound, single-use and proof-of-possession protected |
-| SAAS-009 | P0 | An enrolled Local Node cannot be rebound to another tenant through configuration or API |
-| SAAS-010 | P0 | Subscription entitlement and user authorization are checked independently |
-| SAAS-011 | P0 | Approved local operations continue during Cloud outage under a valid signed lease and local membership projection |
-| SAAS-012 | P0 | Sync rejects events claiming a different tenant or an unassigned campus |
-| SAAS-013 | P1 | Tenant export/offboarding is tenant-scoped, auditable and applies retention/legal-hold rules |
-| SAAS-014 | P0 | Expired/revoked customer-approved support grant cannot continue reading tenant records |
+### SAAS-001 — Registration provisions one tenant idempotently (P0)
+
+**Given** an approved, verified registration and a stable idempotency key.  
+**When** the provisioning command is retried after a timeout or worker restart.  
+**Then** exactly one Organization, School, Campus, owner membership and subscription exist.
+
+### SAAS-002 — Organization hierarchy cannot cross tenants (P0)
+
+**Given** two tenants with separate Schools and Campuses.  
+**When** an API or SQL write attaches one tenant's Campus to another tenant's School or Node.  
+**Then** application validation and composite foreign keys reject the relation.
+
+### SAAS-003 — Tenant switch requires an active membership (P0)
+
+**Given** a user belongs to Tenant A but not Tenant B.  
+**When** the user attempts to switch to Tenant B.  
+**Then** no Tenant B session or data is returned.
+
+### SAAS-004 — Route/host and authenticated tenant mismatch is denied (P0)
+
+**Given** a valid Tenant A session.  
+**When** the caller changes the route or host to Tenant B.  
+**Then** the request is denied before tenant-owned data is read.
+
+### SAAS-005 — Missing tenant context fails closed (P0)
+
+**Given** a tenant-owned table and the restricted Cloud runtime role.  
+**When** a query or write runs without transaction-local tenant context.  
+**Then** no tenant rows are readable and writes are rejected.
+
+### SAAS-006 — RLS and connection-pool context do not leak (P0)
+
+**Given** pooled connections are used for Tenant A and then Tenant B.  
+**When** a prior transaction commits, rolls back or throws.  
+**Then** the next tenant transaction sees only its own rows.
+
+### SAAS-007 — Tenant-owned foreign keys are tenant-consistent (P0)
+
+**Given** globally unique IDs belonging to different tenants.  
+**When** a cross-tenant parent/child relationship is attempted.  
+**Then** application validation and database constraints reject it.
+
+### SAAS-008 — Node enrollment is tenant-bound and single-use (P0)
+
+**Given** an enrollment challenge issued for Tenant A.  
+**When** it is expired, replayed, used without proof of key possession or presented for Tenant B.  
+**Then** enrollment and lease issuance are denied.
+
+### SAAS-009 — A Local Node cannot host a second tenant (P0)
+
+**Given** a Local Node already enrolled for Tenant A.  
+**When** configuration or an API attempts to rebind it to Tenant B.  
+**Then** readiness/enrollment fails until the old node is formally decommissioned and re-enrolled.
+
+### SAAS-010 — Entitlement and user authorization are independent (P0)
+
+**Given** either the tenant lacks a module entitlement or the user lacks its permission.  
+**When** the module API is called.  
+**Then** access is denied regardless of frontend visibility.
+
+### SAAS-011 — Local operations survive Cloud outage within valid lease (P0)
+
+**Given** a node has a valid signed lease and synchronized local membership.  
+**When** Cloud connectivity is lost.  
+**Then** approved local operations continue and synchronization is queued locally.
+
+### SAAS-012 — Sync rejects wrong-tenant or wrong-campus node events (P0)
+
+**Given** a node credential is bound to Tenant A and Campus A1.  
+**When** it submits an event for Tenant B or unassigned Campus B1.  
+**Then** Cloud rejects the event before routing or projecting its payload.
+
+### SAAS-013 — Tenant export and offboarding remain tenant-scoped (P1)
+
+**Given** an authorized tenant owner requests export and closure.  
+**When** export and decommission workflows execute.  
+**Then** only that tenant's data is exported, credentials are revoked and retention/legal-hold rules are applied.
+
+### SAAS-014 — Platform support cannot become permanent tenant access (P0)
+
+**Given** a customer-approved, time-limited support grant.  
+**When** the grant expires or is revoked.  
+**Then** the support agent can no longer access tenant records through the grant or a cached session.
 
 Existing SEC-001 and SEC-005 remain required security tests; SAAS-004 through SAAS-007 deepen the explicit SaaS context and database acceptance contract. Existing LIC and HYB scenarios remain mandatory for licence and offline behavior.
