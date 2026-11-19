@@ -38,6 +38,19 @@ Every item remains Open unless an approved ADR or external evidence is linked. A
 | DEC-019 | Support hours, SLA, node replacement and support-access operating policy | Open | Operations owner + commercial owner + security | 16, 35, 38, 48 | Staffing model, customer contract, time-limited support-access tests |
 | DEC-020 | Module catalogue semantics: core/paid classification, dependency rules, compatibility, subscription entitlement and signed Local Node lease claims | Open | Product owner + technical lead + finance owner | 15, 27, 36, 37, 43, 45, 46, 61 | Approved catalogue model, plan mapping, offline lease claims, compatibility rules and entitlement acceptance tests |
 
+## SaaS tenant implementation baseline proposal
+
+[DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) supplies a concrete v1 recommendation for the tenant foundation. The following recommendations are intentionally **not marked approved**; the corresponding DEC rows remain Open until the accountable owners approve an ADR and the required evidence exists.
+
+| Decision | Recommended v1 baseline in DOC-62 | What is still needed to close it |
+|---|---|---|
+| DEC-001 | One Organization is one Tenant; Organization → School/legal entity → Campus; a Local Node belongs to one Tenant and may serve multiple campuses of that same Tenant; one Tenant may have multiple nodes | Product/legal approval of customer identity and hierarchy; final ERD/cardinality constraints |
+| DEC-004 | Shared Cloud PostgreSQL with tenant-owned rows, composite same-tenant FKs, RLS, transaction-local app.tenant_id, restricted non-owner runtime role without BYPASSRLS, and pooled-connection isolation tests; one-tenant Local Node database | Security threat review, inventory of protected/global tables, production DB-role configuration and executable pooling/RLS tests |
+| DEC-008 | Global user identity plus explicit tenant memberships; separate Cloud, platform, local, demo, parent/student and support audiences; local membership projection for offline login | Select identity provider, MFA/recovery/session policy, local credential lifecycle and revocation SLA |
+| DEC-020 | Subscription entitlements, user permissions and signed node-bound lease claims are independent gates; Local Node evaluates the last valid signed entitlement snapshot offline | Approve core/paid catalogue, dependencies, quotas, compatibility and signed lease claims |
+
+This is a proposed implementation baseline, not an approval record. Do not change any DEC status based solely on the addition of DOC-62. A decision closes only through the closure workflow below and linked approval/validation evidence.
+
 ## Closure workflow
 
 1. Assign a named decision owner before the decision enters active review.
