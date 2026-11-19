@@ -96,7 +96,7 @@ A passing unit test does not prove tenant isolation, financial integrity, offlin
 - Do not invent answers for items marked Open in document 60 or the open-question register.
 - Material architecture, security, data ownership, licensing, commercial or AI-governance changes require an ADR or approved amendment to the existing ADR.
 - Update affected canonical specifications, acceptance tests, requirement mappings and navigation in the same change.
-- Keep implementation status in the seven canonical CSV task-register partitions. Do not create a competing Markdown status tracker.
+- Keep implementation status in the eight canonical CSV task-register partitions. Do not create a competing Markdown status tracker.
 - A design document, scaffold, placeholder directory or roadmap does not prove implementation.
 - Clearly label proposed, accepted, implemented and verified states separately.
 
