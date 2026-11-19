@@ -407,3 +407,23 @@ This document is a logical dictionary; it is not yet a substitute for reviewed D
 ## 16. Guardian and household requirements companion
 
 The focused guardian/household cardinality, open policy decisions and downstream acceptance criteria are maintained in [55 — Guardian and Household Requirements](55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md). This data dictionary remains the proposed logical model reference; it does not approve legal custody, payer authority or communication permissions.
+
+
+## 17. Reference-informed domain coverage review
+
+The eSchool functional inventory is a discovery checklist, not a schema specification and not a mandate to reproduce its module or route count. The SchoolOS logical entities already described in this document remain authoritative subject to the approvals in section 15.
+
+When reviewing domain coverage, verify the end-to-end lifecycle and invariants across:
+
+- Student/person identity, guardian/household relationships, admissions, enrollment history, promotion, transfer and withdrawal.
+- Fee structures, assignments, invoices/challans, payments, allocations, receipts, concessions, refunds and arrears.
+- Finance accounts, journals, journal lines, approvals, posting, cash/bank movements, period locks and reversal history.
+- Attendance sessions/records, staff attendance, correction requests, source/device identifiers and offline operation IDs.
+- Examination sessions, assessments, marks, grading, moderation, result approval, publication and correction history.
+- Role/scope assignments, audit events, communication preferences and permitted parent/teacher/student projections.
+
+Do not create new tables merely because a legacy screen or route exists. Each entity must have one owning module, a documented business purpose, tenant/school/campus scope, retention/classification, constraints, API/event use and acceptance tests.
+
+HR/payroll, library, inventory and transport are candidate capabilities discovered in eSchool; they are not silently added to the approved operational schema by this cross-check. They require product requirements, statutory/legal review where applicable, module ownership, pricing/entitlement decisions and task-register approval first. Pakistani payroll calculations must be verified against current qualified sources before implementation.
+
+DOC-61 records the reference scope and non-adoption boundaries. DOC-44 remains the authority for physical PostgreSQL design and migration approval.
