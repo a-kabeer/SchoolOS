@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using SchoolOS.BuildingBlocks.Persistence;
 
 #nullable disable
 
@@ -95,11 +96,18 @@ public partial class Initial_Organization_Create : Migration
             table: "schools",
             columns: new[] { "tenant_id", "code" },
             unique: true);
+
+        // Enforce PostgreSQL Row-Level Security directly in migrations (CWE-862 defense-in-depth).
+        migrationBuilder.Sql(PostgresRlsHelper.GenerateEnableRlsSql("organization", "schools"));
+        migrationBuilder.Sql(PostgresRlsHelper.GenerateEnableRlsSql("organization", "campuses"));
     }
 
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+        migrationBuilder.Sql(PostgresRlsHelper.GenerateDisableRlsSql("organization", "campuses"));
+        migrationBuilder.Sql(PostgresRlsHelper.GenerateDisableRlsSql("organization", "schools"));
+
         migrationBuilder.DropTable(
             name: "campuses",
             schema: "organization");

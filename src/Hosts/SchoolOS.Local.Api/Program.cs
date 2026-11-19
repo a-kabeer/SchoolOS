@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Observability;
@@ -8,15 +9,16 @@ using SchoolOS.Modules.Organization.Domain;
 using SchoolOS.Modules.Organization.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+var isDevOrTesting = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing");
 
-// Configure JSON serialization to ignore circular references
+// Enforce named enums only (refuses arbitrary integers over JSON API)
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
-    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
 });
 
 // Building Blocks & Modules
-builder.Services.AddSecurityBuildingBlocks(builder.Configuration);
+builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks();
 builder.Services.AddOrganizationModule(builder.Configuration);
@@ -72,11 +74,24 @@ orgGroup.MapGet("/schools", async (
         return Results.Unauthorized();
     }
 
-    // Global query filter automatically restricts results to tenantContext.TenantId
+    // Project directly to explicit DTOs (never expose EF Core entities over the API)
     var schools = await db.Schools
-                          .Include(s => s.Campuses)
-                          .AsNoTracking()
-                          .ToListAsync();
+        .AsNoTracking()
+        .Select(s => new SchoolResponse(
+            s.Id,
+            s.TenantId,
+            s.Name,
+            s.Code,
+            s.IsActive,
+            s.Campuses.Select(c => new CampusResponse(
+                c.Id,
+                c.TenantId,
+                c.SchoolId,
+                c.Name,
+                c.Code,
+                c.Address,
+                c.IsActive)).ToList()))
+        .ToListAsync();
 
     return Results.Ok(schools);
 });
@@ -116,7 +131,16 @@ orgGroup.MapGet("/campuses", async (
         query = query.Where(c => c.Id == tenantContext.CampusId.Value);
     }
 
-    var campuses = await query.ToListAsync();
+    var campuses = await query
+        .Select(c => new CampusResponse(
+            c.Id,
+            c.TenantId,
+            c.SchoolId,
+            c.Name,
+            c.Code,
+            c.Address,
+            c.IsActive))
+        .ToListAsync();
     return Results.Ok(campuses);
 });
 
@@ -149,8 +173,10 @@ app.Run();
 
 public record CreateSchoolRequest(string Name, string Code);
 public record CreateSchoolResponse(Guid Id, Guid TenantId, string Name, string Code);
+public record SchoolResponse(Guid Id, Guid TenantId, string Name, string Code, bool IsActive, IReadOnlyList<CampusResponse> Campuses);
 public record CreateCampusRequest(string Name, string Code, string? Address);
 public record CreateCampusResponse(Guid Id, Guid TenantId, Guid SchoolId, string Name, string Code, string? Address);
+public record CampusResponse(Guid Id, Guid TenantId, Guid SchoolId, string Name, string Code, string? Address, bool IsActive);
 
 namespace SchoolOS.Local.Api
 {

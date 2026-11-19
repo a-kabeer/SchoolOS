@@ -10,5 +10,6 @@ public interface ITenantContext
     Guid? CampusId { get; }
     string? UserId { get; }
     bool IsAuthenticated { get; }
+    bool IsPlatformAdmin { get; }
     bool HasScope(string scope);
 }

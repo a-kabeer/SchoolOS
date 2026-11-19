@@ -11,7 +11,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddSecurityBuildingBlocks(
         this IServiceCollection services,
-        IConfiguration? configuration = null)
+        IConfiguration? configuration = null,
+        bool isDevelopmentOrTesting = false)
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ITenantContext, TenantContext>();
@@ -21,6 +22,8 @@ public static class DependencyInjection
         {
             configuration.GetSection(JwtOptions.SectionName).Bind(jwtOptions);
         }
+
+        jwtOptions.Validate(allowDevelopmentDefaults: isDevelopmentOrTesting);
         services.AddSingleton(jwtOptions);
 
         services.AddAuthentication(options =>
@@ -30,8 +33,8 @@ public static class DependencyInjection
         })
         .AddJwtBearer(options =>
         {
-            options.RequireHttpsMetadata = false;
-            options.SaveToken = true;
+            options.RequireHttpsMetadata = !isDevelopmentOrTesting;
+            options.SaveToken = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,

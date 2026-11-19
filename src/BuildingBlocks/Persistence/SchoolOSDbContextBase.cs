@@ -69,27 +69,40 @@ public abstract class SchoolOSDbContextBase : DbContext
     }
 
     /// <summary>
-    /// Fails fast if any entity is modified or added with a tenant ID differing from the ambient TenantContext.
+    /// Fails closed if any tenant-scoped entity is mutated without an active tenant context (unless verified platform admin),
+    /// or carries a tenant ID differing from the ambient TenantContext.
     /// </summary>
     protected virtual void ValidateTenantIntegrity()
     {
-        if (TenantContext.TenantId is null)
+        var mutatedTenantEntries = ChangeTracker.Entries<ITenantScopedEntity>()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
+            .ToList();
+
+        if (mutatedTenantEntries.Count == 0)
         {
             return;
         }
 
+        if (TenantContext.TenantId is null)
+        {
+            if (TenantContext.IsPlatformAdmin)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException(
+                $"Tenant isolation violation: Cannot persist {mutatedTenantEntries.Count} tenant-scoped entity mutation(s) without an active TenantContext.");
+        }
+
         var activeTenantId = TenantContext.TenantId.Value;
 
-        foreach (var entry in ChangeTracker.Entries<ITenantScopedEntity>())
+        foreach (var entry in mutatedTenantEntries)
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
+            if (entry.Entity.TenantId == Guid.Empty || entry.Entity.TenantId != activeTenantId)
             {
-                if (entry.Entity.TenantId != Guid.Empty && entry.Entity.TenantId != activeTenantId)
-                {
-                    throw new InvalidOperationException(
-                        $"Cross-tenant operation detected: Entity {entry.Entity.GetType().Name} carries tenant '{entry.Entity.TenantId}', " +
-                        $"which does not match active session tenant '{activeTenantId}'.");
-                }
+                throw new InvalidOperationException(
+                    $"Cross-tenant operation detected: Entity {entry.Entity.GetType().Name} carries tenant '{entry.Entity.TenantId}', " +
+                    $"which does not match active session tenant '{activeTenantId}'.");
             }
         }
     }

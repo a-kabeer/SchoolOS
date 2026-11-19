@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Observability;
@@ -8,9 +9,15 @@ using SchoolOS.PlatformModules.Tenants.Domain;
 using SchoolOS.PlatformModules.Tenants.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+var isDevOrTesting = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing");
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
+});
 
 // Building Blocks & Modules
-builder.Services.AddSecurityBuildingBlocks(builder.Configuration);
+builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks();
 builder.Services.AddPlatformTenantsModule(builder.Configuration);
@@ -66,7 +73,10 @@ tenantGroup.MapGet("/", async (
         return Results.Unauthorized();
     }
 
-    var tenants = await db.Tenants.AsNoTracking().ToListAsync();
+    var tenants = await db.Tenants
+        .AsNoTracking()
+        .Select(t => new TenantResponse(t.Id, t.Name, t.Slug, t.Status, t.IsActive, t.CreatedAtUtc))
+        .ToListAsync();
     return Results.Ok(tenants);
 });
 
@@ -90,12 +100,14 @@ tenantGroup.MapPost("/", async (
     db.Tenants.Add(tenant);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/api/v1/platform/tenants/{tenant.Id}", tenant);
+    var response = new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.Status, tenant.IsActive, tenant.CreatedAtUtc);
+    return Results.Created($"/api/v1/platform/tenants/{tenant.Id}", response);
 });
 
 app.Run();
 
 public record CreateTenantRequest(string Name, string Slug);
+public record TenantResponse(Guid Id, string Name, string Slug, TenantStatus Status, bool IsActive, DateTime CreatedAtUtc);
 
 namespace SchoolOS.Cloud.Api
 {

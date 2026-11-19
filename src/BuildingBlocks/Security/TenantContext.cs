@@ -20,6 +20,7 @@ public class TenantContext : ITenantContext
     public Guid? CampusId { get; }
     public string? UserId { get; }
     public bool IsAuthenticated { get; }
+    public bool IsPlatformAdmin { get; }
 
     /// <summary>
     /// Resolves TenantContext from ambient IHttpContextAccessor.
@@ -80,17 +81,26 @@ public class TenantContext : ITenantContext
         {
             _scopes.Add($"role:{claim.Value}");
         }
+
+        foreach (var claim in principal.FindAll("role"))
+        {
+            _scopes.Add($"role:{claim.Value}");
+        }
+
+        IsPlatformAdmin =
+            _scopes.Contains($"role:{SecurityPolicies.PlatformAdminRole}") ||
+            _scopes.Contains(SecurityPolicies.PlatformAdminScope);
     }
 
     /// <summary>
     /// Constructor for explicit, verified server-side background contexts (e.g. migrations, sync daemon).
     /// </summary>
-    public TenantContext(Guid? tenantId, Guid? campusId = null, string? userId = null, IEnumerable<string>? scopes = null)
+    public TenantContext(Guid? tenantId, Guid? campusId = null, string? userId = null, IEnumerable<string>? scopes = null, bool isPlatformAdmin = false)
     {
         TenantId = tenantId;
         CampusId = campusId;
         UserId = userId;
-        IsAuthenticated = userId is not null || tenantId is not null;
+        IsAuthenticated = userId is not null || tenantId is not null || isPlatformAdmin;
 
         if (scopes is not null)
         {
@@ -99,6 +109,10 @@ public class TenantContext : ITenantContext
                 _scopes.Add(s);
             }
         }
+
+        IsPlatformAdmin = isPlatformAdmin ||
+                          _scopes.Contains($"role:{SecurityPolicies.PlatformAdminRole}") ||
+                          _scopes.Contains(SecurityPolicies.PlatformAdminScope);
     }
 
     public bool HasScope(string scope)
