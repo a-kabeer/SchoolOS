@@ -349,3 +349,10 @@ Each deployment must retain:
 - Data export/retention at subscription termination.
 
 No environment is production-ready until these decisions are converted into customer-specific configuration and tested procedures.
+
+
+## 17. SaaS tenant provisioning and lifecycle handover
+
+Use [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md) as the tenant lifecycle and provisioning contract. For every deployment handover, verify that the Organization UUID equals the Local TenantId, the Local Node is bound to exactly one Tenant, every assigned Campus belongs to that Tenant, the node credential was generated/enrolled securely, and the signed lease tenant/node claims match the local database binding. Record the tenant membership projection version, last successful Cloud sync, entitlement lease version/expiry, backup/restore evidence and support grant policy.
+
+Do not mark a tenant provisioned merely because the application starts. Registration approval, hierarchy, subscription, node enrollment, tenant/campus isolation smoke tests, restore verification and customer handover must all be recorded. Tenant-specific restore from the shared Cloud database, data residency/hosting placement and per-tenant usage limits remain open under DEC-021–023.
