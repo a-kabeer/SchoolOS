@@ -76,3 +76,13 @@ Decision record: `decisions/ADR-021-EPHEMERAL-SESSION-BASED-DEMO.md`. Full desig
 ## Documentation and governance decisions
 
 The canonical documentation governance standard is [document 54](54_DOCUMENTATION_STANDARDS.md). Remaining architecture/security decisions are tracked in [document 60](60_ARCHITECTURE_AND_SECURITY_DECISION_CLOSURE_REGISTER.md).
+
+## Platform & Tenancy Foundation Decisions (Phase 1)
+
+| ADR | Title | Direction | Status |
+|---|---|---|---|
+| ADR-022 | Primary Identifier Strategy (UUIDv7) | Adopt UUIDv7 via `Guid.CreateVersion7()` for time-ordered B-tree index locality and offline generation | Accepted |
+| ADR-023 | Local-First Identity and Authentication Strategy | Two-tier architecture with provider-independent `ITenantContext` and offline ASP.NET Core Identity on Local Data Plane | Accepted |
+| ADR-024 | PostgreSQL RLS Transaction Context and Connection Pooling Isolation | Dual-tier transaction-local scoping (`is_local = true`) and fail-closed baseline session reset | Accepted |
+
+Decision records: `decisions/ADR-022-IDENTIFIER-STRATEGY.md`, `decisions/ADR-023-LOCAL-FIRST-AUTHENTICATION-STRATEGY.md`, `decisions/ADR-024-RLS-TRANSACTION-CONTEXT-AND-CONNECTION-POOLING.md`. Architecture specification: [63 — Phase 1B Identity and Access Architecture](63_PHASE_1B_IDENTITY_AND_ACCESS_ARCHITECTURE.md).

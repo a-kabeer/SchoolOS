@@ -20,8 +20,8 @@ This is a project-level milestone view, not a task-level register. Update it onl
 
 | Phase | Name | Status | Gate evidence |
 |---|---|---|---|
-| 0 | Product discovery and design | Not Started | Approved requirements and decision closure |
-| 1 | Platform and tenancy foundation | Not Started | Identity, authorization, schema and API contracts |
+| 0 | Product discovery and design | In Progress | Requirements baseline reconciled; decision closure in DOC-60 |
+| 1 | Platform and tenancy foundation | In Progress | Phase 1A/1A.1 reconciled from `feature/phase-1-platform-foundation`; Wave 0–1 security hardening & Education-Portal building blocks integration underway |
 | 2 | Admissions and student lifecycle | Not Started | Domain workflows and acceptance tests |
 | 3 | Fees, finance and reconciliation | Not Started | Finance controls and reconciliation tests |
 | 4 | Academics and offline workflows | Not Started | Local Node/offline acceptance |
@@ -47,7 +47,7 @@ This is a project-level milestone view, not a task-level register. Update it onl
 
 | Date | Contributor | Milestone-level summary | Blockers / decisions | Evidence |
 |---|---|---|---|---|
-| | | | | |
+| 2026-11-10 | Engineering Team | Phase 1A & 1A.1 foundation (`Tenant`, `School`, `Campus`, UUIDv7, composite FKs, RLS interceptors, Npgsql ClearPool, JWT Bearer, MaterialM shell) | Reconciled into integration baseline | `ADR-022`, `ADR-023`, `ADR-024`, `DOC-63` |
 
 ## Release gate
 
