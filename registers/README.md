@@ -1,7 +1,7 @@
 # SchoolOS Machine-Readable Registers
 
 - **Status:** Current canonical register guide
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `898812f89e0ec7f03aff6c3b1408e46782814dfd`
 
 ## Task registers — one logical source of truth
 
@@ -20,7 +20,7 @@ The seven CSV files below are partitions of the same canonical task register. Ta
 
 ## Requirements traceability
 
-[Requirement traceability](requirement-traceability.csv) contains 36 requirements with implementation task IDs or an Unassigned marker, exact acceptance-test IDs, and evidence status. References are not proof of implementation or test execution.
+[Requirement traceability](requirement-traceability.csv) contains 37 requirements with implementation task IDs or an Unassigned marker, exact acceptance-test IDs, and evidence status. References are not proof of implementation or test execution.
 
 ## Authority
 
