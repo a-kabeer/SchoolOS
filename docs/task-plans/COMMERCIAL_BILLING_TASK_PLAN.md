@@ -4,7 +4,7 @@
 - **Decision maturity:** Commercial direction proposed; legal, tariff and detailed policy approvals remain open
 - **Owner:** Commercial/product lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`; reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
 
 > Preservation note: All BILL-001 through BILL-008, BILL-101 through BILL-106, BILL-201 through BILL-206, BILL-301 through BILL-305, BILL-401 through BILL-407, BILL-501 through BILL-505, and BILL-601 through BILL-605 are retained with source wording and workstream exit criteria. All are planning tasks, not evidence of implementation.
 

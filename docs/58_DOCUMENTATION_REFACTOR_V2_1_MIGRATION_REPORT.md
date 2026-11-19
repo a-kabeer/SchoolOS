@@ -1,11 +1,11 @@
 # 58 — Documentation Refactor v2.1 Migration Report
 
 - **Document ID:** GOV-MIGRATION-001
-- **Status:** Reconciled on main; follow-up governance refactor is tracked in a separate PR
-- **Decision maturity:** Migration disposition recorded; no product policy or architecture decision is newly approved here
-- **Owner:** Technical lead (named accountable owner TBD)
+- **Status:** Current
+- **Decision maturity:** Not applicable — migration report
+- **Owner:** Technical lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; uploaded `SchoolOS_Documentation_Refactor_v2_1_Remediation_Draft` ZIP
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 
 ## 1. Migration objective
 

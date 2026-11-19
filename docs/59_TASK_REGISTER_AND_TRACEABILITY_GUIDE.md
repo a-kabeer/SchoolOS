@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed operating standard for the delivery baseline
 - **Owner:** Delivery lead (named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; task detail restored from the uploaded v2.1 remediation draft and mapped to the current repository
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`; task detail restored from the uploaded v2.1 remediation draft and mapped to the current repository
 
 ## Canonical registers — one logical task register
 

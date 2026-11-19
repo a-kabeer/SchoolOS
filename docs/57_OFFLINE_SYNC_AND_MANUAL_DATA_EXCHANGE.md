@@ -5,7 +5,7 @@
 - **Decision maturity:** Local Node authority and operation-specific offline policy are accepted direction; workflow-specific approval/settlement semantics listed below remain open
 - **Owner:** Technical lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; reconciled from the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9`; reconciled from the uploaded v2.1 remediation draft
 - **Related ADRs:** ADR-013, ADR-014
 
 ## 1. Local-first operational rule
