@@ -45,21 +45,45 @@ public class Wave0SecurityHardeningTests
     }
 
     [Fact]
-    public void PostgresRlsHelper_Generates_Force_Rls_And_Optional_PlatformAdmin_Predicate()
+    public void PostgresRlsHelper_Generates_Strict_Force_Rls_Without_Custom_Guc_Bypass()
     {
         var strictSql = PostgresRlsHelper.GenerateEnableRlsSql("organization", "schools");
         strictSql.ShouldContain("ENABLE ROW LEVEL SECURITY");
         strictSql.ShouldContain("FORCE ROW LEVEL SECURITY");
         strictSql.ShouldContain("app.current_tenant_id");
         strictSql.ShouldNotContain("app.is_platform_admin");
+        strictSql.ShouldNotContain("is_platform_admin");
 
-        var cloudSql = PostgresRlsHelper.GenerateEnableRlsSql("subscriptions", "subscriptions", allowPlatformAdminBypass: true);
-        cloudSql.ShouldContain("app.is_platform_admin");
-        cloudSql.ShouldContain("app.current_tenant_id");
+        var rolePolicySql = PostgresRlsHelper.GeneratePlatformAdminRolePolicySql("subscriptions", "subscriptions", "schoolos_platform_admin");
+        rolePolicySql.ShouldContain("CREATE POLICY subscriptions_platform_admin_access ON subscriptions.subscriptions");
+        rolePolicySql.ShouldContain("TO schoolos_platform_admin");
+        rolePolicySql.ShouldNotContain("app.is_platform_admin");
+
+        var dropRolePolicySql = PostgresRlsHelper.GenerateDropPlatformAdminRolePolicySql("subscriptions", "subscriptions");
+        dropRolePolicySql.ShouldContain("DROP POLICY IF EXISTS subscriptions_platform_admin_access ON subscriptions.subscriptions");
+
+        var grantsSql = PostgresRlsHelper.GenerateLeastPrivilegeTenantRoleGrantsSql("organization", "schoolos_app");
+        grantsSql.ShouldContain("GRANT USAGE ON SCHEMA organization TO schoolos_app");
+        grantsSql.ShouldContain("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA organization TO schoolos_app");
+        grantsSql.ShouldNotContain("GRANT USAGE, CREATE");
+        grantsSql.ShouldNotContain("GRANT ALL PRIVILEGES");
 
         var disableSql = PostgresRlsHelper.GenerateDisableRlsSql("organization", "schools");
         disableSql.ShouldContain("DROP POLICY IF EXISTS schools_tenant_isolation");
         disableSql.ShouldContain("DISABLE ROW LEVEL SECURITY");
+    }
+
+    [Theory]
+    [InlineData("public")]
+    [InlineData("PUBLIC")]
+    [InlineData("schoolos_app")]
+    [InlineData("current_user")]
+    [InlineData("bad;role")]
+    [InlineData("BadUpperCase")]
+    public void PostgresRlsHelper_Rejects_Disallowed_Or_Invalid_PlatformAdmin_Roles(string invalidRole)
+    {
+        Should.Throw<ArgumentException>(() =>
+            PostgresRlsHelper.GeneratePlatformAdminRolePolicySql("subscriptions", "subscriptions", invalidRole));
     }
 
     [Fact]
@@ -74,6 +98,7 @@ public class Wave0SecurityHardeningTests
         var upSql = upBuilder.Operations.OfType<SqlOperation>().Select(o => o.Sql).ToList();
         upSql.ShouldContain(sql => sql.Contains("organization.schools") && sql.Contains("FORCE ROW LEVEL SECURITY"));
         upSql.ShouldContain(sql => sql.Contains("organization.campuses") && sql.Contains("FORCE ROW LEVEL SECURITY"));
+        upSql.ShouldAllBe(sql => !sql.Contains("is_platform_admin", StringComparison.OrdinalIgnoreCase));
 
         var downBuilder = new MigrationBuilder(activeProvider: "Npgsql.EntityFrameworkCore.PostgreSQL");
         downMethod.Invoke(migration, [downBuilder]);
@@ -98,17 +123,17 @@ public class Wave0SecurityHardeningTests
     }
 
     [Fact]
-    public async Task DbContext_SaveChanges_Allows_Verified_PlatformAdmin_Without_Single_TenantId()
+    public async Task DbContext_SaveChanges_FailsClosed_Even_For_PlatformAdmin_When_TenantId_Is_Null()
     {
         var platformAdmin = new TenantContext(tenantId: null, campusId: null, userId: "platform-admin", isPlatformAdmin: true);
         var options = new DbContextOptionsBuilder<OrganizationDbContext>()
-            .UseInMemoryDatabase($"wave0-platform-{Guid.NewGuid()}")
+            .UseInMemoryDatabase($"wave0-platform-failclosed-{Guid.NewGuid()}")
             .Options;
 
         await using var db = new OrganizationDbContext(options, platformAdmin);
-        db.Schools.Add(School.Create(Guid.CreateVersion7(), "Provisioned School", "PRV-1"));
+        db.Schools.Add(School.Create(Guid.CreateVersion7(), "Unscoped Platform Write", "PRV-1"));
 
-        var saved = await db.SaveChangesAsync();
-        saved.ShouldBe(1);
+        var ex = await Should.ThrowAsync<InvalidOperationException>(() => db.SaveChangesAsync());
+        ex.Message.ShouldContain("Tenant isolation violation");
     }
 }

@@ -20,6 +20,7 @@ public class PostgresDatabaseFixture : IAsyncLifetime
     public const string MasterConnectionString = "Host=127.0.0.1;Port=5432;Database=postgres;Username=schoolos_dev;Password=schoolos_dev_password";
     public const string AdminConnectionString = "Host=127.0.0.1;Port=5432;Database=schoolos_test;Username=schoolos_dev;Password=schoolos_dev_password;Include Error Detail=true";
     public const string AppConnectionString = "Host=127.0.0.1;Port=5432;Database=schoolos_test;Username=schoolos_app;Password=schoolos_app_password;Include Error Detail=true";
+    public const string PlatformAdminConnectionString = "Host=127.0.0.1;Port=5432;Database=schoolos_test;Username=schoolos_platform_admin;Password=schoolos_platform_admin_password;Include Error Detail=true";
 
     public async Task InitializeAsync()
     {
@@ -40,7 +41,8 @@ public class PostgresDatabaseFixture : IAsyncLifetime
             }
         }
 
-        // 2. Setup schema and initial structure using admin credentials on schoolos_test
+        // 2. Setup schema and initial structure using admin credentials on schoolos_test.
+        // RLS enablement, FORCE RLS, and policies MUST come strictly from EF Core migrations (never patched by this fixture).
         var options = new DbContextOptionsBuilder<OrganizationDbContext>()
             .UseNpgsql(AdminConnectionString)
             .UseSnakeCaseNamingConvention()
@@ -49,34 +51,35 @@ public class PostgresDatabaseFixture : IAsyncLifetime
         var systemContext = new TenantContext(null, null, "system-setup");
         await using var db = new OrganizationDbContext(options, systemContext);
 
-        // Apply formal EF Core migrations
+        // Apply formal EF Core migrations (embeds ENABLE + FORCE ROW LEVEL SECURITY and tenant isolation policies)
         await db.Database.MigrateAsync();
 
-        // Ensure non-superuser application role exists (superusers bypass PostgreSQL RLS by engine design)
+        // Ensure least-privilege, non-superuser runtime roles exist:
+        // - schoolos_app: tenant runtime role (NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS)
+        // - schoolos_platform_admin: independent Cloud platform-admin role (never granted to schoolos_app, no grants on organization.*)
         await db.Database.ExecuteSqlRawAsync("""
             DO $$
             BEGIN
                 IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'schoolos_app') THEN
-                    CREATE ROLE schoolos_app WITH LOGIN PASSWORD 'schoolos_app_password' NOSUPERUSER NOBYPASSRLS;
+                    CREATE ROLE schoolos_app WITH LOGIN PASSWORD 'schoolos_app_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
                 ELSE
-                    ALTER ROLE schoolos_app WITH PASSWORD 'schoolos_app_password' NOSUPERUSER NOBYPASSRLS;
+                    ALTER ROLE schoolos_app WITH LOGIN PASSWORD 'schoolos_app_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+                END IF;
+
+                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'schoolos_platform_admin') THEN
+                    CREATE ROLE schoolos_platform_admin WITH LOGIN PASSWORD 'schoolos_platform_admin_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+                ELSE
+                    ALTER ROLE schoolos_platform_admin WITH LOGIN PASSWORD 'schoolos_platform_admin_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
                 END IF;
             END
             $$;
-            GRANT USAGE, CREATE ON SCHEMA organization TO schoolos_app;
-            GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA organization TO schoolos_app;
-            GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA organization TO schoolos_app;
-            ALTER DEFAULT PRIVILEGES IN SCHEMA organization GRANT ALL PRIVILEGES ON TABLES TO schoolos_app;
-            ALTER DEFAULT PRIVILEGES IN SCHEMA organization GRANT ALL PRIVILEGES ON SEQUENCES TO schoolos_app;
+            REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+            REVOKE ALL ON SCHEMA organization FROM schoolos_platform_admin;
             """);
 
-        // Enable PostgreSQL Row-Level Security
-        var tables = new List<(string Schema, string Table)>
-        {
-            ("organization", "schools"),
-            ("organization", "campuses")
-        };
-        await PostgresRlsHelper.ApplyRlsPoliciesAsync(db, tables);
+        // Apply strict least-privilege DML-only grants to schoolos_app (no CREATE, no TRUNCATE, no TRIGGER, no REFERENCES)
+        await db.Database.ExecuteSqlRawAsync(
+            PostgresRlsHelper.GenerateLeastPrivilegeTenantRoleGrantsSql("organization", "schoolos_app"));
     }
 
     public Task DisposeAsync()

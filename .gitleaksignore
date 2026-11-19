@@ -1,0 +1,6 @@
+# Verified non-secret documentation JSON placeholders from pre-merge baseline commits:
+# - docs/18_CAMPUS_DATA_ACCESS_AND_DEPLOYMENT_SCENARIOS.md:219 -> "signatureKeyId": "campus-signing-key-01"
+# - docs/42_PHASE_1B_IDENTITY_AND_ACCESS_ARCHITECTURE.md:387,412 (renamed to docs/63_...) -> "accessToken": "eyJhbGciOiJSUzI1NiIsIn..."
+144d939aa38793a5114e49b75818e8987d1deed2:docs/18_CAMPUS_DATA_ACCESS_AND_DEPLOYMENT_SCENARIOS.md:generic-api-key:219
+d80e1d4f1100a8adba3e2a7f1f6645484c798edf:docs/42_PHASE_1B_IDENTITY_AND_ACCESS_ARCHITECTURE.md:generic-api-key:387
+d80e1d4f1100a8adba3e2a7f1f6645484c798edf:docs/42_PHASE_1B_IDENTITY_AND_ACCESS_ARCHITECTURE.md:generic-api-key:412

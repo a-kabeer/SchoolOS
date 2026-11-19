@@ -42,7 +42,6 @@ public class PostgresTenantTransactionInterceptor : DbTransactionInterceptor
     private async Task SetTransactionLocalTenantAsync(DbTransaction transaction, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId?.ToString() ?? string.Empty;
-        var isPlatformAdmin = _tenantContext.IsPlatformAdmin ? "true" : string.Empty;
         if (transaction.Connection is null)
         {
             return;
@@ -50,22 +49,17 @@ public class PostgresTenantTransactionInterceptor : DbTransactionInterceptor
 
         await using var cmd = transaction.Connection.CreateCommand();
         cmd.Transaction = transaction;
-        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, true), set_config('app.is_platform_admin', @is_platform_admin, true);";
+        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, true);";
         var param = cmd.CreateParameter();
         param.ParameterName = "@tenant_id";
         param.Value = tenantId;
         cmd.Parameters.Add(param);
-        var adminParam = cmd.CreateParameter();
-        adminParam.ParameterName = "@is_platform_admin";
-        adminParam.Value = isPlatformAdmin;
-        cmd.Parameters.Add(adminParam);
         await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
     private void SetTransactionLocalTenant(DbTransaction transaction)
     {
         var tenantId = _tenantContext.TenantId?.ToString() ?? string.Empty;
-        var isPlatformAdmin = _tenantContext.IsPlatformAdmin ? "true" : string.Empty;
         if (transaction.Connection is null)
         {
             return;
@@ -73,15 +67,11 @@ public class PostgresTenantTransactionInterceptor : DbTransactionInterceptor
 
         using var cmd = transaction.Connection.CreateCommand();
         cmd.Transaction = transaction;
-        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, true), set_config('app.is_platform_admin', @is_platform_admin, true);";
+        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, true);";
         var param = cmd.CreateParameter();
         param.ParameterName = "@tenant_id";
         param.Value = tenantId;
         cmd.Parameters.Add(param);
-        var adminParam = cmd.CreateParameter();
-        adminParam.ParameterName = "@is_platform_admin";
-        adminParam.Value = isPlatformAdmin;
-        cmd.Parameters.Add(adminParam);
         cmd.ExecuteNonQuery();
     }
 }

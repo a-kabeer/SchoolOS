@@ -59,34 +59,24 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
     private async Task SetTenantSessionVariableAsync(DbConnection connection, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId?.ToString() ?? string.Empty;
-        var isPlatformAdmin = _tenantContext.IsPlatformAdmin ? "true" : string.Empty;
         await using var cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, false), set_config('app.is_platform_admin', @is_platform_admin, false);";
+        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, false);";
         var param = cmd.CreateParameter();
         param.ParameterName = "@tenant_id";
         param.Value = tenantId;
         cmd.Parameters.Add(param);
-        var adminParam = cmd.CreateParameter();
-        adminParam.ParameterName = "@is_platform_admin";
-        adminParam.Value = isPlatformAdmin;
-        cmd.Parameters.Add(adminParam);
         await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
     private void SetTenantSessionVariable(DbConnection connection)
     {
         var tenantId = _tenantContext.TenantId?.ToString() ?? string.Empty;
-        var isPlatformAdmin = _tenantContext.IsPlatformAdmin ? "true" : string.Empty;
         using var cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, false), set_config('app.is_platform_admin', @is_platform_admin, false);";
+        cmd.CommandText = "SELECT set_config('app.current_tenant_id', @tenant_id, false);";
         var param = cmd.CreateParameter();
         param.ParameterName = "@tenant_id";
         param.Value = tenantId;
         cmd.Parameters.Add(param);
-        var adminParam = cmd.CreateParameter();
-        adminParam.ParameterName = "@is_platform_admin";
-        adminParam.Value = isPlatformAdmin;
-        cmd.Parameters.Add(adminParam);
         cmd.ExecuteNonQuery();
     }
 
@@ -97,7 +87,7 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
             try
             {
                 await using var cmd = connection.CreateCommand();
-                cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false), set_config('app.is_platform_admin', '', false);";
+                cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false);";
                 await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
@@ -135,7 +125,7 @@ public class PostgresTenantSessionInterceptor : DbConnectionInterceptor
             try
             {
                 using var cmd = connection.CreateCommand();
-                cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false), set_config('app.is_platform_admin', '', false);";
+                cmd.CommandText = "SELECT set_config('app.current_tenant_id', '', false);";
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)

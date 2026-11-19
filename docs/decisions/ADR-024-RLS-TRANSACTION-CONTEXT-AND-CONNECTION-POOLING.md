@@ -66,10 +66,22 @@ CREATE POLICY {table}_tenant_isolation ON {schema}.{table}
 - If `app.current_tenant_id` is empty string or unset, `NULLIF(..., '')` produces SQL `NULL`.
 - Because `tenant_id` columns are defined as `NOT NULL`, `tenant_id = NULL` evaluates to `UNKNOWN` (falsy in SQL predicates), returning zero rows.
 
-### 4. Non-Superuser Role Enforcement
-By PostgreSQL engine design, superusers and roles with `BYPASSRLS` bypass row-level security. 
-- Schema migrations and DDL operations execute under the administrative role `schoolos_dev`.
-- Application and integration test connections execute under the non-superuser role `schoolos_app` (`NOSUPERUSER NOBYPASSRLS`), ensuring that RLS policies are strictly enforced by the PostgreSQL query planner.
+### 4. Non-Superuser Role Enforcement & Least-Privilege Runtime Grants
+By PostgreSQL engine design, superusers and roles with `BYPASSRLS` bypass row-level security.
+- Schema migrations and DDL operations execute under the administrative owner role `schoolos_dev`.
+- Application and integration test connections execute under the non-superuser role `schoolos_app` (`NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS`), ensuring that RLS policies are strictly enforced by the PostgreSQL query planner.
+- `schoolos_app` is granted ONLY `USAGE` on target schemas, `SELECT, INSERT, UPDATE, DELETE` on tables, and `USAGE, SELECT` on sequences (`PostgresRlsHelper.GenerateLeastPrivilegeTenantRoleGrantsSql`). It MUST NOT own protected tables and MUST NOT be granted `CREATE`, `TRUNCATE`, `TRIGGER`, or `REFERENCES`.
+- Every protected table MUST enable both `ENABLE ROW LEVEL SECURITY` and `FORCE ROW LEVEL SECURITY` directly inside its EF Core migration (`Up`/`Down`), not only in test harnesses.
+
+### 5. Prohibition of Custom GUC Bypasses & Secure Platform-Wide Access Boundary
+Custom placeholder PostgreSQL GUCs (such as `app.is_platform_admin`) MUST NEVER be used as an RLS bypass predicate:
+- In PostgreSQL, unregistered two-part custom GUCs (`app.*`) are `PGC_USERSET` and can be set via `SELECT set_config('app.is_platform_admin', 'true', ...)` by **any** connected role, including a `NOSUPERUSER NOBYPASSRLS` tenant runtime role (`schoolos_app`).
+- `NOBYPASSRLS` prevents a role from skipping RLS evaluation; it does **not** prevent that role from mutating custom GUCs to satisfy a policy expression.
+- Any future Cloud Control Plane table that legitimately requires platform-wide cross-tenant access (never Local Data Plane operational tables such as `organization.*`) MUST instead authorize via an independently credentialed PostgreSQL role (`schoolos_platform_admin`, `NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS`) with:
+  1. No role membership granted to `schoolos_app` (so `SET ROLE schoolos_platform_admin` is denied with SQLSTATE `42501`).
+  2. Explicit per-table role-scoped policy (`CREATE POLICY ... FOR ALL TO schoolos_platform_admin USING (true) WITH CHECK (true)` via `PostgresRlsHelper.GeneratePlatformAdminRolePolicySql`), never `TO PUBLIC` and never `TO schoolos_app`.
+  3. Separate connection string / secret boundary in the Cloud host or lifecycle job.
+- `SchoolOSDbContextBase.ValidateTenantIntegrity()` fails closed unconditionally whenever an `ITenantScopedEntity` is mutated with `TenantContext.TenantId == null`, regardless of `IsPlatformAdmin`.
 
 ## Consequences
 

@@ -69,8 +69,9 @@ public abstract class SchoolOSDbContextBase : DbContext
     }
 
     /// <summary>
-    /// Fails closed if any tenant-scoped entity is mutated without an active tenant context (unless verified platform admin),
-    /// or carries a tenant ID differing from the ambient TenantContext.
+    /// Fails closed unconditionally if any tenant-scoped entity is mutated without an active tenant context
+    /// (regardless of <see cref="ITenantContext.IsPlatformAdmin"/>), or carries a tenant ID differing from
+    /// the ambient <see cref="TenantContext"/>.
     /// </summary>
     protected virtual void ValidateTenantIntegrity()
     {
@@ -85,11 +86,6 @@ public abstract class SchoolOSDbContextBase : DbContext
 
         if (TenantContext.TenantId is null)
         {
-            if (TenantContext.IsPlatformAdmin)
-            {
-                return;
-            }
-
             throw new InvalidOperationException(
                 $"Tenant isolation violation: Cannot persist {mutatedTenantEntries.Count} tenant-scoped entity mutation(s) without an active TenantContext.");
         }
