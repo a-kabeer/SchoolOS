@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed authorization matrix; owner sign-off required
 - **Owner:** Security lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 **Version:** v1.8 draft · **Status:** Proposed authorization baseline; owner sign-off required  
 **Companion:** docs/07_SECURITY_AND_QUALITY_REQUIREMENTS.md, docs/38_PLATFORM_SECURITY_REQUIREMENTS.md, docs/43_OPERATIONAL_DOMAIN_DATA_DICTIONARY.md
 
@@ -258,7 +258,7 @@ The exact operation-by-operation list is open and must be approved before releas
 Use [55 — Guardian and Household Requirements](55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md) together with the guardian/family-link permissions in this matrix. Access is derived from verified relationships plus explicit permission and scope; payer, emergency-contact or household membership alone must not be treated as blanket access.
 
 
-## 9. Module entitlement is separate from user authorization
+## 15. Module entitlement is separate from user authorization
 
 A module being visible or included in a menu is not an authorization decision. SchoolOS must evaluate distinct gates for a protected capability:
 
