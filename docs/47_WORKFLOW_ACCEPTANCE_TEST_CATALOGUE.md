@@ -594,3 +594,26 @@ These scenarios supplement the existing workflow catalogue. They are proposed ac
 The exact transaction/posting boundary remains governed by DEC-005. Do not mark FIN-006 passed until the chosen contract and persistence-level tests are approved.
 
 Link these scenarios to the canonical task-register IDs before implementation. Do not create a separate Markdown task-status tracker.
+
+## 16. SaaS tenant foundation acceptance scenarios
+
+The detailed Given/When/Then contracts are maintained in [DOC-62](62_SAAS_TENANT_IMPLEMENTATION_BLUEPRINT.md). These identifiers must be included in the canonical requirement-to-task-to-test traceability workflow. They are not considered passed until reproducible automated evidence is linked.
+
+| Test ID | Priority | Acceptance boundary |
+|---|---|---|
+| SAAS-001 | P0 | Registration/provisioning retry creates exactly one Tenant, School, Campus, owner membership and subscription |
+| SAAS-002 | P0 | School/Campus/Node relations cannot cross tenant boundaries |
+| SAAS-003 | P0 | Tenant switch is allowed only for an active membership |
+| SAAS-004 | P0 | Route/host and authenticated tenant mismatch is denied before data access |
+| SAAS-005 | P0 | Missing database tenant context fails closed |
+| SAAS-006 | P0 | RLS transaction context does not leak across pooled connections or exception paths |
+| SAAS-007 | P0 | Tenant-owned composite foreign keys reject cross-tenant references |
+| SAAS-008 | P0 | Node enrollment challenge is tenant-bound, single-use and proof-of-possession protected |
+| SAAS-009 | P0 | An enrolled Local Node cannot be rebound to another tenant through configuration or API |
+| SAAS-010 | P0 | Subscription entitlement and user authorization are checked independently |
+| SAAS-011 | P0 | Approved local operations continue during Cloud outage under a valid signed lease and local membership projection |
+| SAAS-012 | P0 | Sync rejects events claiming a different tenant or an unassigned campus |
+| SAAS-013 | P1 | Tenant export/offboarding is tenant-scoped, auditable and applies retention/legal-hold rules |
+| SAAS-014 | P0 | Expired/revoked customer-approved support grant cannot continue reading tenant records |
+
+Existing SEC-001 and SEC-005 remain required security tests; SAAS-004 through SAAS-007 deepen the explicit SaaS context and database acceptance contract. Existing LIC and HYB scenarios remain mandatory for licence and offline behavior.
