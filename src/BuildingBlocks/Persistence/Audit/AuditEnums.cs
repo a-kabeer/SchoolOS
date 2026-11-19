@@ -1,0 +1,71 @@
+namespace SchoolOS.BuildingBlocks.Persistence.Audit;
+
+public enum ChangeAuditAction
+{
+    Added = 1,
+    Modified = 2,
+    Removed = 3,
+}
+
+public enum SecurityAuditOutcome
+{
+    Success = 1,
+    Failure = 2,
+}
+
+public enum SecurityAuditEventType
+{
+    SignInSucceeded = 1,
+    SignInFailed = 2,
+    SignInLockedOut = 3,
+    SignedOut = 4,
+    AccessDenied = 5,
+    TenantMismatch = 6,
+    BrandingChanged = 7,
+    CountryChanged = 8,
+    SchoolCountryChanged = 9,
+    SchoolModuleChanged = 11,
+    ModuleChanged = 12,
+    ModuleCreated = 13,
+    ModuleDeleted = 14,
+    ModuleDependencyAdded = 15,
+    ModuleDependencyRemoved = 16,
+    PlanCreated = 17,
+    PlanChanged = 18,
+    PlanDeleted = 19,
+    PriceBookCreated = 20,
+    PriceBookChanged = 21,
+    PriceBookDeleted = 22,
+    PriceChanged = 23,
+    SubscriptionCreated = 24,
+    DataRegionChanged = 25,
+    RoleCreated = 26,
+    RoleChanged = 27,
+    RoleDeleted = 28,
+    InvoiceCreated = 29,
+    InvoiceVoided = 30,
+    PaymentRecorded = 31,
+    SchoolTaxRateChanged = 32,
+    SchoolCreated = 33,
+    UserCreated = 34,
+    PasswordChanged = 35,
+    SubscriptionChanged = 36,
+    AddOnRequested = 37,
+    AddOnRequestDecided = 38,
+    InvoiceMarkedOverdue = 39,
+    SchoolProfileChanged = 40,
+    CampusCreated = 41,
+    CampusUpdated = 42,
+    CampusDeleted = 43,
+    SchoolDeleted = 44,
+    CampusSettingsChanged = 45,
+    UserDetailsCreated = 46,
+    SchoolRequestApproved = 47,
+    SchoolRequestRejected = 48,
+    UserDetailsUpdated = 49,
+    UserDetailsDeleted = 50,
+    TokenReuseDetected = 60,
+    EmergencyCredentialReset = 61,
+    LicenseLeaseIssued = 62,
+    LicenseLeaseRevoked = 63,
+}

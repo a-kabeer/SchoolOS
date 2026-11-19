@@ -1,8 +1,11 @@
 using System.Reflection;
 using FluentAssertions;
 using NetArchTest.Rules;
+using SchoolOS.BuildingBlocks.Observability;
+using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.BuildingBlocks.SharedKernel;
+using SchoolOS.BuildingBlocks.Web;
 using Xunit;
 
 namespace SchoolOS.ArchitectureTests;
@@ -61,5 +64,27 @@ public class ModuleBoundaryTests
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Secrets_Observability_And_Web_BuildingBlocks_ShouldNotDependOn_HostsOrModules()
+    {
+        string[] forbidden =
+        [
+            "SchoolOS.Cloud.Api",
+            "SchoolOS.Local.Api",
+            "SchoolOS.Modules.Organization",
+            "SchoolOS.PlatformModules.Tenants"
+        ];
+
+        foreach (var assembly in new[] { typeof(ISecretProvider).Assembly, typeof(ObservabilityOptions).Assembly, typeof(IEndpointGroup).Assembly })
+        {
+            var result = Types.InAssembly(assembly)
+                .ShouldNot()
+                .HaveDependencyOnAny(forbidden)
+                .GetResult();
+
+            result.IsSuccessful.Should().BeTrue($"BuildingBlock {assembly.GetName().Name} must stay decoupled from hosts and modules.");
+        }
     }
 }

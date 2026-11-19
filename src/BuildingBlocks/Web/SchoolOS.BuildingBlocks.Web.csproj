@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Web security headers, rate limiting, Kestrel hardening, and Minimal API endpoint group conventions for SchoolOS hosts</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
+    <ProjectReference Include="..\Security\SchoolOS.BuildingBlocks.Security.csproj" />
+  </ItemGroup>
+</Project>

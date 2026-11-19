@@ -1,9 +1,10 @@
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Observability;
 using SchoolOS.BuildingBlocks.Persistence;
+using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
+using SchoolOS.BuildingBlocks.Web;
 using SchoolOS.Modules.Organization;
 using SchoolOS.Modules.Organization.Domain;
 using SchoolOS.Modules.Organization.Persistence;
@@ -11,16 +12,15 @@ using SchoolOS.Modules.Organization.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 var isDevOrTesting = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing");
 
-// Enforce named enums only (refuses arbitrary integers over JSON API)
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
-});
+// Load node/platform secrets from configured secret store (if enabled) before DB/Auth registration
+await builder.AddPlatformSecretsAsync(SecretsDependencyInjection.LocalStartupSecrets);
 
 // Building Blocks & Modules
+builder.Services.AddSecretsBuildingBlocks(builder.Configuration);
+builder.Services.AddWebHardeningBuildingBlocks(builder.Configuration);
 builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
 builder.Services.AddPersistenceBuildingBlocks();
-builder.Services.AddObservabilityBuildingBlocks();
+builder.Services.AddObservabilityBuildingBlocks(builder.Configuration, builder.Environment, "SchoolOS.Local.Api");
 builder.Services.AddOrganizationModule(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -28,16 +28,23 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+if (!isDevOrTesting)
+{
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseSchoolOSSecurityHeaders(isDevOrTesting);
 app.UseObservabilityBuildingBlocks();
+app.UseRateLimiter();
 app.UseAuthentication();
+app.UseTenantTelemetry();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.UseHttpsRedirection();
 
 // Liveness & Readiness Probes
 app.MapGet("/healthz", () => Results.Ok(new { status = "Live", timestamp = DateTime.UtcNow }));
