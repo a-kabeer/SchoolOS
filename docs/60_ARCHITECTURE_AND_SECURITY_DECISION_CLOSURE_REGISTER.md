@@ -5,7 +5,7 @@
 - **Decision maturity:** Open decisions register; no new product or security policy is approved here
 - **Owner:** Product owner (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `9d8d27caa65f9bd0a68764671d451495df28df77`; reference sources pinned in DOC-61
 
 ## Purpose and authority
 
@@ -37,6 +37,9 @@ Every item remains Open unless an approved ADR or external evidence is linked. A
 | DEC-018 | Final tariffs, tax/withholding, cancellation, refunds and customer exit policy | Open / external verification | Commercial owner + finance + legal | 27, 28, 36, 50 | Pilot cost evidence, tax/legal review and approved price book/contract |
 | DEC-019 | Support hours, SLA, node replacement and support-access operating policy | Open | Operations owner + commercial owner + security | 16, 35, 38, 48 | Staffing model, customer contract, time-limited support-access tests |
 | DEC-020 | Module catalogue semantics: core/paid classification, dependency rules, compatibility, subscription entitlement and signed Local Node lease claims | Open | Product owner + technical lead + finance owner | 15, 27, 36, 37, 43, 45, 46, 61 | Approved catalogue model, plan mapping, offline lease claims, compatibility rules and entitlement acceptance tests |
+| DEC-021 | Tenant-specific restore/recovery from shared Cloud database, including point-in-time consistency, quarantine, event replay/cursor handling and customer evidence | Open | Operations owner + DBA/technical lead + security + product owner | 07, 14, 36, 44, 48, 50, 62 | Tested tenant-selective restore to quarantine, cross-tenant integrity checks, financial/audit consistency, measured RPO/RTO and approved customer restore procedure |
+| DEC-022 | Tenant data residency and hosting/isolation placement: Cloud region, backup/DR location, subprocessors, support/telemetry boundaries and dedicated database/deployment eligibility | Open / external verification | Security owner + legal counsel + operations + commercial owner | 07, 14, 36, 38, 48, 62 | Approved data-flow/subprocessor inventory, jurisdiction/legal review, deployment placement policy and tested data-location controls |
+| DEC-023 | Per-tenant usage metering, capacity quotas, API/sync/AI rate limits, fair-use/noisy-neighbor controls and overage handling | Open | Product owner + commercial owner + technical/operations leads | 27, 28, 36, 37, 45, 46, 48, 62 | Approved metering dimensions, counter/reconciliation design, threshold and enforcement policy, plan mapping and idempotent usage tests |
 
 ## SaaS tenant implementation baseline proposal
 
@@ -51,9 +54,6 @@ Every item remains Open unless an approved ADR or external evidence is linked. A
 
 This is a proposed implementation baseline, not an approval record. Do not change any DEC status based solely on the addition of DOC-62. A decision closes only through the closure workflow below and linked approval/validation evidence.
 
-| DEC-021 | Tenant-specific restore/recovery from shared Cloud database, including point-in-time consistency, quarantine, event replay/cursor handling and customer evidence | Open | Operations owner + DBA/technical lead + security + product owner | 07, 14, 36, 44, 48, 50, 62 | Tested tenant-selective restore to quarantine, cross-tenant integrity checks, financial/audit consistency, measured RPO/RTO and approved customer restore procedure |
-| DEC-022 | Tenant data residency and hosting/isolation placement: Cloud region, backup/DR location, subprocessors, support/telemetry boundaries and dedicated database/deployment eligibility | Open / external verification | Security owner + legal counsel + operations + commercial owner | 07, 14, 36, 38, 48, 62 | Approved data-flow/subprocessor inventory, jurisdiction/legal review, deployment placement policy and tested data-location controls |
-| DEC-023 | Per-tenant usage metering, capacity quotas, API/sync/AI rate limits, fair-use/noisy-neighbor controls and overage handling | Open | Product owner + commercial owner + technical/operations leads | 27, 28, 36, 37, 45, 46, 48, 62 | Approved metering dimensions, counter/reconciliation design, threshold and enforcement policy, plan mapping and idempotent usage tests |
 
 ## Closure workflow
 
@@ -68,6 +68,8 @@ This is a proposed implementation baseline, not an approval record. Do not chang
 The reference-project adoption in [DOC-61](61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) does not close DEC-020. Core/paid classifications, dependency rules, compatibility and signed local lease claims require explicit approval and acceptance evidence. DOC-62 proposes a SaaS tenant baseline but does not close DEC-001, DEC-004, DEC-008 or DEC-020. DEC-021–023 capture additional restore, residency/placement and usage-metering gates; they also remain Open.
 
 ## Relationship to other registers
+
+- [Documentation Arrangement and Alignment Task Plan](task-plans/DOCUMENTATION_ALIGNMENT_TASK_PLAN.md) records the controlled documentation-only remediation; its task statuses remain in the canonical register.
 
 - [11 — Open Questions](11_OPEN_QUESTIONS.md) retains detailed question context.
 - [51 — Requirements Traceability and Documentation Sign-off](51_REQUIREMENTS_TRACEABILITY_AND_DOCUMENTATION_SIGNOFF.md) records requirement gates.
