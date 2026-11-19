@@ -21,7 +21,8 @@ Audited `main` before this change: `9d8d27caa65f9bd0a68764671d451495df28df77`.
 |---|---|---|
 | [PR #5 — documentation governance](https://github.com/a-kabeer/SchoolOS/pull/5) | Consolidated plan summaries, seven task-register partitions, documentation standard and validator | Preserve the flat numbered documents; reconcile remaining count/validation gaps |
 | [PR #6 — SaaS tenant and reference adoption](https://github.com/a-kabeer/SchoolOS/pull/6) | DOC-61/DOC-62, SaaS tenant blueprint and related traceability | Surface the new reference and tenant documents in navigation; keep proposed decisions open |
-| [PR #7 — repo-local skills](https://github.com/a-kabeer/SchoolOS/pull/7) | 51 skills and precedence guidance in AGENTS.md | Preserve the skills catalogue as supplemental; skills cannot override canonical requirements or task registers |\n| [PR #8 — documentation arrangement](https://github.com/a-kabeer/SchoolOS/pull/8) | Updated documentation index, register alignment, metadata/validator governance and task-plan organization | Re-audit the merged main state; do not assume the earlier branch snapshot remains current |
+| [PR #7 — repo-local skills](https://github.com/a-kabeer/SchoolOS/pull/7) | 51 skills and precedence guidance in AGENTS.md | Preserve the skills catalogue as supplemental; skills cannot override canonical requirements or task registers |
+| [PR #8 — documentation arrangement](https://github.com/a-kabeer/SchoolOS/pull/8) | Updated documentation index, register alignment, metadata/validator governance and task-plan organization | Re-audit the merged main state; do not assume the earlier branch snapshot remains current |
 
 The pre-change repository had 297 task rows in seven CSV partitions and 37 actual requirement rows. DOC-59 and the register counts JSON still said 36. DEC-021–023 were outside the primary decision table. There was no `docs/README.md`. The validator did not reconcile count metadata, enforce unique canonical document IDs, or scan all key navigation files.
 
@@ -86,12 +87,15 @@ The following IDs are registered in the eighth task-register partition. All are 
 5. DOCALIGN-005 and DOCALIGN-006 append current-state reconciliation to DOC-42 and DOC-58.
 6. DOCALIGN-007 and DOCALIGN-008 align the README, indexes, metadata and lifecycle conventions.
 
-Publish the seven-source map in the catalogue, clarify DOC-08 as the master roadmap, retain focused indexes and preserve historical/current audit baselines.\n\n**Exit gate:** Every canonical document is discoverable; historical/current baselines are distinct; agents can locate the primary authority for each knowledge area.
+Publish the seven-source map in the catalogue, clarify DOC-08 as the master roadmap, retain focused indexes and preserve historical/current audit baselines.
+
+**Exit gate:** Every canonical document is discoverable; historical/current baselines are distinct; agents can locate the primary authority for each knowledge area.
 
 ### Phase C — Automated enforcement and final review
 7. DOCALIGN-009 expands the validator and CI path filters.
-8. DOCALIGN-010 and DOCALIGN-011 align task-scoped skill activation and SaaS traceability.\n9. Add the ordered agent execution protocol to AGENTS.md and align it with the seven-source map.
-9. DOCALIGN-012 closes only after the PR validation and owner review.
+8. DOCALIGN-010 and DOCALIGN-011 align task-scoped skill activation and SaaS traceability.
+9. Add the ordered agent execution protocol to AGENTS.md and align it with the seven-source map.
+10. DOCALIGN-012 closes only after the PR validation and owner review.
 
 **Exit gate:** The validator enforces the same rules described by DOC-54; no open decision is silently approved.
 
