@@ -128,3 +128,14 @@ A documentation-only change uses `docs:` Conventional Commit scope. A material a
 - [ ] GitHub Actions documentation validation passes.
 - [ ] Sensitive information is absent.
 - [ ] Root README, `docs/13_ADR_INDEX.md`, relevant source references and task crosswalk are updated where necessary.
+
+
+## 11. Contributor and AI-agent instruction source
+
+The repository root `AGENTS.md` is the authoritative contributor and AI-agent guide for coding, testing, security, privacy and Git workflow. It supplements this document and must not create a second, conflicting requirements catalogue.
+
+- New tool-specific instruction files must be short pointers to root `AGENTS.md` and the relevant canonical documents; do not copy the full rules into several assistant-specific files.
+- Material changes to architecture/security/data/commercial/AI requirements still follow section 9 and require an ADR or approved amendment where appropriate.
+- When the guide changes, update the relevant security/architecture documentation and review affected CI checks in the same PR.
+- The guide is not proof that its controls are implemented. Mark automation as active only when a workflow exists and its successful run is evidenced.
+- Reference-project practices are governed by [DOC-61 — Reference Project Adoption and Integration Plan](61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md); SchoolOS's own documents and open decisions remain authoritative.
