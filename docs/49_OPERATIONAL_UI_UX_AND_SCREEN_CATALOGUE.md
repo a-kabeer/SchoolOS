@@ -264,3 +264,21 @@ Full language scope (English, Urdu and whether Roman Urdu is a complete UI local
 - [ ] Clickable wireframes for admission, fee payment, reconciliation, attendance and result publication.
 - [ ] Parent/guardian multi-child view.
 - [ ] Campus selector and freshness indicators.
+
+
+## 13. Reference-informed cashier and operational workflow
+
+The eSchool fee-counter research is a usability reference, not a requirement to reproduce its legacy screen or mandate a particular scanner/hardware vendor.
+
+The Local cashier workspace should support a fast, keyboard-friendly journey:
+
+1. Find a student or invoice using authorized identifiers (admission/student number, name, challan/invoice number and, where approved, an optional barcode/QR lookup).
+2. Confirm student, campus, academic year, fee heads, billed amount, prior payments, concessions and outstanding balance before accepting money.
+3. Enter amount, payment method and allocation; clearly distinguish unallocated/advance payment from invoice settlement.
+4. Show a final confirmation with currency, receipt state and allocation before submission.
+5. Prevent duplicate submission and display the stable receipt/payment reference.
+6. Provide receipt print/download/reprint and authorized transaction history.
+7. During offline operation, show provisional/pending-sync status and local operation ID. Do not present an offline provisional receipt as a cloud-confirmed bank/payment settlement.
+8. Show rejected, reversed, refunded and corrected transactions with links to their original record; never make a posted receipt disappear.
+
+A barcode scanner is optional input hardware. The core workflow must work with keyboard/search and must not depend on a specific scanner, barcode standard or SignalR connection. UI design must follow server-side permission filtering, idempotent submission and the financial-state rules in sections 9 and 11 and DOC-47/DOC-61.
