@@ -1,5 +1,11 @@
 # 12 — Competitor and Market Research Notes
 
+- **Document ID:** DOC-12
+- **Status:** Current
+- **Decision maturity:** Research baseline; competitor claims require current verification
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Evidence caution:** These notes summarize public product descriptions reviewed during the planning discussion. They are not independent hands-on product tests, audited performance results or legal claims. Feature availability, pricing and positioning can change. Re-check official websites and run demos before using these details in sales or investment materials.
 
 ## 1. Competitors originally identified

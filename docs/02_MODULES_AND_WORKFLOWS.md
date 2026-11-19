@@ -1,5 +1,12 @@
 # 02 — Module Catalogue and Key Workflows
 
+- **Document ID:** DOC-02
+- **Status:** Current
+- **Decision maturity:** Proposed workflows; business policies require approval
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+
 ## 1. Business modules
 
 | Module | Main responsibility | Main data ownership |

@@ -1,5 +1,11 @@
 # 01 — Product Requirements Document (PRD)
 
+- **Document ID:** DOC-01
+- **Status:** Current
+- **Decision maturity:** Proposed product requirements
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Product:** SchoolOS (working name)  
 **Version:** 1.0 planning baseline  
 **Market:** Pakistan; private schools and school chains  

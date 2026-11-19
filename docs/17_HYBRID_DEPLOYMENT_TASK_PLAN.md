@@ -1,5 +1,11 @@
 # 17 — Hybrid Deployment and Subscription Work Package
 
+- **Document ID:** DOC-17
+- **Status:** Current
+- **Decision maturity:** Accepted hybrid direction; summary of canonical task plan
+- **Owner:** Delivery lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 - **Canonical detailed plan:** [Hybrid Deployment H0–H7](task-plans/HYBRID_DEPLOYMENT_TASK_PLAN.md)
 - **Canonical task status:** [Hybrid task registers](../registers/README.md#task-registers)
 - **Related decisions:** ADR-011, ADR-012, ADR-013, ADR-014

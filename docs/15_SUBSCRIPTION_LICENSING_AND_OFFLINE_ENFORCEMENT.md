@@ -1,7 +1,12 @@
 # 15 — Subscription, Licensing and Offline Enforcement
 
+- **Document ID:** DOC-15
+- **Status:** Current
+- **Decision maturity:** Accepted licensing policy; cryptographic details and grace duration remain open
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** 1.2  
-**Status:** Recommended commercial and technical policy; final prices, grace period and retention terms require owner approval.
 
 ## 1. Core decision
 

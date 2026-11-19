@@ -1,5 +1,12 @@
 # 06 — AI Intelligence Specification
 
+- **Document ID:** DOC-06
+- **Status:** Current
+- **Decision maturity:** Proposed AI capability specification
+- **Owner:** AI/technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+
 ## 1. AI architecture principles
 
 - AI functions live behind the SchoolOS AI module and provider gateway.

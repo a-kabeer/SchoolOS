@@ -1,5 +1,11 @@
 # 08 — Phase-Wise Development Task Plan
 
+- **Document ID:** DOC-08
+- **Status:** Current
+- **Decision maturity:** Planning baseline; release scope and dependencies remain subject to review
+- **Owner:** Product owner (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Planning rule:** Do not set calendar duration until team capacity, product scope, integrations and acceptance criteria have been assessed. Each phase must finish with working software, tests, documentation and a demo.
 
 ## Phase 0 — Product discovery and design

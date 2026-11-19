@@ -1,5 +1,11 @@
 # 03 — Technical Architecture: ASP.NET Core Modular Monolith
 
+- **Document ID:** DOC-03
+- **Status:** Current
+- **Decision maturity:** Accepted modular-monolith architecture direction
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 > **Hybrid deployment update (v1.1):** This document's Modular Monolith guidance applies to the **Local Data Plane business application**. The deployment now has two planes: (1) SchoolOS Cloud Control Plane for subscriptions, licenses, releases and sync coordination, and (2) one or more Local Data Plane nodes for school operations. This does not mean turning every business module into a microservice. See `14_HYBRID_CLOUD_LOCAL_ARCHITECTURE.md` for the authoritative topology.
 
 ## 1. Architecture choice

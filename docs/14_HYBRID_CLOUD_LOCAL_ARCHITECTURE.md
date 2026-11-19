@@ -1,7 +1,12 @@
 # 14 — Hybrid Cloud + Local Deployment Architecture
 
+- **Document ID:** DOC-14
+- **Status:** Current
+- **Decision maturity:** Accepted hybrid architecture direction; pilot topology remains open
+- **Owner:** Technical lead (accountable role; assignee TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
 **Version:** 1.1  
-**Status:** Recommended target architecture; deployment topology is configurable per customer.  
 **Decision:** SchoolOS will use a central Cloud Control Plane and one or more Local Data Plane nodes. Local school operations must not depend on a live cloud connection.
 
 ## 1. Executive decision
