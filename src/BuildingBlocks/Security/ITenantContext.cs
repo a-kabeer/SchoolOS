@@ -9,6 +9,9 @@ public interface ITenantContext
     Guid? TenantId { get; }
     Guid? CampusId { get; }
     string? UserId { get; }
+    Guid? SessionId { get; }
+    int CredentialVersion { get; }
+    bool MustChangePassword { get; }
     bool IsAuthenticated { get; }
     bool IsPlatformAdmin { get; }
     bool HasScope(string scope);

@@ -14,4 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CommonPasswords.txt.gz" LogicalName="SchoolOS.BuildingBlocks.Security.CommonPasswords.txt.gz" />
+  </ItemGroup>
 </Project>

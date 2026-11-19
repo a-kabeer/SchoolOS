@@ -18,7 +18,11 @@ public static class JwtTokenHelper
         Guid? campusId = null,
         IEnumerable<string>? roles = null,
         IEnumerable<string>? scopes = null,
-        TimeSpan? lifetime = null)
+        TimeSpan? lifetime = null,
+        int credentialVersion = 1,
+        Guid? sessionId = null,
+        bool mustChangePassword = false,
+        IEnumerable<string>? permissions = null)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -27,8 +31,19 @@ public static class JwtTokenHelper
         {
             new(JwtRegisteredClaimNames.Sub, userId),
             new(ClaimTypes.NameIdentifier, userId),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(TenantContext.CredentialVersionClaimType, (credentialVersion > 0 ? credentialVersion : 1).ToString())
         };
+
+        if (sessionId.HasValue)
+        {
+            claims.Add(new Claim(TenantContext.SessionIdClaimType, sessionId.Value.ToString()));
+        }
+
+        if (mustChangePassword)
+        {
+            claims.Add(new Claim(TenantContext.MustChangePasswordClaimType, "true"));
+        }
 
         if (tenantId.HasValue)
         {
@@ -54,6 +69,14 @@ public static class JwtTokenHelper
             foreach (var scope in scopes)
             {
                 claims.Add(new Claim(TenantContext.ScopeClaimType, scope));
+            }
+        }
+
+        if (permissions is not null)
+        {
+            foreach (var perm in permissions)
+            {
+                claims.Add(new Claim(TenantContext.PermissionClaimType, perm));
             }
         }
 

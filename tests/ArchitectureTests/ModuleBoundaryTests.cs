@@ -60,7 +60,9 @@ public class ModuleBoundaryTests
         var cloudAssembly = Assembly.Load("SchoolOS.Cloud.Api");
         var result = Types.InAssembly(cloudAssembly)
             .ShouldNot()
-            .HaveDependencyOn("SchoolOS.Modules.Organization")
+            .HaveDependencyOnAny(
+                "SchoolOS.Modules.Organization",
+                "SchoolOS.Modules.Identity")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
@@ -74,6 +76,7 @@ public class ModuleBoundaryTests
             "SchoolOS.Cloud.Api",
             "SchoolOS.Local.Api",
             "SchoolOS.Modules.Organization",
+            "SchoolOS.Modules.Identity",
             "SchoolOS.PlatformModules.Tenants"
         ];
 

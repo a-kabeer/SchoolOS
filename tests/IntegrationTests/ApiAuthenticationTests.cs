@@ -10,11 +10,48 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SchoolOS.BuildingBlocks.Persistence.Interceptors;
 using SchoolOS.BuildingBlocks.Security;
+using SchoolOS.Modules.Identity.Persistence;
 using SchoolOS.Modules.Organization.Persistence;
 using SchoolOS.PlatformModules.Tenants.Persistence;
 using Xunit;
 
 namespace SchoolOS.IntegrationTests;
+
+public static class TestDbContextExtensions
+{
+    internal static void ReplaceDbContextWithInMemory<TDbContext>(
+        IServiceCollection services,
+        string dbName,
+        bool includeChangeAudit = false)
+        where TDbContext : DbContext
+    {
+        var optionDescriptors = services
+            .Where(d =>
+                d.ServiceType == typeof(DbContextOptions<TDbContext>) ||
+                d.ServiceType == typeof(Microsoft.EntityFrameworkCore.Infrastructure.IDbContextOptionsConfiguration<TDbContext>))
+            .ToList();
+
+        foreach (var descriptor in optionDescriptors)
+        {
+            services.Remove(descriptor);
+        }
+
+        services.AddDbContext<TDbContext>((sp, options) =>
+        {
+            options.UseInMemoryDatabase(dbName);
+            if (includeChangeAudit)
+            {
+                options.AddInterceptors(
+                    sp.GetRequiredService<AuditSaveChangesInterceptor>(),
+                    sp.GetRequiredService<SchoolOS.BuildingBlocks.Persistence.Audit.ChangeAuditInterceptor>());
+            }
+            else
+            {
+                options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
+            }
+        });
+    }
+}
 
 public class CloudApiFactory : WebApplicationFactory<SchoolOS.Cloud.Api.Program>
 {
@@ -25,17 +62,7 @@ public class CloudApiFactory : WebApplicationFactory<SchoolOS.Cloud.Api.Program>
         builder.UseEnvironment("Testing");
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<PlatformDbContext>));
-            if (descriptor is not null)
-            {
-                services.Remove(descriptor);
-            }
-
-            services.AddDbContext<PlatformDbContext>((sp, options) =>
-            {
-                options.UseInMemoryDatabase(_dbName);
-                options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
-            });
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<PlatformDbContext>(services, _dbName);
         });
     }
 }
@@ -49,17 +76,8 @@ public class LocalApiFactory : WebApplicationFactory<SchoolOS.Local.Api.Program>
         builder.UseEnvironment("Testing");
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<OrganizationDbContext>));
-            if (descriptor is not null)
-            {
-                services.Remove(descriptor);
-            }
-
-            services.AddDbContext<OrganizationDbContext>((sp, options) =>
-            {
-                options.UseInMemoryDatabase(_dbName);
-                options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
-            });
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<OrganizationDbContext>(services, _dbName);
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<IdentityDbContext>(services, _dbName, includeChangeAudit: true);
         });
     }
 }

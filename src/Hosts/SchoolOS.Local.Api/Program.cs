@@ -5,6 +5,8 @@ using SchoolOS.BuildingBlocks.Persistence;
 using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.BuildingBlocks.Web;
+using SchoolOS.Modules.Identity;
+using SchoolOS.Modules.Identity.Endpoints;
 using SchoolOS.Modules.Organization;
 using SchoolOS.Modules.Organization.Domain;
 using SchoolOS.Modules.Organization.Persistence;
@@ -21,6 +23,7 @@ builder.Services.AddWebHardeningBuildingBlocks(builder.Configuration);
 builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks(builder.Configuration, builder.Environment, "SchoolOS.Local.Api");
+builder.Services.AddIdentityModule(builder.Configuration);
 builder.Services.AddOrganizationModule(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -64,6 +67,11 @@ app.MapGet("/health", () => Results.Ok(new
     plane = "CampusLocalDataPlane",
     timestamp = DateTime.UtcNow 
 }));
+
+// ==============================================================================
+// Identity & Scoped RBAC Endpoints (Local Data Plane)
+// ==============================================================================
+app.MapIdentityEndpoints();
 
 // ==============================================================================
 // Organization Endpoints (Local Data Plane — Multi-Tenant Scoped)

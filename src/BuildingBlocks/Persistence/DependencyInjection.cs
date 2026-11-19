@@ -10,6 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddPersistenceBuildingBlocks(this IServiceCollection services)
     {
         services.TryAddSingleton(TimeProvider.System);
+        services.TryAddScoped<ISecurityAuditLog, StructuredSecurityAuditLog>();
         services.AddScoped<AuditSaveChangesInterceptor>();
         services.AddScoped<ChangeAuditInterceptor>();
         services.AddScoped<PostgresTenantSessionInterceptor>();

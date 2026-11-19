@@ -13,12 +13,19 @@ public class TenantContext : ITenantContext
     public const string TenantIdClaimType = "tenant_id";
     public const string CampusIdClaimType = "campus_id";
     public const string ScopeClaimType = "scope";
+    public const string PermissionClaimType = "perms";
+    public const string SessionIdClaimType = "sid";
+    public const string CredentialVersionClaimType = "cv";
+    public const string MustChangePasswordClaimType = "pwd_change_required";
 
     private readonly HashSet<string> _scopes = new(StringComparer.OrdinalIgnoreCase);
 
-    public Guid? TenantId { get; }
+    public Guid? TenantId { get; private set; }
     public Guid? CampusId { get; }
-    public string? UserId { get; }
+    public string? UserId { get; private set; }
+    public Guid? SessionId { get; }
+    public int CredentialVersion { get; } = 1;
+    public bool MustChangePassword { get; }
     public bool IsAuthenticated { get; }
     public bool IsPlatformAdmin { get; }
 
@@ -71,8 +78,13 @@ public class TenantContext : ITenantContext
             CampusId = campusId;
         }
 
-        // Cache scopes and roles for authorization evaluation
+        // Cache scopes, permissions, and roles for authorization evaluation
         foreach (var claim in principal.FindAll(ScopeClaimType))
+        {
+            _scopes.Add(claim.Value);
+        }
+
+        foreach (var claim in principal.FindAll(PermissionClaimType))
         {
             _scopes.Add(claim.Value);
         }
@@ -87,6 +99,23 @@ public class TenantContext : ITenantContext
             _scopes.Add($"role:{claim.Value}");
         }
 
+        var sidClaim = principal.FindFirst(SessionIdClaimType)?.Value;
+        if (Guid.TryParse(sidClaim, out var sessionId))
+        {
+            SessionId = sessionId;
+        }
+
+        var cvClaim = principal.FindFirst(CredentialVersionClaimType)?.Value;
+        if (int.TryParse(cvClaim, out var cv) && cv > 0)
+        {
+            CredentialVersion = cv;
+        }
+
+        MustChangePassword = string.Equals(
+            principal.FindFirst(MustChangePasswordClaimType)?.Value,
+            "true",
+            StringComparison.OrdinalIgnoreCase);
+
         IsPlatformAdmin =
             _scopes.Contains($"role:{SecurityPolicies.PlatformAdminRole}") ||
             _scopes.Contains(SecurityPolicies.PlatformAdminScope);
@@ -95,11 +124,22 @@ public class TenantContext : ITenantContext
     /// <summary>
     /// Constructor for explicit, verified server-side background contexts (e.g. migrations, sync daemon).
     /// </summary>
-    public TenantContext(Guid? tenantId, Guid? campusId = null, string? userId = null, IEnumerable<string>? scopes = null, bool isPlatformAdmin = false)
+    public TenantContext(
+        Guid? tenantId,
+        Guid? campusId = null,
+        string? userId = null,
+        IEnumerable<string>? scopes = null,
+        bool isPlatformAdmin = false,
+        int credentialVersion = 1,
+        Guid? sessionId = null,
+        bool mustChangePassword = false)
     {
         TenantId = tenantId;
         CampusId = campusId;
         UserId = userId;
+        SessionId = sessionId;
+        CredentialVersion = credentialVersion > 0 ? credentialVersion : 1;
+        MustChangePassword = mustChangePassword;
         IsAuthenticated = userId is not null || tenantId is not null || isPlatformAdmin;
 
         if (scopes is not null)
@@ -119,5 +159,33 @@ public class TenantContext : ITenantContext
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(scope);
         return _scopes.Contains(scope);
+    }
+
+    /// <summary>
+    /// Binds an unauthenticated, tenant-less request context to a specific target tenant during
+    /// pre-authentication workflows (<c>/auth/login</c>, <c>/auth/refresh</c>) so EF Core query filters,
+    /// PostgreSQL RLS session interceptors, and audit attribution stay strictly scoped and fail-closed.
+    /// Refuses to overwrite an already authenticated or tenant-bound context.
+    /// </summary>
+    public void EnterPreAuthenticationTenantScope(Guid tenantId, string systemActorId)
+    {
+        if (IsAuthenticated || TenantId.HasValue)
+        {
+            throw new InvalidOperationException("Cannot override an already-authenticated or tenant-bound TenantContext.");
+        }
+
+        if (tenantId == Guid.Empty)
+        {
+            throw new ArgumentException("Tenant ID cannot be empty.", nameof(tenantId));
+        }
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(systemActorId);
+        if (!systemActorId.StartsWith("system:", StringComparison.Ordinal))
+        {
+            throw new ArgumentException("Pre-authentication scope requires an explicit 'system:' actor identifier.", nameof(systemActorId));
+        }
+
+        TenantId = tenantId;
+        UserId = systemActorId;
     }
 }

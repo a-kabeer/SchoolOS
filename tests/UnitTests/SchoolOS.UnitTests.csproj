@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\src\BuildingBlocks\Observability\SchoolOS.BuildingBlocks.Observability.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\Secrets\SchoolOS.BuildingBlocks.Secrets.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\Web\SchoolOS.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Identity\SchoolOS.Modules.Identity.csproj" />
     <ProjectReference Include="..\..\src\Modules\Organization\SchoolOS.Modules.Organization.csproj" />
   </ItemGroup>
 
