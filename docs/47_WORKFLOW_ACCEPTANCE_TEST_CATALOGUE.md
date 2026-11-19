@@ -5,7 +5,7 @@
 - **Decision maturity:** Proposed acceptance-test catalogue; execution evidence not implied
 - **Owner:** QA lead (accountable role; assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor)
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 **Version:** v1.8 draft · **Status:** Proposed acceptance baseline; pilot-specific values and policies require approval  
 **Companion:** docs/02_MODULES_AND_WORKFLOWS.md, docs/08_DEVELOPMENT_ROADMAP.md, docs/45_API_AND_INTEGRATION_EVENT_CONTRACTS.md, docs/46_AUTHORIZATION_AND_TENANT_ISOLATION_MATRIX.md
 
