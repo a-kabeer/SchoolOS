@@ -1,0 +1,39 @@
+Task ID,ID Type,Workstream,Work Package,Task,Source Document,Source ID,Priority,Status,Owner
+AI-4,Source work package,AI,AI-4,First product release: Auditor and Business Copilot,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-4,Not specified in source,Not Started,Unassigned
+AI-4-01,Refactor tracking ID (new),AI,AI-4,Implement deterministic finance anomaly rules.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-4,Not specified in source,Not Started,Unassigned
+AI-4-02,Refactor tracking ID (new),AI,AI-4,Add read-only reporting tools and explanation layer.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-4,Not specified in source,Not Started,Unassigned
+AI-4-03,Refactor tracking ID (new),AI,AI-4,"Add finding severity, evidence and reviewer disposition.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-4,Not specified in source,Not Started,Unassigned
+AI-4-04,Refactor tracking ID (new),AI,AI-4,"Show calculation, date range, scope and data freshness in Copilot.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-4,Not specified in source,Not Started,Unassigned
+AI-4-05,Refactor tracking ID (new),AI,AI-4,"Add feedback, false-positive tracking and evaluation dashboard.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-4,Not specified in source,Not Started,Unassigned
+AI-4-06,Refactor tracking ID (new),AI,AI-4,"Pilot with controlled, anonymized or explicitly approved data.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-4,Not specified in source,Not Started,Unassigned
+AI-5,Source work package,AI,AI-5,Learning and Examination Intelligence,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-5-01,Refactor tracking ID (new),AI,AI-5,Implement topic/learning-outcome performance dataset.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-5-02,Refactor tracking ID (new),AI,AI-5,Add curriculum-aware worksheet generation and teacher review.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-5-03,Refactor tracking ID (new),AI,AI-5,Add exam paper blueprint and coverage validation.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-5-04,Refactor tracking ID (new),AI,AI-5,Add objective OMR/image checking pilot.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-5-05,Refactor tracking ID (new),AI,AI-5,Evaluate OCR/handwriting and rubric-based subjective marking.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-5-06,Refactor tracking ID (new),AI,AI-5,Store AI suggestions separately from approved official marks.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-5-07,Refactor tracking ID (new),AI,AI-5,Add subject/language-specific evaluation and moderation.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-5,Not specified in source,Not Started,Unassigned
+AI-6,Source work package,AI,AI-6,Voice and Early Intervention,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-6,Not specified in source,Not Started,Unassigned
+AI-6-01,Refactor tracking ID (new),AI,AI-6,"Benchmark Urdu, Roman Urdu and mixed-language speech services.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-6,Not specified in source,Not Started,Unassigned
+AI-6-02,Refactor tracking ID (new),AI,AI-6,Build voice assistant read-only query flow.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-6,Not specified in source,Not Started,Unassigned
+AI-6-03,Refactor tracking ID (new),AI,AI-6,Add confirmation and normal permission checks for actions.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-6,Not specified in source,Not Started,Unassigned
+AI-6-04,Refactor tracking ID (new),AI,AI-6,Build early-intervention signals with explanation and human review.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-6,Not specified in source,Not Started,Unassigned
+AI-6-05,Refactor tracking ID (new),AI,AI-6,"Conduct false-positive, fairness and safety reviews.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-6,Not specified in source,Not Started,Unassigned
+AI-6-06,Refactor tracking ID (new),AI,AI-6,"Test noise, accent, names, accessibility and device compatibility.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-6,Not specified in source,Not Started,Unassigned
+AI-7,Source work package,AI,AI-7,Private and Campus Local AI,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-01,Refactor tracking ID (new),AI,AI-7,Define premium private-hosting service and operational responsibilities.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-02,Refactor tracking ID (new),AI,AI-7,Evaluate local model runtime and hardware profiles.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-03,Refactor tracking ID (new),AI,AI-7,Implement local inference endpoint behind the same gateway contract.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-04,Refactor tracking ID (new),AI,AI-7,Implement local RAG and approved local document indexing.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-05,Refactor tracking ID (new),AI,AI-7,Test WAN outage and cloud-fallback prohibition for local-only data.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-06,Refactor tracking ID (new),AI,AI-7,"Define model update, vulnerability patching and rollback process.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-07,Refactor tracking ID (new),AI,AI-7,"Measure cost, latency, support load and local capacity.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-08,Refactor tracking ID (new),AI,AI-7,Code and automated tests completed.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-09,Refactor tracking ID (new),AI,AI-7,Tenant/campus authorization and data classification tested.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-10,Refactor tracking ID (new),AI,AI-7,Quality and adversarial tests pass.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-11,Refactor tracking ID (new),AI,AI-7,Human approval requirements are implemented.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-12,Refactor tracking ID (new),AI,AI-7,"Usage, cost and audit events are observable.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-13,Refactor tracking ID (new),AI,AI-7,Privacy/retention/provider terms are reviewed.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-14,Refactor tracking ID (new),AI,AI-7,"Documentation, rollback and support instructions are updated.",docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned
+AI-7-15,Refactor tracking ID (new),AI,AI-7,Product owner and technical lead accept the result.,docs/task-plans/AI_IMPLEMENTATION_TASK_PLAN.md,AI-7,Not specified in source,Not Started,Unassigned

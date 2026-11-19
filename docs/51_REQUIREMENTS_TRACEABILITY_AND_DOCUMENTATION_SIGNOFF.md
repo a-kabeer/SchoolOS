@@ -130,3 +130,8 @@ Each decision must be recorded in an ADR or approved decision log with context, 
 - [ ] Product, technical, security and QA sign-off is recorded.
 
 **No coding gate:** Phase 1 remains blocked until this checklist is signed off. Approval of a specification does not automatically authorize unrelated phases.
+
+
+## 7. Supplemental machine-readable requirement register
+
+The root `registers/requirement-traceability.csv` exports the 36 requirement rows in this document 51 matrix into a machine-readable supplement. Its acceptance-test references are copied from this matrix and remain references only; they do not prove that the corresponding test exists or has passed. This CSV is not a substitute for this sign-off matrix.

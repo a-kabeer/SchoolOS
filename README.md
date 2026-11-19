@@ -1,7 +1,8 @@
 # SchoolOS — Project Blueprint
 
-**Document set:** Product, Technical & Business Platform Blueprint v1.7  
+**Document set:** Product, Technical & Business Platform Blueprint v1.7 with the v1.8 implementation-ready baseline and v2.1 documentation reconciliation supplement  
 **Prepared:** 9 November 2026  
+**Documentation reconciliation:** 19 November 2026  
 **Working product name:** SchoolOS (provisional; final brand not selected)  
 **Status:** Product direction and BCP scope captured; detailed discovery and implementation decisions remain open. No implementation is implied.
 
@@ -170,3 +171,19 @@ The documentation-first supplement is in `docs/42` through `docs/51`. Read these
 These specifications are drafts until reviewed and approved. Their existence does not imply implementation. Phase 1 coding must remain blocked until the sign-off checklist in document 51 is complete.
 
 The separate developer/pilot OCI staging pipeline is documented in `docs/52_OCI_STAGING_AND_AUTOMATED_QA_RUNBOOK.md` and tracked in `docs/53_STAGING_QA_PROGRESS_TRACKER.md`. It complements document 48 but does not replace production Local Node operations.
+
+
+## Documentation governance and v2.1 reconciliation
+
+The v2.1 remediation package has been selectively reconciled with the current repository baseline. The existing numbered documentation and merged PR #2 / PR #3 changes remain authoritative; the alternate folder hierarchy from the ZIP was not copied as a competing structure.
+
+- [54 — Documentation Standards](docs/54_DOCUMENTATION_STANDARDS.md)
+- [55 — Guardian and Household Requirements](docs/55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md)
+- [56 — SchoolOS Glossary](docs/56_GLOSSARY.md)
+- [57 — Offline Sync and Manual Data Exchange](docs/57_OFFLINE_SYNC_AND_MANUAL_DATA_EXCHANGE.md)
+- [58 — v2.1 Documentation Migration Report](docs/58_DOCUMENTATION_REFACTOR_V2_1_MIGRATION_REPORT.md)
+- [59 — Task Register and Traceability Guide](docs/59_TASK_REGISTER_AND_TRACEABILITY_GUIDE.md)
+
+The four detailed H0–H7, AI-0–AI-7, BILL and BCP task plans are in `docs/task-plans/`. The machine-readable planning and traceability registers are in `registers/`; they complement, rather than replace, documents 09, 51 and 53. Reusable ADR, module-specification, runbook and change-proposal templates are in `docs/templates/`.
+
+The new governance and companion documents are review material, not sign-off for unresolved product decisions. The task register is a plan snapshot and does not imply implementation.

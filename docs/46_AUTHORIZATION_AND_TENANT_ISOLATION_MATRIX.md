@@ -245,3 +245,8 @@ The exact operation-by-operation list is open and must be approved before releas
 - [ ] Restricted Mode operation matrix approved.
 - [ ] RLS/database-role strategy approved.
 - [ ] Authorization test suite approved.
+
+
+## 14. Guardian and household requirement companion
+
+Use [55 — Guardian and Household Requirements](55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md) together with the guardian/family-link permissions in this matrix. Access is derived from verified relationships plus explicit permission and scope; payer, emergency-contact or household membership alone must not be treated as blanket access.

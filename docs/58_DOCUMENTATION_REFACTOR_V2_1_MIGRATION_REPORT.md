@@ -1,0 +1,65 @@
+# 58 — Documentation Refactor v2.1 Migration Report
+
+- **Document ID:** GOV-MIGRATION-001
+- **Status:** Implemented on a review branch; pending PR review and owner sign-off
+- **Decision maturity:** Migration disposition recorded; no product policy or architecture decision is newly approved here
+- **Owner:** Technical lead (named accountable owner TBD)
+- **Last reviewed:** 2026-11-19
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `1f84bb022816a91d985c7c0baae77b3a5ca47121`; uploaded `SchoolOS_Documentation_Refactor_v2_1_Remediation_Draft` ZIP
+
+## 1. Migration objective
+
+Reconcile the uploaded v2.1 remediation package with the current repository documentation baseline without replacing the existing flat `docs/00–53` structure or reintroducing content already merged through PR #2 and PR #3. This is a documentation-only change.
+
+## 2. Verified repository baseline
+
+- PR #1 (Phase 0 foundation) is merged.
+- PR #2 (documentation baseline, documents 42–51) is merged.
+- PR #3 (OCI staging/automated QA, documents 52–53) is merged.
+- The current `main` commit at migration start was `1f84bb022816a91d985c7c0baae77b3a5ca47121`.
+- Existing ADR-011 through ADR-021 are retained under `docs/decisions/`; document 13 remains the repository ADR index.
+
+The ZIP's pinned source commit `66e0d35416a7f556ecb2aead4a8580bd3a0ed686` predates PR #2 and PR #3. Its alternate proposed folder hierarchy and migration map were not adopted as a replacement.
+
+## 3. Adopted assets
+
+| Source asset | Repository destination | Disposition |
+|---|---|---|
+| Documentation standards | `docs/54_DOCUMENTATION_STANDARDS.md` | Adopted, adjusted for current flat structure and gradual metadata compliance |
+| Guardian/household requirements | `docs/55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md` | Adopted as focused companion to docs 43 and 46 |
+| Glossary shell | `docs/56_GLOSSARY.md` | Replaced with concise definitions aligned to current docs; no product policy added |
+| Offline sync/data exchange specification | `docs/57_OFFLINE_SYNC_AND_MANUAL_DATA_EXCHANGE.md` | Adopted as detailed companion to doc 05; unresolved semantics remain open |
+| Four restored task plans | `docs/task-plans/` | Adopted; source package/work-package and task IDs preserved |
+| Consolidated task registers | Six workstream CSVs under `registers/task-register-*.csv` | Adopted; 265 source/work-package/tracking rows partitioned by workstream; `ID Type` and `Source ID` preserve lineage without a separate crosswalk file |
+| Requirement traceability | `registers/requirement-traceability.csv` | Derived from the current document 51 matrix (36 requirement rows); acceptance-test references are references only, not evidence of execution |
+| Task counts | `registers/task-register-counts.json` | Adopted and annotated with current repository baseline and scope |
+| ADR, module, runbook and change templates | `docs/templates/` | Adopted as reusable templates, not approved decisions |
+
+## 4. Deliberately not imported
+
+- The ZIP's proposed `docs/00-overview`, `01-product`, `02-architecture`, `03-platform`, `04-ai`, `05-security-operations`, `06-delivery` and `07-reference` hierarchy was not copied wholesale because it duplicates or relocates current numbered documents 00–53.
+- Its alternate `docs/INDEX.md` and ADR index were not added as parallel indexes; the root README and `docs/13_ADR_INDEX.md` remain the navigation/decision indexes.
+- Its decision register was not imported because current ADR-011–021 records and document 13 already exist.
+- Its proposed document register and source-path migration register were not imported because their destinations describe the alternate hierarchy that this migration intentionally does not adopt.
+- The ZIP's branch-baseline reconciliation was not copied as current fact: it describes a 9–11 November snapshot and must be re-audited before any branch status is asserted.
+- No application code, database schema, migrations, deployment configuration, secrets, workflows or runtime behavior were changed.
+
+## 5. Important open decisions preserved
+
+- Guardian relationship authority, custody, payer rights and communication scope remain open; multiple guardians per student and multiple students/siblings per household remain supported requirements.
+- Whether marks can be finalized by a reachable Local Node during WAN loss remains open.
+- Whether a Local Node-accepted offline cash receipt is campus-final or remains provisional pending cloud acknowledgement remains open.
+- Acceptance-test references carried from document 51 are traceability pointers only; test execution was not verified by this migration.
+
+## 6. Validation performed
+
+- ZIP archive integrity checked with `unzip -t`.
+- All 71 entries in the ZIP SHA-256 manifest verified with zero mismatches.
+- 62 Markdown files inventoried; 265 register rows checked for unique task/work-package IDs across six workstream CSVs; 36 current document 51 requirement rows exported.
+- Task-register source paths remapped to the imported plan locations; detailed work-package plans are stored under `docs/task-plans/`.
+- New/updated Markdown relative links and CSV/JSON registers are validated as part of this PR.
+- No claim is made that the SchoolOS application features or planned delivery tasks are implemented.
+
+## 7. Review required
+
+Product owner and technical lead should review the proposed governance standard, guardian rules, offline workflow semantics and register scope. The existing PR #2 and PR #3 merges remain unchanged.

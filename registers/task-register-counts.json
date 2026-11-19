@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "source_package": "SchoolOS_Documentation_Refactor_v2_1_Remediation_Draft",
+  "repository": "a-kabeer/SchoolOS",
+  "branch": "docs/refactor-v2.1-reconciliation",
+  "audited_base_commit": "1f84bb022816a91d985c7c0baae77b3a5ca47121",
+  "task_registers": [
+    {
+      "path": "registers/task-register-hybrid-h0-h3.csv",
+      "data_rows": 48,
+      "workstream": "Hybrid deployment H0–H3"
+    },
+    {
+      "path": "registers/task-register-hybrid-h4-h7.csv",
+      "data_rows": 44,
+      "workstream": "Hybrid deployment H4–H7"
+    },
+    {
+      "path": "registers/task-register-ai-ai0-ai3.csv",
+      "data_rows": 33,
+      "workstream": "AI AI-0–AI-3"
+    },
+    {
+      "path": "registers/task-register-ai-ai4-ai7.csv",
+      "data_rows": 38,
+      "workstream": "AI AI-4–AI-7"
+    },
+    {
+      "path": "registers/task-register-commercial-billing.csv",
+      "data_rows": 49,
+      "workstream": "Commercial billing"
+    },
+    {
+      "path": "registers/task-register-business-customer-platform.csv",
+      "data_rows": 53,
+      "workstream": "Business & Customer Platform"
+    }
+  ],
+  "total_task_register_rows": 265,
+  "requirement_traceability_rows": 36,
+  "lineage_fields": [
+    "ID Type",
+    "Source ID"
+  ],
+  "status_note": "All statuses are planning snapshots from the source package; none imply implementation completion.",
+  "evidence_note": "Acceptance-test references are pointers only. No test execution is asserted by these registers."
+}
