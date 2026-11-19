@@ -82,9 +82,9 @@ This section records the subsequent repository changes; it does not alter the or
 
 ### 9.1 Reconciled counts
 
-At the post-PR #6 / pre-PR #7 documentation baseline `9d8d27caa65f9bd0a68764671d451495df28df77`, the canonical registers contained 297 task rows across seven CSV partitions and 37 requirement rows. The prior 265 task rows and 36 requirement rows recorded in section 3 remain the correct result of the original v2.1 migration and are not overwritten.
+At the PR #7 base commit `f614eae6d63cf9d1f4a7d12bfd1dc0e32c0f5102` (post-PR #6 and pre-PR #7), the canonical registers contained 297 task rows across seven CSV partitions and 37 requirement rows. The prior 265 task rows and 36 requirement rows recorded in section 3 remain the correct result of the original v2.1 migration and are not overwritten.
 
-The follow-up documentation-arrangement work adds 12 DOCALIGN tasks in an eighth partition. Its branch therefore contains 309 task rows across eight partitions and still 37 requirement rows. The counts JSON and validator are updated together to derive/verify these values from the actual CSV files.
+PR #7 then merged as `9d8d27caa65f9bd0a68764671d451495df28df77` without changing `docs/` or `registers/`, so the seven-partition/297-task/37-requirement documentation baseline remained unchanged. The follow-up documentation-arrangement work adds 12 DOCALIGN tasks in an eighth partition. Its branch therefore contains 309 task rows across eight partitions and still 37 requirement rows. The counts JSON and validator are updated together to derive/verify these values from the actual CSV files.
 
 ### 9.2 Current navigation and governance
 
