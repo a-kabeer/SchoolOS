@@ -555,3 +555,42 @@ For each accepted test, keep:
 - Reviewer/approver.
 
 A passing test on a developer laptop is not by itself production readiness evidence.
+
+
+## 15. Reference-adoption acceptance scenarios
+
+These scenarios supplement the existing workflow catalogue. They are proposed acceptance requirements, not evidence that the scenarios have been implemented or executed. They use synthetic data.
+
+### MOD-001 — Entitlement and user authorization are independent (P0)
+
+**Given** a Local Node has a valid signed entitlement for a module, but the signed-in user lacks the relevant permission.  
+**When** the user calls the module API directly.  
+**Then** the request is denied, no data changes, and the denial is auditable according to policy.
+
+### MOD-002 — User role cannot enable an unentitled module (P0)
+
+**Given** a user has a role containing a permission for a module, but the node's verified subscription/licence entitlement does not include that module.  
+**When** the user accesses the module API while Cloud is unavailable.  
+**Then** the Local Node denies the operation using its verified local entitlement state; no live Cloud call is required and no customer data is deleted.
+
+### MOD-003 — Module dependency and compatibility gate (P1)
+
+**Given** a module depends on another module or requires a newer compatible contract/schema version.  
+**When** the catalogue/lease configuration is activated with the dependency missing or incompatible.  
+**Then** activation is rejected or the capability is safely unavailable with an explicit diagnostic; no silent partial operation is allowed.
+
+### FEE-009 — Concurrent or retried cashier payment is idempotent (P0)
+
+**Given** the same payment instruction is submitted twice because of a double click, retry or concurrent cashier request using the same idempotency/source key.  
+**When** the Local Node processes the requests.  
+**Then** only one payment/receipt and one corresponding accounting effect are created; subsequent attempts return the existing result or a safe duplicate response.
+
+### FIN-006 — Fee receipt is traceable to finance posting (P0)
+
+**Given** a fee payment is accepted and reaches its approved confirmed/posted state.  
+**When** the finance integration completes.  
+**Then** the receipt, payment allocation, source operation and balanced journal can be traced to each other; retry cannot create a second journal; any failure is visible and recoverable without an unsafe dual-write.
+
+The exact transaction/posting boundary remains governed by DEC-005. Do not mark FIN-006 passed until the chosen contract and persistence-level tests are approved.
+
+Link these scenarios to the canonical task-register IDs before implementation. Do not create a separate Markdown task-status tracker.
