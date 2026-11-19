@@ -4,7 +4,7 @@
 - **Decision maturity:** Accepted project documentation standard for this repository
 - **Owner:** Technical lead (accountable role; named assignee TBD)
 - **Last reviewed:** 2026-11-19
-- **Source baseline:** `a-kabeer/SchoolOS` `main` @ `8356f248e54d317294c4972d124e26ecc6ae84d9` (base for documentation governance refactor); reconciled against the current repository documentation baseline and the uploaded v2.1 remediation draft
+- **Source baseline:** `a-kabeer/SchoolOS` `main` @ 898812f89e0ec7f03aff6c3b1408e46782814dfd; reference sources pinned in DOC-61
 
 **Applies to:** All canonical product, engineering, security, AI, operations, commercial, delivery and architecture-decision documents. Templates, indexes, generated manifests, CSV/JSON registers and changelogs have their own metadata rules below.
 
