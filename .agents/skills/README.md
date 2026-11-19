@@ -13,6 +13,31 @@ For SchoolOS-specific requirements and architecture, start with the [categorized
 - Skill entry point: `.agents/skills/<skill-name>/SKILL.md`
 - Companion material: `.agents/skills/<skill-name>/references/`, `scripts/`, or `resources/` where supplied.
 - No `tier-1-core/` or `tier-2-workstreams/` parent directories are retained in this installed layout.
+## Task-to-skill activation map
+
+Choose the smallest relevant set of skills for the task. These are routing suggestions, not additional project requirements; open each selected `SKILL.md` before applying it.
+
+| SchoolOS task | Activate when | Relevant existing skills |
+|---|---|---|
+| Product scope, workflows and architecture | Defining module boundaries, evaluating a design or tracing docs/code drift | `product-manager`, `engineering-software-architect`, `engineering-backend-architect`, `specialized-codebase-archaeologist`, `specialized-workflow-architect` |
+| .NET 10 / ASP.NET Core / APIs | Editing C# hosts, module boundaries, API contracts or identity endpoints | `engineering-backend-architect`, `engineering-api-platform-engineer`, `engineering-identity-access-engineer`, `engineering-code-reviewer` |
+| React / TypeScript frontend | Editing the Vite/React app, routing, forms, UI behavior or responsive layout | `engineering-frontend-developer`, `modern-web-guidance`, `ui-ux-pro-max`; add `a11y-debugging`, `testing-accessibility-auditor` or `engineering-i18n-engineer` for accessibility, RTL or localization work |
+| PostgreSQL / data / migrations | Designing data ownership, schema, queries, migrations or recovery behavior | `engineering-database-optimizer`, `engineering-database-reliability-engineer`, `schema-mapping`; include `accidental-data-loss-prevention` before destructive data operations |
+| SaaS tenancy, identity and security | Changing tenant hierarchy, memberships, provisioning, authorization, privacy or secrets | `engineering-identity-access-engineer`, `security-architect`, `security-appsec-engineer`, `engineering-privacy-engineer`, `data-privacy-officer`, `security-secrets-credential-engineer`; add `security-ai-generated-code-auditor` when reviewing AI-generated code |
+| Hybrid deployment, offline sync and operations | Changing Cloud/Local boundaries, node enrollment, offline queues, synchronization, backup, deployment or incident response | `engineering-software-architect`, `engineering-realtime-collaboration-engineer`, `engineering-devops-automator`, `engineering-database-reliability-engineer`, `engineering-sre`, `engineering-incident-response-commander` |
+| Billing, subscriptions and school finance | Changing payment, entitlement, subscription, reconciliation or accounting workflows | `engineering-payments-billing-engineer`, `finance-bookkeeper-controller`, `security-appsec-engineer` |
+| AI features and providers | Changing AI orchestration, prompts, RAG, voice, model routing or AI security | `engineering-ai-engineer`, `engineering-prompt-engineer`, `engineering-rag-pipeline-engineer`, `engineering-voice-ai-integration-engineer`, `llm-security`; use `gemini-api-dev` only when the approved task actually integrates Gemini |
+| Verification and release readiness | Adding API/UI tests, E2E automation, performance checks or evidence-based review | `testing-test-automation-engineer`, `testing-api-tester`, `testing-reality-checker`, `testing-performance-benchmarker`, `engineering-code-reviewer` |
+| Documentation, planning and Git | Editing canonical specifications, ADRs, plans, registers, agent instructions or PR workflow | `engineering-technical-writer`, `specialized-master-plan-architect`, `specialized-workflow-architect`, `specialized-codebase-archaeologist`, `engineering-git-workflow-master`, `engineering-minimal-change-engineer`; use `specialized-document-generator` only for standalone office/PDF deliverables |
+
+### Skill use and validation rules
+
+1. Read only the selected skill entry points; load companion references only when the skill or task requires them.
+2. SchoolOS's actual stack and authority are defined by `AGENTS.md` and canonical documents: .NET 10 / ASP.NET Core, React + TypeScript, PostgreSQL, modular monolith, and separate Cloud Control Plane / Local Data Plane databases.
+3. Skills may describe other frameworks, vendors or architectures. Do not import those defaults into SchoolOS unless a canonical specification and approved decision permit them.
+4. Validate at the task's real boundary: .NET build/tests for backend work; frontend lint/build and relevant UI tests for frontend work; PostgreSQL integration/migration and tenant-isolation tests for data/security work; documentation validator and link/register checks for documentation work.
+5. A skill checklist, suggested test ID or generated analysis is not proof of execution. Record exact commands and actual results in the PR under the evidence rules in [AGENTS.md](../../AGENTS.md).
+
 
 ## Tier 1 — Core Skills (29)
 

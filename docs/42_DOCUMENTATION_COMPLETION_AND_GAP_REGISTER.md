@@ -246,3 +246,47 @@ The existence of these files establishes documentation coverage only. It does no
 The current alignment work is tracked in [DOCUMENTATION_ALIGNMENT_TASK_PLAN.md](task-plans/DOCUMENTATION_ALIGNMENT_TASK_PLAN.md) and `registers/task-register-documentation-governance.csv`. Its tasks cover the DOC-60 table, current counts, navigation, historical reconciliation, metadata semantics and validator expansion. The plan's task statuses are authoritative only in the CSV partition.
 
 The original document 42 implementation snapshot remains tied to its recorded reviewed commit. Do not reinterpret that snapshot as a new code audit of the post-PR #7 repository.
+
+## 13. Current-state audit after merged PR #8 (19 November 2026)
+
+- **Audit baseline:** `a-kabeer/SchoolOS` `main` at `3cc2a02342f60af124e04aeb86563c331b497a1f`.
+- **Audit method:** GitHub repository tree inspection, current documentation and governance-source review, task-register row counting, inspection of all 51 skill entry points, and targeted review of Cloud API, Local API, frontend shell, tests and the documentation-quality workflow.
+- **Scope:** Documentation architecture, agent guidance, skills discoverability, traceability and implementation/documentation alignment. No runtime code or schema changes were made by this audit.
+
+### 13.1 Repository and governance findings
+
+| Area | Verified current state | Finding |
+|---|---|---|
+| Documentation layout | Stable numbered documents DOC-00–DOC-62; focused `decisions/`, `task-plans/` and `templates/` directories | Preserve the existing flat numbered structure and paths; no mass relocation is justified. |
+| Navigation | Root `README.md`, categorized `docs/README.md`, ADR index, task-plan index and register guide exist | The catalogue covers the numbered documents, but it needs an explicit seven-source knowledge map for agents and maintainers. |
+| Task-status authority | Eight `registers/task-register-*.csv` partitions; 309 data rows in total; 37 requirement-traceability rows | The eight partitions reconcile to the counts manifest and remain one logical task register. Do not create a Markdown task-status tracker. |
+| Detailed delivery plans | Five canonical workstream plans under `docs/task-plans/`; numbered documents 17, 25, 28 and 39 are summaries/entry points | Keep detailed execution plans in `docs/task-plans/`; make DOC-08 the phase-level master roadmap and link to the workstream plans. |
+| Documentation governance | DOC-54 defines metadata, lifecycle and authority; `scripts/validate-docs.mjs` and `.github/workflows/documentation-quality.yml` exist | Retain the existing quality gate. Its validation must be run against the resulting PR branch; repository-file inspection alone is not a passing test result. |
+| Agent instructions | Root `AGENTS.md` is the repository-wide authority and already defines precedence, security and architecture invariants | Add one explicit task-execution protocol and knowledge-source routing here rather than creating a second instruction root. |
+| Agent skills | 51 `SKILL.md` entry points under `.agents/skills/`; index identifies 29 Tier 1 and 22 Tier 2 skills | Preserve all 51. Improve task-to-skill activation guidance; do not copy skill bodies into general documentation or assume every skill applies to every task. |
+| Decision governance | DOC-60 contains the decision closure register; ADRs remain under `docs/decisions/` | Preserve all Open decisions. A proposal, skill or implementation plan must not close a decision. |
+
+### 13.2 Verified implementation baseline at the audit commit
+
+The current source tree remains a foundation scaffold, consistent with the earlier implementation finding, with the following current-snapshot evidence:
+
+- The .NET solution has Cloud API and Local API hosts. Each host currently registers OpenAPI and exposes a basic `/health` endpoint; the inspected host entry points do not register database, authentication, authorization or business-module services.
+- The production C# source files visible in the tree are the two host entry points plus four BuildingBlocks source files (`ITenantContext`, `Entity`, `Result` and telemetry constants). Two test source files cover Shared Kernel behavior and a module-boundary rule; this is not evidence of end-to-end tenant isolation or school workflows.
+- The ten school-module directories and four platform-module directories remain placeholders (`.gitkeep` only). No EF Core `DbContext`, migration set or checked-in operational SQL schema appears in the current source tree.
+- The React/Vite frontend remains a shell. `frontend/schoolos-web/src/App.tsx` renders the Phase 0 foundation placeholder; no completed school workflow is evidenced by that component.
+- The only workflow file in `.github/workflows/` is `documentation-quality.yml`. It validates documentation and registers; it is not a .NET/frontend build, test or deployment pipeline.
+- The repository includes a PostgreSQL development Compose service. Its presence is development infrastructure, not proof that either API host is connected to a configured operational database.
+
+**Implementation conclusion:** SchoolOS is still at the documented foundation/scaffold stage in this audited main snapshot. The Modular Monolith, Cloud Control Plane, Local Data Plane, SaaS tenant isolation, identity, business modules, billing/licensing and AI capabilities remain architectural/product specifications or plans unless separate executable evidence is cited. Do not claim those capabilities are implemented or verified.
+
+### 13.3 Refactor actions justified by this audit
+
+1. Publish an explicit seven-source knowledge map using existing authorities: root `README.md` for project overview; DOC-03 with DOC-14 and related architecture specifications for system architecture; DOC-01 and linked domain specifications for functional requirements; DOC-62 with DOC-46 and the relevant data/API contracts for multi-tenancy; DOC-08 with the detailed workstream plans for the master implementation roadmap; the eight CSV partitions with `registers/README.md` for implementation/task status; and root `AGENTS.md` for the agent workflow.
+2. Add a concise, ordered agent task-execution protocol to `AGENTS.md`, including scoped context loading, relevant skills, source inspection, implementation limits, tests and evidence-based reporting.
+3. Extend the skills catalogue with activation guidance tied to SchoolOS's actual .NET 10, React/TypeScript, PostgreSQL, hybrid deployment, multi-tenancy, security, testing and documentation responsibilities. Preserve every existing skill and its companion files.
+4. Clarify DOC-08 as the phase-level master implementation plan; leave task-level status exclusively in the CSV partitions.
+5. Update relevant navigation and source-baseline references without renumbering existing documents, changing approved decisions, or rewriting historical snapshots.
+
+### 13.4 Validation boundary
+
+The audit verified repository contents and counted the task-register CSV rows. It did not execute `node scripts/validate-docs.mjs`, .NET builds, frontend builds or application tests. The documentation-quality GitHub Actions workflow is the required automated validation for the PR; report its actual result after GitHub runs it. No runtime code, database schema, API behavior or product policy was changed as part of this audit.

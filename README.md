@@ -39,7 +39,7 @@ SchoolOS is a proposed multi-tenant, AI-enabled school operating platform for pr
 
 Read the repository-wide [contributor and AI-agent guide](AGENTS.md) before changing code, tests, configuration or CI. Use [61 — Reference Project Adoption and Integration Plan](docs/61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) to understand which practices from Education-Portal and eSchool are adopted, adapted or explicitly excluded.
 
-Start with the [categorized documentation catalogue](docs/README.md), then follow the path that matches your role. Use document 56 for terminology, document 60 for unresolved architecture/security decisions, and document 62 for the proposed SaaS tenant implementation baseline.
+Start with the [categorized documentation catalogue](docs/README.md), which includes the seven-source knowledge map, then follow the path that matches your role. AI coding agents must follow [AGENTS.md](AGENTS.md), load only context and skills relevant to the assigned task, and verify implementation claims against source code and tests. Use document 56 for terminology, document 60 for unresolved architecture/security decisions, and document 62 for the proposed SaaS tenant implementation baseline.
 
 | Reader | Recommended path |
 |---|---|
