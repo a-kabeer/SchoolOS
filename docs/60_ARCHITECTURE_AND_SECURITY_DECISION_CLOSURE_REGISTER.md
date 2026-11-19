@@ -51,6 +51,10 @@ Every item remains Open unless an approved ADR or external evidence is linked. A
 
 This is a proposed implementation baseline, not an approval record. Do not change any DEC status based solely on the addition of DOC-62. A decision closes only through the closure workflow below and linked approval/validation evidence.
 
+| DEC-021 | Tenant-specific restore/recovery from shared Cloud database, including point-in-time consistency, quarantine, event replay/cursor handling and customer evidence | Open | Operations owner + DBA/technical lead + security + product owner | 07, 14, 36, 44, 48, 50, 62 | Tested tenant-selective restore to quarantine, cross-tenant integrity checks, financial/audit consistency, measured RPO/RTO and approved customer restore procedure |
+| DEC-022 | Tenant data residency and hosting/isolation placement: Cloud region, backup/DR location, subprocessors, support/telemetry boundaries and dedicated database/deployment eligibility | Open / external verification | Security owner + legal counsel + operations + commercial owner | 07, 14, 36, 38, 48, 62 | Approved data-flow/subprocessor inventory, jurisdiction/legal review, deployment placement policy and tested data-location controls |
+| DEC-023 | Per-tenant usage metering, capacity quotas, API/sync/AI rate limits, fair-use/noisy-neighbor controls and overage handling | Open | Product owner + commercial owner + technical/operations leads | 27, 28, 36, 37, 45, 46, 48, 62 | Approved metering dimensions, counter/reconciliation design, threshold and enforcement policy, plan mapping and idempotent usage tests |
+
 ## Closure workflow
 
 1. Assign a named decision owner before the decision enters active review.
@@ -61,7 +65,7 @@ This is a proposed implementation baseline, not an approval record. Do not chang
 6. Change a row from Open only when its approved ADR or external evidence is linked.
 7. Keep implementation status separate: an accepted design is not implemented until code, migrations, tests and operational evidence exist.
 
-The reference-project adoption in [DOC-61](61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) does not close DEC-020. Core/paid classifications, dependency rules, compatibility and signed local lease claims require explicit approval and acceptance evidence.
+The reference-project adoption in [DOC-61](61_REFERENCE_PROJECT_ADOPTION_AND_INTEGRATION_PLAN.md) does not close DEC-020. Core/paid classifications, dependency rules, compatibility and signed local lease claims require explicit approval and acceptance evidence. DOC-62 proposes a SaaS tenant baseline but does not close DEC-001, DEC-004, DEC-008 or DEC-020. DEC-021–023 capture additional restore, residency/placement and usage-metering gates; they also remain Open.
 
 ## Relationship to other registers
 
