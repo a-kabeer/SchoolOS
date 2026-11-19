@@ -256,3 +256,21 @@ The exact operation-by-operation list is open and must be approved before releas
 ## 14. Guardian and household requirement companion
 
 Use [55 — Guardian and Household Requirements](55_GUARDIAN_AND_HOUSEHOLD_REQUIREMENTS.md) together with the guardian/family-link permissions in this matrix. Access is derived from verified relationships plus explicit permission and scope; payer, emergency-contact or household membership alone must not be treated as blanket access.
+
+
+## 9. Module entitlement is separate from user authorization
+
+A module being visible or included in a menu is not an authorization decision. SchoolOS must evaluate distinct gates for a protected capability:
+
+1. The module is available and compatible on the Local Node.
+2. The organization's subscription entitlement permits the module.
+3. The signed, node-bound local licence/lease permits the module under the approved lease policy.
+4. The authenticated user has the required permission.
+5. The user has the correct tenant/school/campus/class/resource relationship.
+6. The record state and Restricted Mode policy allow the requested operation.
+
+The Cloud Control Plane owns the commercial catalogue and subscription state. The Local Data Plane validates its signed entitlement snapshot/lease locally; routine local requests must not require a live Cloud call. User permissions and relationship scope remain independently enforced while offline.
+
+A module entitlement cannot grant a user privileges. A user role cannot enable an unlicensed module. Hiding a module in the frontend is not enforcement: APIs and application services must reject unauthorized operations. Disabling an entitlement must preserve the customer's data and historical records.
+
+The module catalogue fields, core/paid split, dependency semantics, compatibility and signed lease claims remain subject to DEC-020 in DOC-60. The underlying tenant/school/campus cardinality and RLS/DB-role implementation remain subject to DEC-001 and DEC-004; this section does not close those decisions. See DOC-61.
