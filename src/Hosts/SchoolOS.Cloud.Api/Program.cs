@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SchoolOS.BuildingBlocks.Localization;
 using SchoolOS.BuildingBlocks.Observability;
 using SchoolOS.BuildingBlocks.Persistence;
 using SchoolOS.BuildingBlocks.Secrets;
@@ -23,6 +24,7 @@ await builder.AddPlatformSecretsAsync(SecretsDependencyInjection.CloudStartupSec
 // Building Blocks & Modules
 builder.Services.AddSecretsBuildingBlocks(builder.Configuration);
 builder.Services.AddWebHardeningBuildingBlocks(builder.Configuration);
+builder.Services.AddLocalizationBuildingBlocks();
 builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks(builder.Configuration, builder.Environment, "SchoolOS.Cloud.Api");
@@ -43,6 +45,7 @@ if (!isDevOrTesting)
 app.UseHttpsRedirection();
 app.UseSchoolOSSecurityHeaders(isDevOrTesting);
 app.UseObservabilityBuildingBlocks();
+app.UseRequestLocalizationContext();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseTenantTelemetry();

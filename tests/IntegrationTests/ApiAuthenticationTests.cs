@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using FluentAssertions;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SchoolOS.BuildingBlocks.Persistence.Interceptors;
 using SchoolOS.BuildingBlocks.Security;
+using SchoolOS.Modules.Admissions.Persistence;
 using SchoolOS.Modules.Identity.Persistence;
 using SchoolOS.Modules.Organization.Persistence;
 using SchoolOS.PlatformModules.Subscriptions.Persistence;
@@ -72,6 +74,15 @@ public class CloudApiFactory : WebApplicationFactory<SchoolOS.Cloud.Api.Program>
 public class LocalApiFactory : WebApplicationFactory<SchoolOS.Local.Api.Program>
 {
     private readonly string _dbName = Guid.NewGuid().ToString();
+    public string TestSigningPrivateKeyPem { get; }
+    public string TestSigningPublicKeyPem { get; }
+
+    public LocalApiFactory()
+    {
+        using var ecdsa = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        TestSigningPrivateKeyPem = ecdsa.ExportECPrivateKeyPem();
+        TestSigningPublicKeyPem = ecdsa.ExportSubjectPublicKeyInfoPem();
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -80,6 +91,15 @@ public class LocalApiFactory : WebApplicationFactory<SchoolOS.Local.Api.Program>
         {
             TestDbContextExtensions.ReplaceDbContextWithInMemory<OrganizationDbContext>(services, _dbName);
             TestDbContextExtensions.ReplaceDbContextWithInMemory<IdentityDbContext>(services, _dbName, includeChangeAudit: true);
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<AdmissionsDbContext>(services, _dbName, includeChangeAudit: true);
+
+            var existingOpts = services.Where(d => d.ServiceType == typeof(OfflineLicenseVerificationOptions)).ToList();
+            foreach (var d in existingOpts)
+            {
+                services.Remove(d);
+            }
+
+            services.AddSingleton(new OfflineLicenseVerificationOptions { PublicKeyPem = TestSigningPublicKeyPem });
         });
     }
 }

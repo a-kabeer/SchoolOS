@@ -14,6 +14,11 @@ public class OrganizationDbContext : SchoolOSDbContextBase
 {
     public DbSet<School> Schools => Set<School>();
     public DbSet<Campus> Campuses => Set<Campus>();
+    public DbSet<CampusDetails> CampusDetails => Set<CampusDetails>();
+    public DbSet<CampusPhone> CampusPhones => Set<CampusPhone>();
+    public DbSet<BrandingImage> BrandingImages => Set<BrandingImage>();
+    public DbSet<SchoolBranding> SchoolBrandings => Set<SchoolBranding>();
+    public DbSet<SchoolProfile> SchoolProfiles => Set<SchoolProfile>();
 
     public OrganizationDbContext(DbContextOptions<OrganizationDbContext> options, ITenantContext tenantContext)
         : base(options, tenantContext)

@@ -1,14 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SchoolOS.BuildingBlocks.Localization;
 using SchoolOS.BuildingBlocks.Observability;
 using SchoolOS.BuildingBlocks.Persistence;
 using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.BuildingBlocks.Web;
+using SchoolOS.Modules.Admissions;
+using SchoolOS.Modules.Admissions.Endpoints;
 using SchoolOS.Modules.Identity;
 using SchoolOS.Modules.Identity.Endpoints;
 using SchoolOS.Modules.Organization;
 using SchoolOS.Modules.Organization.Domain;
+using SchoolOS.Modules.Organization.Endpoints;
 using SchoolOS.Modules.Organization.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +24,7 @@ await builder.AddPlatformSecretsAsync(SecretsDependencyInjection.LocalStartupSec
 // Building Blocks & Modules
 builder.Services.AddSecretsBuildingBlocks(builder.Configuration);
 builder.Services.AddWebHardeningBuildingBlocks(builder.Configuration);
+builder.Services.AddLocalizationBuildingBlocks();
 builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
 var offlineLicenseOptions = new OfflineLicenseVerificationOptions();
 builder.Configuration.GetSection("OfflineLicense").Bind(offlineLicenseOptions);
@@ -30,6 +35,7 @@ builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks(builder.Configuration, builder.Environment, "SchoolOS.Local.Api");
 builder.Services.AddIdentityModule(builder.Configuration);
 builder.Services.AddOrganizationModule(builder.Configuration);
+builder.Services.AddAdmissionsModule(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -44,6 +50,7 @@ if (!isDevOrTesting)
 app.UseHttpsRedirection();
 app.UseSchoolOSSecurityHeaders(isDevOrTesting);
 app.UseObservabilityBuildingBlocks();
+app.UseRequestLocalizationContext();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseTenantTelemetry();
@@ -188,6 +195,42 @@ orgGroup.MapPost("/schools/{schoolId:guid}/campuses", async (
     var response = new CreateCampusResponse(campus.Id, campus.TenantId, campus.SchoolId, campus.Name, campus.Code, campus.Address);
     return Results.Created($"/api/v1/organization/campuses/{campus.Id}", response);
 }).RequireAuthorization(SecurityPolicies.OrganizationAdminPolicy);
+
+app.MapPost("/api/v1/local/licensing/lease", async (
+    [FromBody] SignedLicenseLease lease,
+    [FromServices] ITenantContext tenantContext,
+    [FromServices] ILicenseLeaseStore store,
+    [FromServices] OfflineLicenseVerificationOptions verificationOptions,
+    TimeProvider timeProvider) =>
+{
+    if (!tenantContext.IsAuthenticated || !tenantContext.TenantId.HasValue)
+    {
+        return Results.Unauthorized();
+    }
+
+    var verified = OfflineLicenseLeaseVerifier.Verify(
+        lease,
+        tenantContext.TenantId.Value,
+        verificationOptions.PublicKeyPem,
+        timeProvider.GetUtcNow());
+
+    if (!verified.IsValid)
+    {
+        return Results.BadRequest(new { code = verified.FailureReason ?? "INVALID_LICENSE_LEASE" });
+    }
+
+    await store.SetLeaseAsync(tenantContext.TenantId.Value, lease);
+    return Results.Ok(new
+    {
+        verified = true,
+        tenantId = tenantContext.TenantId.Value,
+        expiresAtUtc = verified.Payload?.ExpiresAtUtc,
+        enabledModules = verified.EntitledModules.ToList()
+    });
+}).RequireAuthorization(SecurityPolicies.OrganizationAdminPolicy);
+
+app.MapEndpointGroups(typeof(OrganizationSchoolsDetailsEndpointGroup).Assembly);
+app.MapEndpointGroups(typeof(AdmissionsEndpointGroup).Assembly);
 
 app.Run();
 

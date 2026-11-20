@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NetArchTest.Rules;
+using SchoolOS.BuildingBlocks.Localization;
 using SchoolOS.BuildingBlocks.Observability;
 using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
@@ -22,6 +23,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.Local.Api",
                 "SchoolOS.Modules.Organization",
                 "SchoolOS.Modules.Identity",
+                "SchoolOS.Modules.Admissions",
                 "SchoolOS.PlatformModules.Tenants",
                 "SchoolOS.PlatformModules.Subscriptions",
                 "SchoolOS.PlatformModules.Licensing")
@@ -40,6 +42,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.Local.Api",
                 "SchoolOS.Modules.Organization",
                 "SchoolOS.Modules.Identity",
+                "SchoolOS.Modules.Admissions",
                 "SchoolOS.PlatformModules.Tenants",
                 "SchoolOS.PlatformModules.Subscriptions",
                 "SchoolOS.PlatformModules.Licensing")
@@ -71,7 +74,8 @@ public class ModuleBoundaryTests
             .ShouldNot()
             .HaveDependencyOnAny(
                 "SchoolOS.Modules.Organization",
-                "SchoolOS.Modules.Identity")
+                "SchoolOS.Modules.Identity",
+                "SchoolOS.Modules.Admissions")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
@@ -86,12 +90,19 @@ public class ModuleBoundaryTests
             "SchoolOS.Local.Api",
             "SchoolOS.Modules.Organization",
             "SchoolOS.Modules.Identity",
+            "SchoolOS.Modules.Admissions",
             "SchoolOS.PlatformModules.Tenants",
             "SchoolOS.PlatformModules.Subscriptions",
             "SchoolOS.PlatformModules.Licensing"
         ];
 
-        foreach (var assembly in new[] { typeof(ISecretProvider).Assembly, typeof(ObservabilityOptions).Assembly, typeof(IEndpointGroup).Assembly })
+        foreach (var assembly in new[]
+        {
+            typeof(ISecretProvider).Assembly,
+            typeof(ObservabilityOptions).Assembly,
+            typeof(IEndpointGroup).Assembly,
+            typeof(SupportedLanguage).Assembly
+        })
         {
             var result = Types.InAssembly(assembly)
                 .ShouldNot()
