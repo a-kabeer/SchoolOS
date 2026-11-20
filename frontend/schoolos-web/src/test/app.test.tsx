@@ -33,9 +33,10 @@ describe('SchoolOS Application Routes, Auth Guard, Onboarding & Branding', () =>
     window.localStorage.clear();
   });
 
-  it('redirects unauthenticated requests on protected routes to Sign In', () => {
-    renderAt('/admissions');
+  it('redirects unauthenticated requests on protected routes to Sign In and hides demo preview by default', () => {
+    renderAt('/students');
     expect(screen.getByRole('heading', { name: /Sign in/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Enter Preview Session/i })).not.toBeInTheDocument();
   });
 
   it('renders public school onboarding request form without authentication', () => {
@@ -44,12 +45,19 @@ describe('SchoolOS Application Routes, Auth Guard, Onboarding & Branding', () =>
     expect(screen.getByRole('button', { name: /Submit school request/i })).toBeInTheDocument();
   });
 
-  it('allows entering interactive preview session and navigating to Admissions and Branding with SVG guard', () => {
-    renderAt('/auth/login');
-    fireEvent.click(screen.getByRole('button', { name: /Enter Preview Session/i }));
-    expect(screen.getByRole('heading', { name: 'Admissions' })).toBeInTheDocument();
+  it('allows authenticated Admin session to navigate to Branding with SVG guard', () => {
+    tokenStore.setSession('test-jwt', 3600, {
+      id: 'user-1',
+      email: 'admin@schoolos.test',
+      name: 'School Admin',
+      role: 'TenantAdmin',
+      tenantId: '01931a74-0000-7000-8000-000000000001',
+      campusId: null,
+      mustChangePassword: false,
+      permissions: ['students:view', 'students:create', 'students:edit'],
+      preferredLanguage: 'en',
+    });
 
-    cleanup();
     renderAt('/org/branding');
     const fileInput = screen.getByLabelText(/Choose logo/i) as HTMLInputElement;
     const svgFile = new File(['<svg><script>alert(1)</script></svg>'], 'evil.svg', {
@@ -57,5 +65,6 @@ describe('SchoolOS Application Routes, Auth Guard, Onboarding & Branding', () =>
     });
     fireEvent.change(fileInput, { target: { files: [svgFile] } });
     expect(screen.getByRole('alert')).toHaveTextContent(/PNG, JPEG or WebP/i);
+    cleanup();
   });
 });

@@ -191,6 +191,31 @@ public sealed class AdmissionEnquiry : Entity<Guid>, ICampusScopedEntity, IChang
         return student;
     }
 
+    /// <summary>
+    /// Marks the enquiry as admitted and links it to the canonical Student record owned by the Students module.
+    /// Idempotent when called with the same canonical <paramref name="canonicalStudentId"/>.
+    /// </summary>
+    public void MarkAdmitted(Guid canonicalStudentId)
+    {
+        if (canonicalStudentId == Guid.Empty)
+        {
+            throw new ArgumentException("Student ID cannot be empty.", nameof(canonicalStudentId));
+        }
+
+        if (Status == AdmissionEnquiryStatus.Closed)
+        {
+            throw new InvalidOperationException("Closed enquiries cannot be converted to students.");
+        }
+
+        if (ConvertedStudentProfileId.HasValue && ConvertedStudentProfileId.Value != canonicalStudentId)
+        {
+            throw new InvalidOperationException("Enquiry has already been converted to another student record.");
+        }
+
+        Status = AdmissionEnquiryStatus.Admitted;
+        ConvertedStudentProfileId = canonicalStudentId;
+    }
+
     public void Close()
     {
         if (Status == AdmissionEnquiryStatus.Admitted)

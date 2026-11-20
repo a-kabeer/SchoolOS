@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Security\SchoolOS.BuildingBlocks.Security.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Persistence\SchoolOS.BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Web\SchoolOS.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\Organization\SchoolOS.Modules.Organization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

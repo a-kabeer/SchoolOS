@@ -5,6 +5,12 @@ export const SIDEBAR_NAVIGATION: NavSection[] = [
     caption: 'SchoolOS Workspace',
     items: [
       {
+        id: 'students',
+        label: 'Students',
+        path: '/students',
+        iconName: 'Users',
+      },
+      {
         id: 'admissions',
         label: 'Admissions',
         path: '/admissions',

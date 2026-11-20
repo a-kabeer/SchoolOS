@@ -9,6 +9,8 @@
     <ProjectReference Include="..\..\BuildingBlocks\Persistence\SchoolOS.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Localization\SchoolOS.BuildingBlocks.Localization.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Web\SchoolOS.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\Organization\SchoolOS.Modules.Organization.csproj" />
+    <ProjectReference Include="..\Students\SchoolOS.Modules.Students.csproj" />
   </ItemGroup>
 
   <ItemGroup>

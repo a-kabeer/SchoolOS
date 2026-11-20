@@ -75,6 +75,7 @@ public class ModuleBoundaryTests
             .HaveDependencyOnAny(
                 "SchoolOS.Modules.Organization",
                 "SchoolOS.Modules.Identity",
+                "SchoolOS.Modules.Students",
                 "SchoolOS.Modules.Admissions")
             .GetResult();
 
@@ -90,6 +91,7 @@ public class ModuleBoundaryTests
             "SchoolOS.Local.Api",
             "SchoolOS.Modules.Organization",
             "SchoolOS.Modules.Identity",
+            "SchoolOS.Modules.Students",
             "SchoolOS.Modules.Admissions",
             "SchoolOS.PlatformModules.Tenants",
             "SchoolOS.PlatformModules.Subscriptions",
@@ -111,5 +113,29 @@ public class ModuleBoundaryTests
 
             result.IsSuccessful.ShouldBeTrue($"BuildingBlock {assembly.GetName().Name} must stay decoupled from hosts and modules.");
         }
+    }
+
+    [Fact]
+    public void Students_And_Admissions_ShouldNotAccess_OtherModules_DbContexts_Directly()
+    {
+        var studentsAssembly = Assembly.Load("SchoolOS.Modules.Students");
+        var studentsResult = Types.InAssembly(studentsAssembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(
+                "SchoolOS.Modules.Organization.Persistence",
+                "SchoolOS.Modules.Admissions.Persistence",
+                "SchoolOS.Modules.Identity.Persistence")
+            .GetResult();
+        studentsResult.IsSuccessful.ShouldBeTrue("Students module must consume Organization via published Contracts, not OrganizationDbContext.");
+
+        var admissionsAssembly = Assembly.Load("SchoolOS.Modules.Admissions");
+        var admissionsResult = Types.InAssembly(admissionsAssembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(
+                "SchoolOS.Modules.Organization.Persistence",
+                "SchoolOS.Modules.Students.Persistence",
+                "SchoolOS.Modules.Identity.Persistence")
+            .GetResult();
+        admissionsResult.IsSuccessful.ShouldBeTrue("Admissions module must consume Students/Organization via published Contracts, not DbContexts.");
     }
 }

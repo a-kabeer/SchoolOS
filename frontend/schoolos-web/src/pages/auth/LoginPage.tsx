@@ -10,14 +10,16 @@ import { useToast } from '@/context/ToastContext';
 import { ApiError } from '@/api/client';
 
 export function LoginPage() {
-  const { signIn, signInDemo } = useAuth();
+  const { signIn, signInDemo, isDemoPreviewEnabled } = useAuth();
   const { t, locale, setLocale } = useLocale();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [tenantId, setTenantId] = useState('01931a74-0000-7000-8000-000000000001');
+  const [tenantId, setTenantId] = useState(
+    isDemoPreviewEnabled ? '01931a74-0000-7000-8000-000000000001' : ''
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -123,15 +125,17 @@ export function LoginPage() {
           {submitting ? t('loading.label') : t('login.submit')}
         </Button>
 
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handlePreviewSignIn}
-          className="w-full"
-          size="md"
-        >
-          {t('schoolos.enterPreview')}
-        </Button>
+        {isDemoPreviewEnabled && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handlePreviewSignIn}
+            className="w-full"
+            size="md"
+          >
+            {t('schoolos.enterPreview')}
+          </Button>
+        )}
       </form>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">

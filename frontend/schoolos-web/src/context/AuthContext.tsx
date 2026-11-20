@@ -3,15 +3,19 @@ import { schoolOsApi } from '@/api/client';
 import { tokenStore, type AuthSessionUser } from '@/auth/tokenStore';
 import type { UserRole } from '@/types';
 
+export const isDemoPreviewEnabled = import.meta.env.VITE_ENABLE_DEMO_PREVIEW === 'true';
+
 interface AuthContextValue {
   user: AuthSessionUser | null;
   isAuthenticated: boolean;
+  isDemoPreviewEnabled: boolean;
   signIn: (email: string, password: string, tenantId: string, campusId?: string) => Promise<AuthSessionUser>;
   signInDemo: (role: UserRole, email?: string, name?: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateProfile: (patch: Partial<AuthSessionUser>) => void;
   setRole: (role: UserRole) => void;
   can: (action: 'view' | 'create' | 'edit' | 'delete' | 'export') => boolean;
+  hasPermission: (permission: string) => boolean;
 }
 
 const ROLE_CAPABILITIES: Record<UserRole, Record<'view' | 'create' | 'edit' | 'delete' | 'export', boolean>> = {
@@ -23,9 +27,11 @@ const ROLE_CAPABILITIES: Record<UserRole, Record<'view' | 'create' | 'edit' | 'd
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function normalizeUiRole(role: string | undefined): UserRole {
-  if (role === 'Manager' || role === 'Principal') return 'Manager';
-  if (role === 'Viewer') return 'Viewer';
-  return 'Admin';
+  if (!role) return 'Viewer';
+  if (role === 'Admin' || role === 'TenantAdmin' || role === 'PlatformAdmin') return 'Admin';
+  if (role === 'Manager' || role === 'Principal' || role === 'CampusAdmin') return 'Manager';
+  // Default-deny: unknown or unmapped roles never inherit Admin capabilities
+  return 'Viewer';
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -49,6 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInDemo = (role: UserRole, email = 'admin@schoolos.local', name = 'School Administrator') => {
+    if (!isDemoPreviewEnabled) {
+      throw new Error('Preview mode is disabled in this environment.');
+    }
     const demoUser: AuthSessionUser = {
       id: 'demo-session',
       email,
@@ -57,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       tenantId: '01931a74-0000-7000-8000-000000000001',
       campusId: null,
       mustChangePassword: false,
-      permissions: ['admissions:view', 'admissions:create', 'admissions:edit'],
+      permissions: ['admissions:view', 'admissions:create', 'admissions:edit', 'students:view', 'students:create', 'students:edit'],
       preferredLanguage: 'en',
       avatarInitials: 'SA',
       title: 'Principal / Administrator',
@@ -67,11 +76,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     tokenStore.setSession('in-memory-preview-token', 3600, demoUser);
   };
 
-  const logout = () => {
-    tokenStore.clearSession();
+  const logout = async () => {
+    await schoolOsApi.logout();
   };
 
   const setRole = (role: UserRole) => {
+    if (!isDemoPreviewEnabled) return;
     const current = tokenStore.getUser();
     const token = tokenStore.getAccessToken();
     if (current && token) {
@@ -92,17 +102,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return ROLE_CAPABILITIES[normalizeUiRole(user.role)][action];
   };
 
+  const hasPermission = (permission: string) => {
+    if (!authenticated || !user) return false;
+    const uiRole = normalizeUiRole(user.role);
+    if (uiRole === 'Admin') return true;
+    return (user.permissions ?? []).includes(permission);
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuthenticated: authenticated,
+        isDemoPreviewEnabled,
         signIn,
         signInDemo,
         logout,
         updateProfile,
         setRole,
         can,
+        hasPermission,
       }}
     >
       {children}
