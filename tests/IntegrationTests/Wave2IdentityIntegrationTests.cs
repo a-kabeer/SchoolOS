@@ -235,7 +235,7 @@ public class Wave2IdentityPostgresMigrationTests
             {
                 await downConn.OpenAsync();
                 await using var downCmd = downConn.CreateCommand();
-                downCmd.CommandText = "SELECT COUNT(*) FROM pg_tables WHERE schemaname = 'identity';";
+                downCmd.CommandText = "SELECT COUNT(*) FROM pg_tables WHERE schemaname = 'identity' AND tablename <> '__ef_migrations_history';";
                 Convert.ToInt64(await downCmd.ExecuteScalarAsync()).ShouldBe(0);
             }
 
