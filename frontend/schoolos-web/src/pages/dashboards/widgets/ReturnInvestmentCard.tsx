@@ -74,14 +74,15 @@ export function ReturnInvestmentCard() {
                 fontSize: '12px',
               }}
               itemStyle={{ color: '#fff' }}
-              formatter={(value: any) => [`${value}%`, 'Return']}
+              formatter={(value: unknown) => [`${String(value ?? '')}%`, 'Return']}
             />
             <Bar
               dataKey="value"
               radius={[10, 10, 10, 10]}
               barSize={26}
-              onClick={(data: any) => {
-                if (data?.month) setActiveMonth(String(data.month));
+              onClick={(_bar, index) => {
+                const entry = ROI_MONTHS[index];
+                if (entry) setActiveMonth(entry.month);
               }}
             >
               {ROI_MONTHS.map((entry) => (

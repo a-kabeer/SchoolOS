@@ -50,7 +50,7 @@ export function OverallBalanceCard() {
     <Card className="h-full">
       <div className="grid grid-cols-12 gap-6">
         {/* Main Chart Column */}
-        <div className="col-span-12 xl:col-span-8 xl:border-r xl:border-border xl:pr-6">
+        <div className="col-span-12 xl:col-span-8 xl:border-r xl:border-border xl:pe-6">
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-normal text-muted">Overall Balance</p>

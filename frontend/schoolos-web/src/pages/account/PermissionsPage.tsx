@@ -10,8 +10,9 @@ export function PermissionsPage() {
   const { user, setRole } = useAuth();
   const { showToast } = useToast();
 
+  const currentRole = user?.role ?? 'Viewer';
   const activeMatrix =
-    ROLE_PERMISSION_MATRICES.find((r) => r.role === user.role) ?? ROLE_PERMISSION_MATRICES[0];
+    ROLE_PERMISSION_MATRICES.find((r) => r.role === currentRole) ?? ROLE_PERMISSION_MATRICES[0];
 
   const handleSelectRole = (role: UserRole) => {
     setRole(role);
@@ -30,7 +31,7 @@ export function PermissionsPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {ROLE_PERMISSION_MATRICES.map((item) => {
-          const isCurrent = item.role === user.role;
+          const isCurrent = item.role === currentRole;
           return (
             <Card
               key={item.role}
@@ -65,25 +66,25 @@ export function PermissionsPage() {
               Kanban, and Tickets.
             </p>
           </div>
-          <StatusBadge label={`Current: ${user.role}`} tone="success" />
+          <StatusBadge label={`Current: ${currentRole}`} tone="success" />
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-left">
+          <table className="min-w-full border-collapse text-start">
             <thead>
               <tr className="border-b border-border text-xs font-semibold uppercase text-muted">
-                <th className="py-3 pr-4">Application Module</th>
+                <th className="py-3 pe-4">Application Module</th>
                 <th className="py-3 px-4 text-center">View</th>
                 <th className="py-3 px-4 text-center">Create</th>
                 <th className="py-3 px-4 text-center">Edit</th>
                 <th className="py-3 px-4 text-center">Delete</th>
-                <th className="py-3 pl-4 text-center">Export</th>
+                <th className="py-3 ps-4 text-center">Export</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/75 text-sm">
               {activeMatrix.permissions.map((row) => (
                 <tr key={row.module}>
-                  <td className="py-4 pr-4 font-semibold text-ink">{row.module}</td>
+                  <td className="py-4 pe-4 font-semibold text-ink">{row.module}</td>
                   {(['view', 'create', 'edit', 'delete', 'export'] as const).map((cap) => {
                     const allowed = row[cap];
                     return (

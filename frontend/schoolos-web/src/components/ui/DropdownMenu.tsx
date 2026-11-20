@@ -50,7 +50,7 @@ export function DropdownMenu({ items, ariaLabel = 'Card actions' }: DropdownMenu
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-10 z-30 min-w-[176px] rounded-2xl border border-border bg-surface py-1.5 shadow-[var(--mm-shadow-dropdown)]"
+          className="absolute end-0 top-10 z-30 min-w-[176px] rounded-2xl border border-border bg-surface py-1.5 shadow-[var(--mm-shadow-dropdown)]"
         >
           {items.map((item) => (
             <button
@@ -61,7 +61,7 @@ export function DropdownMenu({ items, ariaLabel = 'Card actions' }: DropdownMenu
                 setOpen(false);
                 item.onSelect();
               }}
-              className={`flex w-full items-center gap-2.5 px-4 py-2 text-left text-sm transition-colors hover:bg-subtle ${
+              className={`flex w-full items-center gap-2.5 px-4 py-2 text-start text-sm transition-colors hover:bg-subtle ${
                 item.danger ? 'text-error' : 'text-ink'
               }`}
             >

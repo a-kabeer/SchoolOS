@@ -109,24 +109,24 @@ export function InvoiceDetailPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-left">
+          <table className="min-w-full border-collapse text-start">
             <thead>
               <tr className="border-b border-border text-xs font-semibold uppercase text-muted">
-                <th className="py-3 pr-4">Item Name</th>
-                <th className="py-3 px-4 text-right">Unit Price</th>
-                <th className="py-3 px-4 text-right">Units</th>
-                <th className="py-3 pl-4 text-right">Line Total</th>
+                <th className="py-3 pe-4">Item Name</th>
+                <th className="py-3 px-4 text-end">Unit Price</th>
+                <th className="py-3 px-4 text-end">Units</th>
+                <th className="py-3 ps-4 text-end">Line Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/75 text-sm">
               {invoice.items.map((item) => (
                 <tr key={item.id}>
-                  <td className="py-4 pr-4 font-medium text-ink">{item.itemName}</td>
-                  <td className="py-4 px-4 text-right text-muted">
+                  <td className="py-4 pe-4 font-medium text-ink">{item.itemName}</td>
+                  <td className="py-4 px-4 text-end text-muted">
                     ${item.unitPrice.toFixed(2)}
                   </td>
-                  <td className="py-4 px-4 text-right text-muted">{item.quantity}</td>
-                  <td className="py-4 pl-4 text-right font-semibold text-ink">
+                  <td className="py-4 px-4 text-end text-muted">{item.quantity}</td>
+                  <td className="py-4 ps-4 text-end font-semibold text-ink">
                     ${(item.unitPrice * item.quantity).toFixed(2)}
                   </td>
                 </tr>

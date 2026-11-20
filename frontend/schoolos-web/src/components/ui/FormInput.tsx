@@ -22,17 +22,17 @@ export function FormInput({
     <div className={`flex flex-col gap-1.5 ${className}`}>
       <label htmlFor={inputId} className="text-xs font-semibold text-ink">
         {label}
-        {rest.required && <span className="ml-0.5 text-error">*</span>}
+        {rest.required && <span className="ms-0.5 text-error">*</span>}
       </label>
       <div className="relative flex items-center">
         {leftIcon && (
-          <span className="pointer-events-none absolute left-3.5 text-muted">{leftIcon}</span>
+          <span className="pointer-events-none absolute start-3.5 text-muted">{leftIcon}</span>
         )}
         <input
           id={inputId}
           aria-invalid={Boolean(error)}
           className={`h-10 w-full rounded-xl border bg-surface px-3.5 text-sm text-ink placeholder:text-muted/70 transition-colors focus:outline-none ${
-            leftIcon ? 'pl-10' : ''
+            leftIcon ? 'ps-10' : ''
           } ${
             error
               ? 'border-error focus:border-error'

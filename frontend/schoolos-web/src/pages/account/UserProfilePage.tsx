@@ -24,7 +24,7 @@ export function UserProfilePage() {
   const [posts, setPosts] = useState<ActivityPost[]>([
     {
       id: 'p-1',
-      author: user.name,
+      author: user?.name ?? 'User',
       time: '2 hours ago',
       content:
         'Published Q4 Dashboard 3 telemetry upgrades — ROI tracking and Delivery Analytics radar views are live across all workspaces.',
@@ -46,7 +46,7 @@ export function UserProfilePage() {
     setPosts((prev) => [
       {
         id: `p-${Date.now()}`,
-        author: user.name,
+        author: user?.name ?? 'User',
         time: 'Just now',
         content: postDraft.trim(),
         likes: 0,
@@ -71,11 +71,11 @@ export function UserProfilePage() {
           <div className="-mt-12 flex flex-wrap items-end justify-between gap-4">
             <div className="flex items-end gap-4">
               <span className="inline-flex h-24 w-24 items-center justify-center rounded-full border-4 border-surface bg-gradient-to-br from-[#00a1ff] to-[#00ceb6] text-2xl font-bold text-white shadow-md">
-                {user.avatarInitials}
+                {user?.avatarInitials ?? 'SO'}
               </span>
               <div className="pb-1">
-                <h2 className="text-xl font-bold text-ink">{user.name}</h2>
-                <p className="text-sm text-muted">{user.title}</p>
+                <h2 className="text-xl font-bold text-ink">{user?.name ?? 'User'}</h2>
+                <p className="text-sm text-muted">{user?.title ?? ''}</p>
               </div>
             </div>
 
@@ -143,19 +143,19 @@ export function UserProfilePage() {
               <div className="mt-4 space-y-3 text-sm text-muted">
                 <p className="flex items-center gap-2.5">
                   <Briefcase className="h-4 w-4 text-primary" />
-                  <span>{user.department}</span>
+                  <span>{user?.department ?? ''}</span>
                 </p>
                 <p className="flex items-center gap-2.5">
                   <Mail className="h-4 w-4 text-secondary" />
-                  <span>{user.email}</span>
+                  <span>{user?.email ?? ''}</span>
                 </p>
                 <p className="flex items-center gap-2.5">
                   <MapPin className="h-4 w-4 text-success" />
-                  <span>{user.location}</span>
+                  <span>{user?.location ?? ''}</span>
                 </p>
                 <p className="flex items-center gap-2.5">
                   <Users className="h-4 w-4 text-warning" />
-                  <span>Role: {user.role}</span>
+                  <span>Role: {user?.role ?? 'Viewer'}</span>
                 </p>
               </div>
             </Card>

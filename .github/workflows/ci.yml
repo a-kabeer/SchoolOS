@@ -133,5 +133,11 @@ jobs:
       - name: Verify EN/AR/UR locale parity
         run: npm run verify-locales
 
+      - name: Lint frontend sources
+        run: npm run lint
+
+      - name: Run frontend Vitest unit tests
+        run: npm test
+
       - name: Typecheck and Build
         run: npm run build

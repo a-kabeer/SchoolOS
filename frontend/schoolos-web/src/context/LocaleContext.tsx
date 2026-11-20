@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { setApiLanguage } from '@/api/client';
 import enMessages from '@/locales/en.json';
 import arMessages from '@/locales/ar.json';
 import urMessages from '@/locales/ur.json';
@@ -54,6 +55,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const dir: 'ltr' | 'rtl' = isRtl ? 'rtl' : 'ltr';
 
   useEffect(() => {
+    setApiLanguage(locale);
     if (typeof document !== 'undefined') {
       document.documentElement.lang = locale;
       document.documentElement.dir = dir;

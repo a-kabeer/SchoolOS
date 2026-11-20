@@ -42,7 +42,7 @@ export function FilterPanel({
           {children}
           {chips?.map((group) => (
             <div key={group.label} className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-medium text-muted mr-1">{group.label}:</span>
+              <span className="text-xs font-medium text-muted me-1">{group.label}:</span>
               {group.options.map((opt) => {
                 const active = opt.value === group.value;
                 return (

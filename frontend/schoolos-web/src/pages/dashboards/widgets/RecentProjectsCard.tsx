@@ -89,10 +89,10 @@ export function RecentProjectsCard() {
         </div>
 
         <div className="overflow-x-auto mm-scrollbar">
-          <table className="min-w-full border-collapse text-left">
+          <table className="min-w-full border-collapse text-start">
             <thead>
               <tr className="border-b border-border/80">
-                <th className="w-12 py-3 pr-3 text-sm font-semibold text-ink">
+                <th className="w-12 py-3 pe-3 text-sm font-semibold text-ink">
                   <button
                     type="button"
                     onClick={toggleAll}
@@ -104,10 +104,10 @@ export function RecentProjectsCard() {
                   </button>
                 </th>
                 <th className="py-3 px-2.5 text-sm font-semibold text-ink">Name</th>
-                <th className="py-3 px-2.5 text-right text-sm font-semibold text-ink">Budget</th>
-                <th className="py-3 px-2.5 text-right text-sm font-semibold text-ink">Team</th>
-                <th className="py-3 px-2.5 text-right text-sm font-semibold text-ink">Leader</th>
-                <th className="py-3 pl-2.5 text-right text-sm font-semibold text-ink whitespace-nowrap">
+                <th className="py-3 px-2.5 text-end text-sm font-semibold text-ink">Budget</th>
+                <th className="py-3 px-2.5 text-end text-sm font-semibold text-ink">Team</th>
+                <th className="py-3 px-2.5 text-end text-sm font-semibold text-ink">Leader</th>
+                <th className="py-3 ps-2.5 text-end text-sm font-semibold text-ink whitespace-nowrap">
                   Activity Log
                 </th>
               </tr>
@@ -125,7 +125,7 @@ export function RecentProjectsCard() {
                     }`}
                   >
                     <td
-                      className="py-4 pr-3"
+                      className="py-4 pe-3"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <input
@@ -142,17 +142,17 @@ export function RecentProjectsCard() {
                         <span className="text-[15px] font-semibold text-ink">{project.name}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-2.5 text-right text-sm font-medium text-ink whitespace-nowrap">
+                    <td className="py-4 px-2.5 text-end text-sm font-medium text-ink whitespace-nowrap">
                       {project.budget}
                     </td>
-                    <td className="py-4 px-2.5 text-right whitespace-nowrap">
+                    <td className="py-4 px-2.5 text-end whitespace-nowrap">
                       <TeamAvatarStack extraCount={project.teamExtra} />
                     </td>
-                    <td className="py-4 px-2.5 text-right text-sm font-medium text-muted whitespace-nowrap">
+                    <td className="py-4 px-2.5 text-end text-sm font-medium text-muted whitespace-nowrap">
                       {project.leader}
                     </td>
-                    <td className="py-4 pl-2.5 whitespace-nowrap">
-                      <div className="ml-auto h-7 w-[108px] xl:w-[132px]">
+                    <td className="py-4 ps-2.5 whitespace-nowrap">
+                      <div className="ms-auto h-7 w-[108px] xl:w-[132px]">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={sparkPoints}>
                             <Line

@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 
 export function RegisterPage() {
-  const { login } = useAuth();
+  const { signInDemo } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -21,14 +21,14 @@ export function RegisterPage() {
     const errs: Record<string, string> = {};
     if (!name.trim()) errs.name = 'Name is required';
     if (!email.includes('@')) errs.email = 'Valid email is required';
-    if (password.length < 6) errs.password = 'Minimum 6 characters required';
+    if (password.length < 15) errs.password = 'Minimum 15 characters required';
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
-    login(email.trim(), name.trim());
-    showToast('Account created successfully', 'success');
-    navigate('/dashboards/dashboard3');
+    signInDemo('Admin', email.trim(), name.trim());
+    showToast('Preview workspace initialized', 'success');
+    navigate('/admissions');
   };
 
   return (

@@ -14,11 +14,11 @@ export function AccountSettingsPage() {
   const [tab, setTab] = useState<SettingsTab>('account');
 
   // Personal details
-  const [name, setName] = useState(user.name);
-  const [storeName, setStoreName] = useState('Maxima Studio');
+  const [name, setName] = useState(user?.name ?? '');
+  const [storeName, setStoreName] = useState('SchoolOS Campus');
   const [location, setLocation] = useState('United States');
   const [currency, setCurrency] = useState('USD ($)');
-  const [email, setEmail] = useState(user.email);
+  const [email, setEmail] = useState(user?.email ?? '');
   const [phone, setPhone] = useState('+1 (415) 890-1200');
   const [address, setAddress] = useState('214 Market Street, Suite 400, San Francisco');
 
@@ -38,7 +38,7 @@ export function AccountSettingsPage() {
 
   const handleSaveDetails = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile({ name: name.trim() || user.name, email: email.trim() || user.email, location });
+    updateProfile({ name: name.trim() || user?.name || 'Admin', email: email.trim() || user?.email || '', location });
     showToast('Personal details saved', 'success');
   };
 
@@ -108,7 +108,7 @@ export function AccountSettingsPage() {
 
               <div className="my-7 flex flex-col items-center">
                 <span className="inline-flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-[#00a1ff] to-[#00ceb6] text-3xl font-bold text-white shadow-md">
-                  {user.avatarInitials}
+                  {user?.avatarInitials ?? 'SO'}
                 </span>
 
                 <div className="mt-6 flex items-center gap-3">
@@ -233,8 +233,8 @@ export function AccountSettingsPage() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setName(user.name);
-                      setEmail(user.email);
+                      setName(user?.name ?? '');
+                      setEmail(user?.email ?? '');
                     }}
                   >
                     Cancel

@@ -126,11 +126,11 @@ export function DataTable<T>({
   return (
     <div>
       <div className="overflow-x-auto mm-scrollbar">
-        <table className="min-w-full border-collapse text-left">
+        <table className="min-w-full border-collapse text-start">
           <thead>
             <tr className="border-b border-border">
               {selectable && (
-                <th className="w-10 py-3.5 pl-1 pr-3">
+                <th className="w-10 py-3.5 ps-1 pe-3">
                   <input
                     type="checkbox"
                     aria-label="Select all rows"
@@ -143,10 +143,10 @@ export function DataTable<T>({
               {columns.map((col) => {
                 const alignCls =
                   col.align === 'right'
-                    ? 'text-right justify-end'
+                    ? 'text-end justify-end'
                     : col.align === 'center'
                       ? 'text-center justify-center'
-                      : 'text-left justify-start';
+                      : 'text-start justify-start';
                 return (
                   <th
                     key={col.key}
@@ -193,7 +193,7 @@ export function DataTable<T>({
                 >
                   {selectable && (
                     <td
-                      className="py-4 pl-1 pr-3"
+                      className="py-4 ps-1 pe-3"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <input
@@ -208,10 +208,10 @@ export function DataTable<T>({
                   {columns.map((col) => {
                     const alignCls =
                       col.align === 'right'
-                        ? 'text-right'
+                        ? 'text-end'
                         : col.align === 'center'
                           ? 'text-center'
-                          : 'text-left';
+                          : 'text-start';
                     return (
                       <td
                         key={col.key}

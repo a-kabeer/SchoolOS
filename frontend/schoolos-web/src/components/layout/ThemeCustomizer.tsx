@@ -33,7 +33,7 @@ export function ThemeCustomizer() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open theme customizer"
-        className="fixed bottom-6 right-6 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-success text-white shadow-[0_6px_18px_rgba(0,206,182,0.4)] transition-transform hover:scale-105"
+        className="fixed bottom-6 end-6 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-success text-white shadow-[0_6px_18px_rgba(0,206,182,0.4)] transition-transform hover:scale-105"
       >
         <Settings className="h-5 w-5" />
       </button>

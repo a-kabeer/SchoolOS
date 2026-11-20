@@ -324,7 +324,7 @@ export function TicketsPage() {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!replyText.trim()) return;
-                addTicketReply(activeTicket.id, user.name, replyText.trim());
+                addTicketReply(activeTicket.id, user?.name ?? 'User', replyText.trim());
                 setReplyText('');
                 showToast('Reply sent', 'success');
               }}

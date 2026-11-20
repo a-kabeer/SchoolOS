@@ -46,7 +46,7 @@ export function PaymentMethodsCard() {
               setSelectedCard('visa');
               showToast('Primary Visa card selected', 'info');
             }}
-            className={`relative overflow-hidden rounded-[24px] bg-[#1f2a3d] p-6 text-left text-white shadow-[var(--mm-shadow-card)] transition-all ${
+            className={`relative overflow-hidden rounded-[24px] bg-[#1f2a3d] p-6 text-start text-white shadow-[var(--mm-shadow-card)] transition-all ${
               selectedCard === 'visa' ? 'ring-2 ring-primary ring-offset-2 ring-offset-surface' : 'opacity-95 hover:opacity-100'
             }`}
           >
@@ -77,7 +77,7 @@ export function PaymentMethodsCard() {
               setSelectedCard('mastercard');
               showToast('Corporate Mastercard selected', 'info');
             }}
-            className={`relative overflow-hidden rounded-[24px] bg-subtle p-6 text-left transition-all ${
+            className={`relative overflow-hidden rounded-[24px] bg-subtle p-6 text-start transition-all ${
               selectedCard === 'mastercard'
                 ? 'ring-2 ring-primary ring-offset-2 ring-offset-surface'
                 : 'hover:bg-subtle/80'
@@ -136,7 +136,7 @@ export function PaymentMethodsCard() {
                   label={tx.status}
                   tone={tx.status === 'Approved' ? 'success' : 'warning'}
                 />
-                <div className="min-w-[78px] text-right">
+                <div className="min-w-[78px] text-end">
                   <p className="text-sm font-semibold text-ink">{tx.amount}</p>
                   <p
                     className={`text-xs font-medium ${

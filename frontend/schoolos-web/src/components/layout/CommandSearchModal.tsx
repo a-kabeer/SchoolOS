@@ -1,23 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, FileText, LayoutDashboard, Search, Users } from 'lucide-react';
 import { Modal } from '@/components/ui';
 import { useAppData } from '@/context/AppDataContext';
 
 const ROUTE_ENTRIES = [
-  { title: 'Dashboard 3 — Financial Pulse', path: '/dashboards/dashboard3', group: 'Pages' },
-  { title: 'Dashboard 1 — Executive Overview', path: '/dashboards/dashboard1', group: 'Pages' },
-  { title: 'Dashboard 2 — eCommerce & Sales', path: '/dashboards/dashboard2', group: 'Pages' },
-  { title: 'Invoices Management', path: '/apps/invoices', group: 'Apps' },
-  { title: 'Kanban Task Board', path: '/apps/kanban', group: 'Apps' },
-  { title: 'Contacts Directory', path: '/apps/contacts', group: 'Apps' },
-  { title: 'Support Tickets', path: '/apps/tickets', group: 'Apps' },
-  { title: 'Analytics & Reports', path: '/analytics/reports', group: 'Analytics' },
-  { title: 'Data Tables Explorer', path: '/tables/data-table', group: 'Analytics' },
-  { title: 'User Profile', path: '/pages/profile', group: 'Account' },
-  { title: 'Account Settings', path: '/pages/account-setting', group: 'Account' },
-  { title: 'Role Base Access Control', path: '/pages/permissions', group: 'Account' },
-  { title: 'Pricing Plans', path: '/pages/pricing', group: 'Account' },
+  { title: 'Admissions Workspace', path: '/admissions', group: 'SchoolOS' },
+  { title: 'Schools & Campuses', path: '/org/schools', group: 'SchoolOS' },
+  { title: 'School Branding', path: '/org/branding', group: 'SchoolOS' },
+  { title: 'Roles & Users Access', path: '/org/access', group: 'SchoolOS' },
+  { title: 'Cloud Platform Console', path: '/platform', group: 'Cloud' },
+  { title: 'Request a School', path: '/request-school', group: 'Public' },
+  { title: 'Change Password', path: '/auth/change-password', group: 'Security' },
 ];
 
 export function CommandSearchModal({
@@ -31,9 +25,10 @@ export function CommandSearchModal({
   const navigate = useNavigate();
   const { invoices, contacts } = useAppData();
 
-  useEffect(() => {
-    if (open) setQuery('');
-  }, [open]);
+  const handleClose = () => {
+    setQuery('');
+    onClose();
+  };
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -67,21 +62,21 @@ export function CommandSearchModal({
   }, [query, invoices, contacts]);
 
   const go = (path: string) => {
-    onClose();
+    handleClose();
     navigate(path);
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Quick Search" size="md">
+    <Modal open={open} onClose={handleClose} title="Quick Search" size="md">
       <div className="relative mb-4">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+        <Search className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
           autoFocus
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search pages, invoices, or team contacts..."
-          className="h-11 w-full rounded-xl border border-border bg-subtle/50 pl-10 pr-4 text-sm text-ink focus:border-primary focus:outline-none"
+          className="h-11 w-full rounded-xl border border-border bg-subtle/50 ps-10 pe-4 text-sm text-ink focus:border-primary focus:outline-none"
         />
       </div>
 
@@ -96,7 +91,7 @@ export function CommandSearchModal({
                 key={item.path}
                 type="button"
                 onClick={() => go(item.path)}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-light-primary/60"
+                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-start text-sm hover:bg-light-primary/60"
               >
                 <span className="flex items-center gap-2.5 text-ink font-medium">
                   <LayoutDashboard className="h-4 w-4 text-primary" />
@@ -119,7 +114,7 @@ export function CommandSearchModal({
                   key={inv.id}
                   type="button"
                   onClick={() => go(`/apps/invoices/${inv.id}`)}
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm hover:bg-subtle"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-start text-sm hover:bg-subtle"
                 >
                   <span className="flex items-center gap-2.5 text-ink">
                     <FileText className="h-4 w-4 text-secondary" />
@@ -143,7 +138,7 @@ export function CommandSearchModal({
                   key={cnt.id}
                   type="button"
                   onClick={() => go('/apps/contacts')}
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm hover:bg-subtle"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-start text-sm hover:bg-subtle"
                 >
                   <span className="flex items-center gap-2.5 text-ink">
                     <Users className="h-4 w-4 text-success" />

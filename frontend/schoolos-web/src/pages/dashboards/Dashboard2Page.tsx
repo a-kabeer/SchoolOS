@@ -126,7 +126,7 @@ export function Dashboard2Page() {
                     <p className="text-xs text-muted">{item.category}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <p className="text-sm font-bold text-ink">{item.sales}</p>
                   <StatusBadge label={item.status} tone="success" className="mt-1" />
                 </div>

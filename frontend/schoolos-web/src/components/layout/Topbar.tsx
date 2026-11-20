@@ -351,19 +351,19 @@ export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
             aria-expanded={openMenu === 'profile'}
             className="ms-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#00a1ff] to-[#00ceb6] text-xs font-bold text-white shadow-xs ring-2 ring-surface transition-transform hover:scale-105"
           >
-            {user.avatarInitials}
+            {user?.avatarInitials ?? 'SO'}
           </button>
 
           {openMenu === 'profile' && (
             <div className="absolute end-0 top-12 z-40 w-[280px] rounded-[24px] border border-border bg-surface p-5 shadow-[var(--mm-shadow-dropdown)]">
               <div className="flex items-center gap-3 border-b border-border pb-4">
                 <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#00a1ff] to-[#00ceb6] text-sm font-bold text-white">
-                  {user.avatarInitials}
+                  {user?.avatarInitials ?? 'SO'}
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-ink">{user.name}</p>
-                  <p className="truncate text-xs text-muted">{user.email}</p>
-                  <StatusBadge label={user.role} tone="primary" className="mt-1" />
+                  <p className="truncate text-sm font-semibold text-ink">{user?.name ?? 'User'}</p>
+                  <p className="truncate text-xs text-muted">{user?.email ?? ''}</p>
+                  <StatusBadge label={user?.role ?? 'Viewer'} tone="primary" className="mt-1" />
                 </div>
               </div>
 
@@ -390,7 +390,7 @@ export function Topbar({ onToggleSidebar, onOpenSearch }: TopbarProps) {
                   className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink hover:bg-subtle"
                 >
                   <ShieldCheck className="h-4 w-4 text-success" />
-                  <span>Role Access ({user.role})</span>
+                  <span>Role Access ({user?.role ?? 'Viewer'})</span>
                 </Link>
               </div>
 
