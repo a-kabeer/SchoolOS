@@ -11,9 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SchoolOS.BuildingBlocks.Persistence.Interceptors;
 using SchoolOS.BuildingBlocks.Security;
+using SchoolOS.Local.Api.LocalPlatform;
 using SchoolOS.Modules.Admissions.Persistence;
 using SchoolOS.Modules.Identity.Persistence;
 using SchoolOS.Modules.Organization.Persistence;
+using SchoolOS.Modules.Students.Persistence;
 using SchoolOS.PlatformModules.Subscriptions.Persistence;
 using SchoolOS.PlatformModules.Tenants.Persistence;
 using Xunit;
@@ -91,7 +93,9 @@ public class LocalApiFactory : WebApplicationFactory<SchoolOS.Local.Api.Program>
         {
             TestDbContextExtensions.ReplaceDbContextWithInMemory<OrganizationDbContext>(services, _dbName);
             TestDbContextExtensions.ReplaceDbContextWithInMemory<IdentityDbContext>(services, _dbName, includeChangeAudit: true);
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<StudentsDbContext>(services, _dbName, includeChangeAudit: true);
             TestDbContextExtensions.ReplaceDbContextWithInMemory<AdmissionsDbContext>(services, _dbName, includeChangeAudit: true);
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<LocalPlatformDbContext>(services, _dbName);
 
             var existingOpts = services.Where(d => d.ServiceType == typeof(OfflineLicenseVerificationOptions)).ToList();
             foreach (var d in existingOpts)

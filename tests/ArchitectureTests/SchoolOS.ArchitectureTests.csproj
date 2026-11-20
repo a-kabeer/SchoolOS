@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\src\Hosts\SchoolOS.Local.Api\SchoolOS.Local.Api.csproj" />
     <ProjectReference Include="..\..\src\Modules\Identity\SchoolOS.Modules.Identity.csproj" />
     <ProjectReference Include="..\..\src\Modules\Organization\SchoolOS.Modules.Organization.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Students\SchoolOS.Modules.Students.csproj" />
     <ProjectReference Include="..\..\src\Modules\Admissions\SchoolOS.Modules.Admissions.csproj" />
     <ProjectReference Include="..\..\src\PlatformModules\Tenants\SchoolOS.PlatformModules.Tenants.csproj" />
     <ProjectReference Include="..\..\src\PlatformModules\Subscriptions\SchoolOS.PlatformModules.Subscriptions.csproj" />

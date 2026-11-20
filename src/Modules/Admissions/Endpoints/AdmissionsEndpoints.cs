@@ -6,6 +6,8 @@ using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.BuildingBlocks.Web;
 using SchoolOS.Modules.Admissions.Domain;
 using SchoolOS.Modules.Admissions.Persistence;
+using SchoolOS.Modules.Organization.Contracts;
+using SchoolOS.Modules.Students.Contracts;
 
 namespace SchoolOS.Modules.Admissions.Endpoints;
 
@@ -90,6 +92,7 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
     private static async Task<IResult> CreateEnquiry(
         CreateEnquiryBody request,
         AdmissionsDbContext db,
+        IOrganizationAcademicReader organization,
         ITenantContext tenantContext,
         CancellationToken cancellationToken)
     {
@@ -98,7 +101,18 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
             return Results.Unauthorized();
         }
 
+        if (tenantContext.CampusId.HasValue && request.CampusId != Guid.Empty && request.CampusId != tenantContext.CampusId.Value)
+        {
+            return Results.Forbid();
+        }
+
         var campusId = tenantContext.CampusId ?? request.CampusId;
+        var campus = await organization.GetCampusAsync(tenantContext.TenantId.Value, campusId, cancellationToken);
+        if (campus is null || !campus.IsActive)
+        {
+            return Results.BadRequest(new { code = "CAMPUS_NOT_FOUND", message = "Target campus was not found or is inactive in the authenticated tenant." });
+        }
+
         var enquiry = AdmissionEnquiry.Create(
             tenantContext.TenantId.Value,
             campusId,
@@ -122,6 +136,7 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
         Guid id,
         AddFollowUpBody request,
         AdmissionsDbContext db,
+        ITenantContext tenantContext,
         CancellationToken cancellationToken)
     {
         var enquiry = await db.AdmissionEnquiries
@@ -130,6 +145,11 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
         if (enquiry is null)
         {
             return Results.NotFound();
+        }
+
+        if (tenantContext.CampusId.HasValue && enquiry.CampusId != tenantContext.CampusId.Value)
+        {
+            return Results.Forbid();
         }
 
         var followUp = enquiry.AddFollowUp(request.FollowUpAtUtc, request.Channel, request.Notes);
@@ -145,6 +165,7 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
         Guid id,
         ScheduleVisitBody request,
         AdmissionsDbContext db,
+        ITenantContext tenantContext,
         CancellationToken cancellationToken)
     {
         var enquiry = await db.AdmissionEnquiries
@@ -153,6 +174,11 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
         if (enquiry is null)
         {
             return Results.NotFound();
+        }
+
+        if (tenantContext.CampusId.HasValue && enquiry.CampusId != tenantContext.CampusId.Value)
+        {
+            return Results.Forbid();
         }
 
         var visit = enquiry.ScheduleVisit(request.ScheduledAtUtc, request.VisitorName, request.Notes);
@@ -168,43 +194,83 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
         Guid id,
         ConvertEnquiryBody request,
         AdmissionsDbContext db,
+        IStudentAdmissionBridge studentBridge,
+        ITenantContext tenantContext,
         TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
+        if (!tenantContext.TenantId.HasValue)
+        {
+            return Results.Unauthorized();
+        }
+
         var enquiry = await db.AdmissionEnquiries.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         if (enquiry is null)
         {
             return Results.NotFound();
         }
 
+        if (tenantContext.CampusId.HasValue && enquiry.CampusId != tenantContext.CampusId.Value)
+        {
+            return Results.Forbid();
+        }
+
         var admissionDate = request.AdmissionDate ?? DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
-        var student = enquiry.ConvertToStudent(
-            request.AdmissionNumber,
-            request.FirstName,
-            request.LastName,
-            request.DateOfBirth,
-            admissionDate);
 
-        db.StudentProfiles.Add(student);
-        await db.SaveChangesAsync(cancellationToken);
+        var admitted = await studentBridge.AdmitFromEnquiryAsync(
+            new AdmitStudentFromEnquiryCommand(
+                tenantContext.TenantId.Value,
+                enquiry.CampusId,
+                enquiry.Id,
+                request.AdmissionNumber,
+                request.FirstName,
+                request.LastName,
+                request.DateOfBirth,
+                admissionDate,
+                enquiry.GuardianName,
+                enquiry.GuardianPhone,
+                enquiry.GuardianEmail,
+                enquiry.TargetGrade),
+            cancellationToken);
 
-        return Results.Created(
-            $"/api/v1/admissions/students/{student.Id}",
-            new { student.Id, student.AdmissionNumber, student.FirstName, student.LastName, EnquiryId = enquiry.Id, EnquiryStatus = enquiry.Status });
+        if (enquiry.Status != AdmissionEnquiryStatus.Admitted || enquiry.ConvertedStudentProfileId != admitted.StudentId)
+        {
+            enquiry.MarkAdmitted(admitted.StudentId);
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        var payload = new
+        {
+            Id = admitted.StudentId,
+            admitted.AdmissionNumber,
+            admitted.FirstName,
+            admitted.LastName,
+            EnquiryId = enquiry.Id,
+            EnquiryStatus = enquiry.Status,
+            admitted.WasExisting
+        };
+
+        return admitted.WasExisting
+            ? Results.Ok(payload)
+            : Results.Created($"/api/v1/students/{admitted.StudentId}", payload);
     }
 
     private static async Task<IResult> ListStudents(
         AdmissionsDbContext db,
+        IStudentAdmissionBridge studentBridge,
         ITenantContext tenantContext,
         CancellationToken cancellationToken)
     {
-        var query = db.StudentProfiles.AsNoTracking();
+        var canonical = await studentBridge.ListAdmittedStudentsAsync(tenantContext.CampusId, cancellationToken);
+        var seenIds = canonical.Select(s => s.Id).ToHashSet();
+
+        var legacyQuery = db.StudentProfiles.AsNoTracking();
         if (tenantContext.CampusId.HasValue)
         {
-            query = query.Where(s => s.CampusId == tenantContext.CampusId.Value);
+            legacyQuery = legacyQuery.Where(s => s.CampusId == tenantContext.CampusId.Value);
         }
 
-        var items = await query
+        var legacy = await legacyQuery
             .OrderBy(s => s.AdmissionNumber)
             .Select(s => new
             {
@@ -214,17 +280,34 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
                 s.FirstName,
                 s.LastName,
                 s.TargetGrade,
-                s.Status,
+                Status = s.Status.ToString(),
                 s.SourceEnquiryId
             })
             .ToListAsync(cancellationToken);
 
-        return Results.Ok(items);
+        var combined = canonical
+            .Select(s => new
+            {
+                s.Id,
+                s.CampusId,
+                s.AdmissionNumber,
+                s.FirstName,
+                s.LastName,
+                TargetGrade = string.Empty,
+                s.Status,
+                s.SourceEnquiryId
+            })
+            .Concat(legacy.Where(l => !seenIds.Contains(l.Id)))
+            .OrderBy(s => s.AdmissionNumber)
+            .ToList();
+
+        return Results.Ok(combined);
     }
 
     private static async Task<IResult> GetStudentById(
         Guid id,
         AdmissionsDbContext db,
+        ITenantContext tenantContext,
         CancellationToken cancellationToken)
     {
         var student = await db.StudentProfiles.AsNoTracking()
@@ -232,6 +315,11 @@ public sealed class AdmissionsEndpointGroup : IEndpointGroup
         if (student is null)
         {
             return Results.NotFound();
+        }
+
+        if (tenantContext.CampusId.HasValue && student.CampusId != tenantContext.CampusId.Value)
+        {
+            return Results.Forbid();
         }
 
         return Results.Ok(new

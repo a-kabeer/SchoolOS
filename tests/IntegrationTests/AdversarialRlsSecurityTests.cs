@@ -153,7 +153,7 @@ public class AdversarialRlsSecurityTests
         await adminConn.OpenAsync();
 
         // 1. Verify ENABLE + FORCE ROW LEVEL SECURITY directly from MigrateAsync() on all organization tables
-        foreach (var table in new[] { "schools", "campuses", "campus_details", "campus_phones", "branding_images", "school_brandings", "school_profiles" })
+        foreach (var table in new[] { "schools", "campuses", "campus_details", "campus_phones", "branding_images", "school_brandings", "school_profiles", "academic_years", "grade_levels", "sections" })
         {
             await using var rlsCmd = adminConn.CreateCommand();
             rlsCmd.CommandText = """
@@ -187,8 +187,8 @@ public class AdversarialRlsSecurityTests
                 policies.Add((reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
             }
 
-            policies.Count.ShouldBe(7);
-            policies.Select(p => p.Table).ShouldBe(["branding_images", "campus_details", "campus_phones", "campuses", "school_brandings", "school_profiles", "schools"], ignoreOrder: true);
+            policies.Count.ShouldBe(10);
+            policies.Select(p => p.Table).ShouldBe(["academic_years", "branding_images", "campus_details", "campus_phones", "campuses", "grade_levels", "school_brandings", "school_profiles", "schools", "sections"], ignoreOrder: true);
             foreach (var p in policies)
             {
                 p.Qual.ShouldContain("app.current_tenant_id");

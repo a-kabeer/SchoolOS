@@ -36,7 +36,10 @@ public class Wave3And4PostgresMigrationTests
         "campus_phones",
         "branding_images",
         "school_brandings",
-        "school_profiles"
+        "school_profiles",
+        "academic_years",
+        "grade_levels",
+        "sections"
     ];
 
     private static readonly string[] Wave4AdmissionsTenantTables =
