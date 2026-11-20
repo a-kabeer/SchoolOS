@@ -1,7 +1,7 @@
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.Modules.Organization.Domain;
+using Shouldly;
 using Xunit;
 
 namespace SchoolOS.IntegrationTests;
@@ -27,25 +27,25 @@ public class AuditActorSafetyTests
         db.Schools.Add(school);
         await db.SaveChangesAsync();
 
-        school.CreatedBy.Should().Be("user-alice");
-        school.CreatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
-        school.UpdatedBy.Should().BeNull();
-        school.UpdatedAtUtc.Should().BeNull();
+        school.CreatedBy.ShouldBe("user-alice");
+        school.CreatedAtUtc.ShouldBe(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+        school.UpdatedBy.ShouldBeNull();
+        school.UpdatedAtUtc.ShouldBeNull();
     }
 
     [Fact]
     public async Task MissingUser_Actor_FailsClosed_With_InvalidOperationException()
     {
         var tenantId = Guid.CreateVersion7();
-        var context = new TenantContext(tenantId, null, null); // Missing user ID
+        var context = new TenantContext(tenantId, null, null);
         await using var db = _fixture.CreateDbContext(context);
 
         var school = School.Create(tenantId, "No User School", "NOUSER");
         db.Schools.Add(school);
 
-        var act = () => db.SaveChangesAsync();
-        await act.Should().ThrowAsync<InvalidOperationException>()
-                 .WithMessage("*Audit integrity failure*without an authenticated user identifier*");
+        var ex = await Should.ThrowAsync<InvalidOperationException>(() => db.SaveChangesAsync());
+        ex.Message.ShouldContain("Audit integrity failure");
+        ex.Message.ShouldContain("without an authenticated user identifier");
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class AuditActorSafetyTests
         db.Schools.Add(school);
         await db.SaveChangesAsync();
 
-        school.CreatedBy.Should().Be("system:migration-daemon");
+        school.CreatedBy.ShouldBe("system:migration-daemon");
     }
 
     [Fact]
@@ -81,7 +81,6 @@ public class AuditActorSafetyTests
             originalCreatedAt = school.CreatedAtUtc;
         }
 
-        // Now modify as a different user
         var modifierUser = "modifier-charlie";
         var updateContext = new TenantContext(tenantId, null, modifierUser);
 
@@ -91,10 +90,11 @@ public class AuditActorSafetyTests
             school.Update("Updated Name", "ORIG-UPD");
             await db2.SaveChangesAsync();
 
-            school.CreatedBy.Should().Be("author-bob", "Original author must be preserved across updates");
-            school.CreatedAtUtc.Should().BeCloseTo(originalCreatedAt, TimeSpan.FromMilliseconds(1), "Original creation timestamp must remain unmodified");
-            school.UpdatedBy.Should().Be("modifier-charlie");
-            school.UpdatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+            school.CreatedBy.ShouldBe("author-bob", "Original author must be preserved across updates");
+            school.CreatedAtUtc.ShouldBe(originalCreatedAt, TimeSpan.FromMilliseconds(1), "Original creation timestamp must remain unmodified");
+            school.UpdatedBy.ShouldBe("modifier-charlie");
+            school.UpdatedAtUtc.ShouldNotBeNull();
+            school.UpdatedAtUtc!.Value.ShouldBe(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
     }
 }

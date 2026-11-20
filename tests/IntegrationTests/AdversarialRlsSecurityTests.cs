@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -59,7 +59,7 @@ public class AdversarialRlsSecurityTests
         {
             gucCmd.CommandText = "SELECT set_config('app.is_platform_admin', 'true', false);";
             var gucValue = (string?)await gucCmd.ExecuteScalarAsync();
-            gucValue.Should().Be("true",
+            gucValue.ShouldBe("true",
                 "PostgreSQL allows any role (including NOSUPERUSER NOBYPASSRLS) to set custom app.* placeholder GUCs");
         }
 
@@ -73,7 +73,7 @@ public class AdversarialRlsSecurityTests
         {
             readCmd.CommandText = "SELECT COUNT(*) FROM organization.schools WHERE code = 'ADV-VICTIM';";
             var count = Convert.ToInt64(await readCmd.ExecuteScalarAsync());
-            count.Should().Be(0, "Custom GUC app.is_platform_admin must NEVER bypass RLS");
+            count.ShouldBe(0, "Custom GUC app.is_platform_admin must NEVER bypass RLS");
         }
 
         // 3. With app.is_platform_admin = 'true' AND tenant_id = Tenant B, Tenant A's rows must remain invisible and immutable
@@ -87,21 +87,21 @@ public class AdversarialRlsSecurityTests
         {
             crossTenantCmd.CommandText = "SELECT COUNT(*) FROM organization.schools WHERE code = 'ADV-VICTIM';";
             var count = Convert.ToInt64(await crossTenantCmd.ExecuteScalarAsync());
-            count.Should().Be(0);
+            count.ShouldBe(0);
         }
 
         await using (var updateCmd = attackerConn.CreateCommand())
         {
             updateCmd.CommandText = "UPDATE organization.schools SET name = 'Pwned' WHERE code = 'ADV-VICTIM';";
             var updated = await updateCmd.ExecuteNonQueryAsync();
-            updated.Should().Be(0);
+            updated.ShouldBe(0);
         }
 
         await using (var deleteCmd = attackerConn.CreateCommand())
         {
             deleteCmd.CommandText = "DELETE FROM organization.schools WHERE code = 'ADV-VICTIM';";
             var deleted = await deleteCmd.ExecuteNonQueryAsync();
-            deleted.Should().Be(0);
+            deleted.ShouldBe(0);
         }
 
         // 4. Attempting to forge an INSERT into Tenant A while app.is_platform_admin = 'true' must fail with 42501
@@ -115,7 +115,7 @@ public class AdversarialRlsSecurityTests
             insertCmd.Parameters.AddWithValue("@tenantA", tenantA);
 
             var ex = await Assert.ThrowsAsync<PostgresException>(() => insertCmd.ExecuteNonQueryAsync());
-            ex.SqlState.Should().Be("42501");
+            ex.SqlState.ShouldBe("42501");
         }
     }
 
@@ -142,7 +142,7 @@ public class AdversarialRlsSecurityTests
             await using var cmd = conn.CreateCommand();
             cmd.CommandText = sql;
             var ex = await Assert.ThrowsAsync<PostgresException>(() => cmd.ExecuteNonQueryAsync());
-            ex.SqlState.Should().Be("42501", $"Statement '{sql}' must be denied with insufficient_privilege (42501)");
+            ex.SqlState.ShouldBe("42501", $"Statement '{sql}' must be denied with insufficient_privilege (42501)");
         }
     }
 
@@ -165,10 +165,10 @@ public class AdversarialRlsSecurityTests
             rlsCmd.Parameters.AddWithValue("@table", table);
 
             await using var reader = await rlsCmd.ExecuteReaderAsync();
-            (await reader.ReadAsync()).Should().BeTrue($"Table organization.{table} must exist");
-            reader.GetBoolean(0).Should().BeTrue($"organization.{table} must have ENABLE ROW LEVEL SECURITY");
-            reader.GetBoolean(1).Should().BeTrue($"organization.{table} must have FORCE ROW LEVEL SECURITY");
-            reader.GetString(2).Should().Be("schoolos_dev", $"schoolos_app must NOT own organization.{table}");
+            (await reader.ReadAsync()).ShouldBeTrue($"Table organization.{table} must exist");
+            reader.GetBoolean(0).ShouldBeTrue($"organization.{table} must have ENABLE ROW LEVEL SECURITY");
+            reader.GetBoolean(1).ShouldBeTrue($"organization.{table} must have FORCE ROW LEVEL SECURITY");
+            reader.GetString(2).ShouldBe("schoolos_dev", $"schoolos_app must NOT own organization.{table}");
         }
 
         // 2. Verify pg_policies predicates strictly check app.current_tenant_id and NEVER reference is_platform_admin
@@ -187,14 +187,14 @@ public class AdversarialRlsSecurityTests
                 policies.Add((reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
             }
 
-            policies.Should().HaveCount(2);
-            policies.Select(p => p.Table).Should().BeEquivalentTo(["campuses", "schools"]);
+            policies.Count.ShouldBe(2);
+            policies.Select(p => p.Table).ShouldBe(["campuses", "schools"], ignoreOrder: true);
             foreach (var p in policies)
             {
-                p.Qual.Should().Contain("app.current_tenant_id");
-                p.WithCheck.Should().Contain("app.current_tenant_id");
-                p.Qual.Should().NotContain("is_platform_admin");
-                p.WithCheck.Should().NotContain("is_platform_admin");
+                p.Qual.ShouldContain("app.current_tenant_id");
+                p.WithCheck.ShouldContain("app.current_tenant_id");
+                p.Qual.ShouldNotContain("is_platform_admin");
+                p.WithCheck.ShouldNotContain("is_platform_admin");
             }
         }
 
@@ -209,12 +209,12 @@ public class AdversarialRlsSecurityTests
                 """;
             roleCmd.Parameters.AddWithValue("@role", roleName);
             await using var reader = await roleCmd.ExecuteReaderAsync();
-            (await reader.ReadAsync()).Should().BeTrue($"Role {roleName} must exist");
-            reader.GetBoolean(0).Should().BeFalse($"{roleName} must be NOSUPERUSER");
-            reader.GetBoolean(1).Should().BeFalse($"{roleName} must be NOBYPASSRLS");
-            reader.GetBoolean(2).Should().BeFalse($"{roleName} must be NOCREATEDB");
-            reader.GetBoolean(3).Should().BeFalse($"{roleName} must be NOCREATEROLE");
-            reader.GetBoolean(4).Should().BeFalse($"{roleName} must be NOINHERIT");
+            (await reader.ReadAsync()).ShouldBeTrue($"Role {roleName} must exist");
+            reader.GetBoolean(0).ShouldBeFalse($"{roleName} must be NOSUPERUSER");
+            reader.GetBoolean(1).ShouldBeFalse($"{roleName} must be NOBYPASSRLS");
+            reader.GetBoolean(2).ShouldBeFalse($"{roleName} must be NOCREATEDB");
+            reader.GetBoolean(3).ShouldBeFalse($"{roleName} must be NOCREATEROLE");
+            reader.GetBoolean(4).ShouldBeFalse($"{roleName} must be NOINHERIT");
         }
 
         await using (var privCmd = adminConn.CreateCommand())
@@ -234,18 +234,18 @@ public class AdversarialRlsSecurityTests
                     has_schema_privilege('schoolos_platform_admin', 'organization', 'USAGE');
                 """;
             await using var reader = await privCmd.ExecuteReaderAsync();
-            (await reader.ReadAsync()).Should().BeTrue();
-            reader.GetBoolean(0).Should().BeFalse("schoolos_app must NOT be a member of schoolos_platform_admin");
-            reader.GetBoolean(1).Should().BeFalse("schoolos_app must NOT be a member of schoolos_dev");
-            reader.GetBoolean(2).Should().BeTrue("schoolos_app needs USAGE on organization");
-            reader.GetBoolean(3).Should().BeFalse("schoolos_app must NOT have CREATE on organization");
-            reader.GetBoolean(4).Should().BeTrue();
-            reader.GetBoolean(5).Should().BeTrue();
-            reader.GetBoolean(6).Should().BeTrue();
-            reader.GetBoolean(7).Should().BeTrue();
-            reader.GetBoolean(8).Should().BeFalse("schoolos_app must NOT have TRUNCATE");
-            reader.GetBoolean(9).Should().BeFalse("schoolos_app must NOT have TRIGGER");
-            reader.GetBoolean(10).Should().BeFalse("schoolos_platform_admin must NOT have privileges on Local organization schema");
+            (await reader.ReadAsync()).ShouldBeTrue();
+            reader.GetBoolean(0).ShouldBeFalse("schoolos_app must NOT be a member of schoolos_platform_admin");
+            reader.GetBoolean(1).ShouldBeFalse("schoolos_app must NOT be a member of schoolos_dev");
+            reader.GetBoolean(2).ShouldBeTrue("schoolos_app needs USAGE on organization");
+            reader.GetBoolean(3).ShouldBeFalse("schoolos_app must NOT have CREATE on organization");
+            reader.GetBoolean(4).ShouldBeTrue();
+            reader.GetBoolean(5).ShouldBeTrue();
+            reader.GetBoolean(6).ShouldBeTrue();
+            reader.GetBoolean(7).ShouldBeTrue();
+            reader.GetBoolean(8).ShouldBeFalse("schoolos_app must NOT have TRUNCATE");
+            reader.GetBoolean(9).ShouldBeFalse("schoolos_app must NOT have TRIGGER");
+            reader.GetBoolean(10).ShouldBeFalse("schoolos_platform_admin must NOT have privileges on Local organization schema");
         }
     }
 
@@ -266,7 +266,7 @@ public class AdversarialRlsSecurityTests
             cmd.Parameters.AddWithValue("@tenant", Guid.CreateVersion7());
 
             var ex = await Assert.ThrowsAsync<PostgresException>(() => cmd.ExecuteNonQueryAsync());
-            ex.SqlState.Should().Be("42501");
+            ex.SqlState.ShouldBe("42501");
         }
 
         // 2. EF Core SaveChangesAsync with null TenantId fails closed even if IsPlatformAdmin = true
@@ -274,9 +274,8 @@ public class AdversarialRlsSecurityTests
         await using (var db = _fixture.CreateDbContext(platformAdminWithoutTenant))
         {
             db.Schools.Add(School.Create(Guid.CreateVersion7(), "No Context EF School", "NOCONTEXT-EF"));
-            var act = () => db.SaveChangesAsync();
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("*Tenant isolation violation*");
+            var ex = await Should.ThrowAsync<InvalidOperationException>(() => db.SaveChangesAsync());
+            ex.Message.ShouldContain("Tenant isolation violation");
         }
     }
 
@@ -323,18 +322,18 @@ public class AdversarialRlsSecurityTests
                 seedCmd.Parameters.AddWithValue("@tenantA", tenantA);
                 seedCmd.Parameters.AddWithValue("@idB", Guid.CreateVersion7());
                 seedCmd.Parameters.AddWithValue("@tenantB", tenantB);
-                (await seedCmd.ExecuteNonQueryAsync()).Should().Be(2);
+                (await seedCmd.ExecuteNonQueryAsync()).ShouldBe(2);
 
                 // Platform admin role sees BOTH tenants WITHOUT any custom GUC
                 await using var readAllCmd = platConn.CreateCommand();
                 readAllCmd.CommandText = "SELECT COUNT(*) FROM cloud_rls_verify.commercial_records;";
-                Convert.ToInt64(await readAllCmd.ExecuteScalarAsync()).Should().Be(2);
+                Convert.ToInt64(await readAllCmd.ExecuteScalarAsync()).ShouldBe(2);
 
                 // Platform admin role is still strictly denied access to Local Data Plane organization.schools
                 await using var deniedLocalCmd = platConn.CreateCommand();
                 deniedLocalCmd.CommandText = "SELECT COUNT(*) FROM organization.schools;";
                 var ex = await Assert.ThrowsAsync<PostgresException>(() => deniedLocalCmd.ExecuteScalarAsync());
-                ex.SqlState.Should().Be("42501");
+                ex.SqlState.ShouldBe("42501");
             }
 
             // Normal tenant runtime role (schoolos_app) still CANNOT bypass RLS even with app.is_platform_admin = 'true'
@@ -349,7 +348,7 @@ public class AdversarialRlsSecurityTests
                 await using (var attemptCmd = appConn.CreateCommand())
                 {
                     attemptCmd.CommandText = "SELECT COUNT(*) FROM cloud_rls_verify.commercial_records;";
-                    Convert.ToInt64(await attemptCmd.ExecuteScalarAsync()).Should().Be(0);
+                    Convert.ToInt64(await attemptCmd.ExecuteScalarAsync()).ShouldBe(0);
                 }
 
                 // Scoped to Tenant A, schoolos_app sees ONLY Tenant A's record
@@ -362,7 +361,7 @@ public class AdversarialRlsSecurityTests
                 await using (var scopedCmd = appConn.CreateCommand())
                 {
                     scopedCmd.CommandText = "SELECT COUNT(*) FROM cloud_rls_verify.commercial_records;";
-                    Convert.ToInt64(await scopedCmd.ExecuteScalarAsync()).Should().Be(1);
+                    Convert.ToInt64(await scopedCmd.ExecuteScalarAsync()).ShouldBe(1);
                 }
             }
         }
@@ -407,7 +406,7 @@ public class AdversarialRlsSecurityTests
             {
                 await dbA.Database.OpenConnectionAsync();
                 var schools = await dbA.Schools.Where(s => s.Code == "POOL-AUD-A").ToListAsync();
-                schools.Should().ContainSingle();
+                schools.ShouldHaveSingleItem();
 
                 var conn = dbA.Database.GetDbConnection();
                 await using var pidCmd = conn.CreateCommand();
@@ -423,11 +422,11 @@ public class AdversarialRlsSecurityTests
                 await using var checkCmd = reusedConn.CreateCommand();
                 checkCmd.CommandText = "SELECT pg_backend_pid(), COALESCE(current_setting('app.current_tenant_id', true), ''), (SELECT COUNT(*) FROM organization.schools WHERE code = 'POOL-AUD-A');";
                 await using var reader = await checkCmd.ExecuteReaderAsync();
-                (await reader.ReadAsync()).Should().BeTrue();
+                (await reader.ReadAsync()).ShouldBeTrue();
 
-                reader.GetInt32(0).Should().Be(pidFromTenantA, "Single-slot pool must reuse the same physical backend connection");
-                reader.GetString(1).Should().BeEmpty("PostgresTenantSessionInterceptor must reset app.current_tenant_id on close");
-                reader.GetInt64(2).Should().Be(0, "Reused pooled connection without tenant context must fail closed and see 0 rows");
+                reader.GetInt32(0).ShouldBe(pidFromTenantA, "Single-slot pool must reuse the same physical backend connection");
+                reader.GetString(1).ShouldBeEmpty("PostgresTenantSessionInterceptor must reset app.current_tenant_id on close");
+                reader.GetInt64(2).ShouldBe(0, "Reused pooled connection without tenant context must fail closed and see 0 rows");
             }
 
             // 3. Verify transaction-local set_config (is_local = true) automatically clears on explicit ROLLBACK and error abort
@@ -460,9 +459,9 @@ public class AdversarialRlsSecurityTests
                 await using var postAbortCmd = txConn.CreateCommand();
                 postAbortCmd.CommandText = "SELECT COALESCE(current_setting('app.current_tenant_id', true), ''), (SELECT COUNT(*) FROM organization.schools WHERE code = 'POOL-AUD-A');";
                 await using var reader = await postAbortCmd.ExecuteReaderAsync();
-                (await reader.ReadAsync()).Should().BeTrue();
-                reader.GetString(0).Should().BeEmpty("Transaction-local tenant GUC must be discarded by PostgreSQL on rollback/abort");
-                reader.GetInt64(1).Should().Be(0);
+                (await reader.ReadAsync()).ShouldBeTrue();
+                reader.GetString(0).ShouldBeEmpty("Transaction-local tenant GUC must be discarded by PostgreSQL on rollback/abort");
+                reader.GetInt64(1).ShouldBe(0);
             }
         }
         finally
@@ -495,7 +494,7 @@ public class AdversarialRlsSecurityTests
 
             // 1. Migrate Up on a completely empty database
             await db.Database.MigrateAsync();
-            (await db.Database.GetPendingMigrationsAsync()).Should().BeEmpty();
+            (await db.Database.GetPendingMigrationsAsync()).ShouldBeEmpty();
 
             await using (var checkConn = new NpgsqlConnection(tempAdminConnString))
             {
@@ -510,7 +509,7 @@ public class AdversarialRlsSecurityTests
                       AND c.relrowsecurity = true
                       AND c.relforcerowsecurity = true;
                     """;
-                Convert.ToInt64(await cmd.ExecuteScalarAsync()).Should().Be(2, "Clean-DB Up migration must enable & force RLS on both tables");
+                Convert.ToInt64(await cmd.ExecuteScalarAsync()).ShouldBe(2, "Clean-DB Up migration must enable & force RLS on both tables");
             }
 
             // 2. Rollback Down to initial state ("0")
@@ -526,12 +525,12 @@ public class AdversarialRlsSecurityTests
                     FROM pg_tables
                     WHERE schemaname = 'organization' AND tablename IN ('schools', 'campuses');
                     """;
-                Convert.ToInt64(await cmd.ExecuteScalarAsync()).Should().Be(0, "Down migration must cleanly drop tables and policies");
+                Convert.ToInt64(await cmd.ExecuteScalarAsync()).ShouldBe(0, "Down migration must cleanly drop tables and policies");
             }
 
             // 3. Re-migrate Up cleanly
             await db.Database.MigrateAsync();
-            (await db.Database.GetAppliedMigrationsAsync()).Should().Contain(m => m.Contains("Initial_Organization_Create"));
+            (await db.Database.GetAppliedMigrationsAsync()).ShouldContain(m => m.Contains("Initial_Organization_Create"));
 
             // 4. Verify Cloud Control Plane PlatformDbContext clean migration Up -> Down -> Up on a separate clean database
             const string platformTempDb = "schoolos_platform_migration_verify";
@@ -547,13 +546,13 @@ public class AdversarialRlsSecurityTests
 
                 await using var platDb = new PlatformDbContext(platOptions);
                 await platDb.Database.MigrateAsync();
-                (await platDb.Database.GetPendingMigrationsAsync()).Should().BeEmpty();
-                (await platDb.Database.GetAppliedMigrationsAsync()).Should().Contain(m => m.Contains("Initial_Platform_Create"));
+                (await platDb.Database.GetPendingMigrationsAsync()).ShouldBeEmpty();
+                (await platDb.Database.GetAppliedMigrationsAsync()).ShouldContain(m => m.Contains("Initial_Platform_Create"));
 
                 var platMigrator = platDb.GetInfrastructure().GetRequiredService<IMigrator>();
                 await platMigrator.MigrateAsync("0");
                 await platDb.Database.MigrateAsync();
-                (await platDb.Database.GetPendingMigrationsAsync()).Should().BeEmpty();
+                (await platDb.Database.GetPendingMigrationsAsync()).ShouldBeEmpty();
             }
             finally
             {

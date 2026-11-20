@@ -1,6 +1,6 @@
 using System.Data;
 using System.Data.Common;
-using FluentAssertions;
+using Shouldly;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SchoolOS.BuildingBlocks.Persistence.Interceptors;
@@ -137,11 +137,11 @@ public class ConnectionPoolResetFailureTests
         // 2. Must throw InvalidOperationException
         // 3. Must preserve the original inner exception
         // 4. Must NOT call connection.Close() recursively inside the interceptor callback
-        var ex = await act.Should().ThrowAsync<InvalidOperationException>();
-        ex.WithMessage("*CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id'*");
-        ex.WithInnerException<Npgsql.PostgresException>();
+        var ex = await Should.ThrowAsync<InvalidOperationException>(async () => await act());
+        ex.Message.ShouldContain("CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id'");
+        ex.InnerException.ShouldBeOfType<Npgsql.PostgresException>();
 
-        faultyConn.CloseCallCount.Should().Be(0, "Close() must not be called recursively from inside ConnectionClosingAsync");
+        faultyConn.CloseCallCount.ShouldBe(0, "Close() must not be called recursively from inside ConnectionClosingAsync");
     }
 
     [Fact]
@@ -164,11 +164,11 @@ public class ConnectionPoolResetFailureTests
         // Act: Synchronous closing interception
         var act = () => interceptor.ConnectionClosing(faultyConn, eventData, default);
 
-        var ex = act.Should().Throw<InvalidOperationException>();
-        ex.WithMessage("*CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id'*");
-        ex.WithInnerException<Npgsql.PostgresException>();
+        var ex = Should.Throw<InvalidOperationException>(() => _ = act());
+        ex.Message.ShouldContain("CRITICAL: Failed to reset PostgreSQL tenant session variable 'app.current_tenant_id'");
+        ex.InnerException.ShouldBeOfType<Npgsql.PostgresException>();
 
-        faultyConn.CloseCallCount.Should().Be(0, "Close() must not be called recursively from inside ConnectionClosing");
+        faultyConn.CloseCallCount.ShouldBe(0, "Close() must not be called recursively from inside ConnectionClosing");
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class ConnectionPoolResetFailureTests
             DateTimeOffset.UtcNow);
 
         // Should cleanly return without attempting command execution on a closed connection
-        var act = async () => await interceptor.ConnectionClosingAsync(closedConn, eventData, default);
-        await act.Should().NotThrowAsync();
+        Func<Task> act = async () => await interceptor.ConnectionClosingAsync(closedConn, eventData, default);
+        await Should.NotThrowAsync(act);
     }
 }

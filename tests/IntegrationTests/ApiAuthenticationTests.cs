@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using FluentAssertions;
+using Shouldly;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -141,7 +141,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
     {
         var client = _cloudFactory.CreateClient();
         var response = await client.GetAsync("/api/v1/platform/tenants");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         var client = _cloudFactory.CreateClient();
         var payload = new { Name = "Test School System", Slug = "test-system" };
         var response = await client.PostAsJsonAsync("/api/v1/platform/tenants", payload);
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await client.GetAsync("/api/v1/platform/tenants");
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", invalidToken);
 
         var response = await client.GetAsync("/api/v1/platform/tenants");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", expiredToken);
 
         var response = await client.GetAsync("/api/v1/platform/tenants");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -198,10 +198,10 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         var slug = $"slug-{Guid.NewGuid():N}";
         var payload = new { Name = "Al-Hikmah Educational Trust", Slug = slug };
         var postResponse = await client.PostAsJsonAsync("/api/v1/platform/tenants", payload);
-        postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        postResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var getResponse = await client.GetAsync("/api/v1/platform/tenants");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
     {
         var client = _localFactory.CreateClient();
         var response = await client.GetAsync("/api/v1/organization/schools");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         var client = _localFactory.CreateClient();
         var payload = new { Name = "City Campus", Code = "CC-01" };
         var response = await client.PostAsJsonAsync("/api/v1/organization/schools", payload);
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -230,7 +230,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await client.GetAsync("/api/v1/organization/schools");
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", invalidToken);
 
         var response = await client.GetAsync("/api/v1/organization/schools");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -252,7 +252,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", expiredToken);
 
         var response = await client.GetAsync("/api/v1/organization/schools");
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -266,12 +266,12 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
 
         // Can read schools within tenant scope
         var getResponse = await client.GetAsync("/api/v1/organization/schools");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Cannot create new school (requires OrganizationAdminPolicy)
         var payload = new { Name = "Unauthorized School Attempt", Code = "FAIL-01" };
         var postResponse = await client.PostAsJsonAsync("/api/v1/organization/schools", payload);
-        postResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        postResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -285,10 +285,10 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         var code = $"SCH-{Guid.NewGuid():N}"[..10];
         var payload = new { Name = "Beaconhouse Main Branch", Code = code };
         var postResponse = await client.PostAsJsonAsync("/api/v1/organization/schools", payload);
-        postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        postResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var getResponse = await client.GetAsync("/api/v1/organization/schools");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -303,15 +303,15 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         var schoolCode = $"SCH-{Guid.NewGuid():N}"[..10];
         var schoolPayload = new { Name = "City School Model Town", Code = schoolCode };
         var schoolPost = await client.PostAsJsonAsync("/api/v1/organization/schools", schoolPayload);
-        schoolPost.StatusCode.Should().Be(HttpStatusCode.Created);
+        schoolPost.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var school = await schoolPost.Content.ReadFromJsonAsync<CreatedSchoolResponse>();
-        school.Should().NotBeNull();
+        school.ShouldNotBeNull();
 
         // Create campus
         var campusPayload = new { Name = "Junior Branch", Code = "JB-01", Address = "123 Main St" };
         var campusPost = await client.PostAsJsonAsync($"/api/v1/organization/schools/{school!.Id}/campuses", campusPayload);
-        campusPost.StatusCode.Should().Be(HttpStatusCode.Created);
+        campusPost.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         var code = $"SCH-{Guid.NewGuid():N}"[..10];
         var payload = new { Name = "Scope-Authorized Academy", Code = code };
         var postResponse = await client.PostAsJsonAsync("/api/v1/organization/schools", payload);
-        postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        postResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 
     [Fact]
@@ -336,10 +336,10 @@ public class ApiAuthenticationTests : IClassFixture<CloudApiFactory>, IClassFixt
         var localClient = _localFactory.CreateClient();
 
         var cloudHealth = await cloudClient.GetAsync("/healthz");
-        cloudHealth.StatusCode.Should().Be(HttpStatusCode.OK);
+        cloudHealth.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var localHealth = await localClient.GetAsync("/healthz");
-        localHealth.StatusCode.Should().Be(HttpStatusCode.OK);
+        localHealth.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }
 

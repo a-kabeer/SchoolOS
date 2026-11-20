@@ -1,5 +1,5 @@
-using FluentAssertions;
 using SchoolOS.Modules.Organization.Domain;
+using Shouldly;
 using Xunit;
 
 namespace SchoolOS.UnitTests;
@@ -12,19 +12,18 @@ public class SchoolAndCampusDomainTests
         var tenantId = Guid.CreateVersion7();
         var school = School.Create(tenantId, "Army Public School", "APS-01");
 
-        school.Id.Should().NotBeEmpty();
-        school.TenantId.Should().Be(tenantId);
-        school.Name.Should().Be("Army Public School");
-        school.Code.Should().Be("APS-01");
-        school.IsActive.Should().BeTrue();
+        school.Id.ShouldNotBe(Guid.Empty);
+        school.TenantId.ShouldBe(tenantId);
+        school.Name.ShouldBe("Army Public School");
+        school.Code.ShouldBe("APS-01");
+        school.IsActive.ShouldBeTrue();
     }
 
     [Fact]
     public void School_Create_EmptyTenantId_ShouldThrowArgumentException()
     {
-        var act = () => School.Create(Guid.Empty, "Valid School", "VS-01");
-        act.Should().Throw<ArgumentException>()
-           .WithMessage("*Tenant ID cannot be empty*");
+        var ex = Should.Throw<ArgumentException>(() => School.Create(Guid.Empty, "Valid School", "VS-01"));
+        ex.Message.ShouldContain("Tenant ID cannot be empty");
     }
 
     [Fact]
@@ -35,12 +34,12 @@ public class SchoolAndCampusDomainTests
 
         var campus = school.AddCampus("Main Campus", "MAIN", "Sector F-8, Islamabad");
 
-        campus.Should().NotBeNull();
-        campus.TenantId.Should().Be(tenantId);
-        campus.SchoolId.Should().Be(school.Id);
-        campus.Name.Should().Be("Main Campus");
-        campus.Code.Should().Be("MAIN");
-        school.Campuses.Should().Contain(campus);
+        campus.ShouldNotBeNull();
+        campus.TenantId.ShouldBe(tenantId);
+        campus.SchoolId.ShouldBe(school.Id);
+        campus.Name.ShouldBe("Main Campus");
+        campus.Code.ShouldBe("MAIN");
+        school.Campuses.ShouldContain(campus);
     }
 
     [Fact]
@@ -51,7 +50,7 @@ public class SchoolAndCampusDomainTests
 
         var campus = Campus.CreateForSchool(school, "Gulberg Branch", "GUL");
 
-        campus.TenantId.Should().Be(tenantId);
-        campus.SchoolId.Should().Be(school.Id);
+        campus.TenantId.ShouldBe(tenantId);
+        campus.SchoolId.ShouldBe(school.Id);
     }
 }

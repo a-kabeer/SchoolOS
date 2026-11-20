@@ -1,5 +1,5 @@
 using System.Data.Common;
-using FluentAssertions;
+using Shouldly;
 using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.Modules.Organization.Domain;
@@ -49,20 +49,23 @@ public class MultiTenantIsolationTests
         await using (var dbA = _fixture.CreateDbContext(contextA))
         {
             var schoolsA = await dbA.Schools.Include(s => s.Campuses).ToListAsync();
-            schoolsA.Should().ContainSingle(s => s.Code == "APS-ISB");
-            schoolsA.Should().NotContain(s => s.Code == "BSS-LHR");
+            schoolsA.Count.ShouldBe(1);
+            schoolsA.ShouldContain(s => s.Code == "APS-ISB");
+            schoolsA.ShouldNotContain(s => s.Code == "BSS-LHR");
 
             var campusesA = await dbA.Campuses.ToListAsync();
-            campusesA.Should().ContainSingle(c => c.Code == "MAIN");
-            campusesA.Should().NotContain(c => c.Code == "GUL");
+            campusesA.Count.ShouldBe(1);
+            campusesA.ShouldContain(c => c.Code == "MAIN");
+            campusesA.ShouldNotContain(c => c.Code == "GUL");
         }
 
         // Act & Assert: Querying as Tenant B should only return Tenant B records
         await using (var dbB = _fixture.CreateDbContext(contextB))
         {
             var schoolsB = await dbB.Schools.Include(s => s.Campuses).ToListAsync();
-            schoolsB.Should().ContainSingle(s => s.Code == "BSS-LHR");
-            schoolsB.Should().NotContain(s => s.Code == "APS-ISB");
+            schoolsB.Count.ShouldBe(1);
+            schoolsB.ShouldContain(s => s.Code == "BSS-LHR");
+            schoolsB.ShouldNotContain(s => s.Code == "APS-ISB");
         }
     }
 
@@ -91,9 +94,8 @@ public class MultiTenantIsolationTests
             var rogueSchool = School.Create(tenantB, "Rogue School", "ROGUE");
             dbA.Schools.Add(rogueSchool);
 
-            var act = () => dbA.SaveChangesAsync();
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                     .WithMessage("*Cross-tenant operation detected*");
+            var ex = await Should.ThrowAsync<InvalidOperationException>(() => dbA.SaveChangesAsync());
+            ex.Message.ShouldContain("Cross-tenant operation detected");
         }
     }
 
@@ -126,8 +128,9 @@ public class MultiTenantIsolationTests
                                    .Where(c => c.Id == contextCampus1.CampusId!.Value)
                                    .ToListAsync();
 
-            campuses.Should().ContainSingle(c => c.Id == campus1Id);
-            campuses.Should().NotContain(c => c.Id == campus2Id);
+            campuses.Count.ShouldBe(1);
+            campuses.ShouldContain(c => c.Id == campus1Id);
+            campuses.ShouldNotContain(c => c.Id == campus2Id);
         }
     }
 
@@ -143,7 +146,7 @@ public class MultiTenantIsolationTests
         var schools = await db.Schools.ToListAsync();
 
         // Assert: Zero records returned
-        schools.Should().BeEmpty();
+        schools.ShouldBeEmpty();
     }
 
     [Fact]
@@ -174,7 +177,7 @@ public class MultiTenantIsolationTests
         {
             cmdA.CommandText = "SELECT COUNT(*) FROM organization.schools;";
             var countA = Convert.ToInt32(await cmdA.ExecuteScalarAsync());
-            countA.Should().Be(1, "PostgreSQL RLS should only allow Tenant A's record");
+            countA.ShouldBe(1, "PostgreSQL RLS should only allow Tenant A's record");
         }
 
         // Act & Assert 2: Raw SQL with app.current_tenant_id = tenantB
@@ -183,7 +186,7 @@ public class MultiTenantIsolationTests
         {
             cmdB.CommandText = "SELECT COUNT(*) FROM organization.schools;";
             var countB = Convert.ToInt32(await cmdB.ExecuteScalarAsync());
-            countB.Should().Be(1, "PostgreSQL RLS should only allow Tenant B's record");
+            countB.ShouldBe(1, "PostgreSQL RLS should only allow Tenant B's record");
         }
 
         // Act & Assert 3: Raw SQL with app.current_tenant_id = '' (missing/reset)
@@ -192,7 +195,7 @@ public class MultiTenantIsolationTests
         {
             cmdEmpty.CommandText = "SELECT COUNT(*) FROM organization.schools;";
             var countEmpty = Convert.ToInt32(await cmdEmpty.ExecuteScalarAsync());
-            countEmpty.Should().Be(0, "PostgreSQL RLS must fail closed when tenant context is empty");
+            countEmpty.ShouldBe(0, "PostgreSQL RLS must fail closed when tenant context is empty");
         }
     }
 
@@ -207,7 +210,7 @@ public class MultiTenantIsolationTests
         {
             cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
             var setting = (string?)await cmd.ExecuteScalarAsync();
-            setting.Should().Be(tenantA.ToString());
+            setting.ShouldBe(tenantA.ToString());
 
             // Reset session variable (as done by connection pooling / reset)
             cmd.CommandText = "RESET app.current_tenant_id;";
@@ -220,7 +223,7 @@ public class MultiTenantIsolationTests
         {
             cmd2.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
             var setting2 = (string?)await cmd2.ExecuteScalarAsync();
-            setting2.Should().BeEmpty("Connection reset must wipe any residual tenant context");
+            setting2.ShouldBeEmpty("Connection reset must wipe any residual tenant context");
         }
     }
 
@@ -241,10 +244,10 @@ public class MultiTenantIsolationTests
             await db.SaveChangesAsync();
             schoolId = school.Id;
 
-            school.CreatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
-            school.CreatedBy.Should().Be(authorUser);
-            school.UpdatedAtUtc.Should().BeNull();
-            school.UpdatedBy.Should().BeNull();
+            school.CreatedAtUtc.ShouldBe(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+            school.CreatedBy.ShouldBe(authorUser);
+            school.UpdatedAtUtc.ShouldBeNull();
+            school.UpdatedBy.ShouldBeNull();
         }
 
         // Update with another user
@@ -257,9 +260,10 @@ public class MultiTenantIsolationTests
             school.Update("Audit Tracking School (Updated)", "ATS-UPD");
             await db.SaveChangesAsync();
 
-            school.CreatedBy.Should().Be(authorUser);
-            school.UpdatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
-            school.UpdatedBy.Should().Be(editorUser);
+            school.CreatedBy.ShouldBe(authorUser);
+            school.UpdatedAtUtc.ShouldNotBeNull();
+            school.UpdatedAtUtc.Value.ShouldBe(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+            school.UpdatedBy.ShouldBe(editorUser);
         }
     }
 
@@ -293,7 +297,7 @@ public class MultiTenantIsolationTests
         await using (var dbCheck = _fixture.CreateDbContext(context))
         {
             var count = await dbCheck.Schools.CountAsync(s => s.Code == "SEED-01");
-            count.Should().Be(1);
+            count.ShouldBe(1);
         }
     }
 
@@ -309,9 +313,8 @@ public class MultiTenantIsolationTests
         db.Schools.Add(school);
 
         // Act & Assert: Must fail fast to prevent unattributed audit records
-        var act = () => db.SaveChangesAsync();
-        await act.Should().ThrowAsync<InvalidOperationException>()
-                 .WithMessage("*Audit integrity failure: Cannot create entity of type 'School' without an authenticated user identifier*");
+        var ex = await Should.ThrowAsync<InvalidOperationException>(() => db.SaveChangesAsync());
+        ex.Message.ShouldContain("Audit integrity failure: Cannot create entity of type 'School' without an authenticated user identifier");
     }
 
     [Fact]
@@ -344,10 +347,9 @@ public class MultiTenantIsolationTests
                 VALUES ('{rogueCampusId}', '{tenantA}', '{schoolBId}', 'Cross-Tenant Rogue Campus', 'ROGUE-C', true, NOW(), 'attacker');
                 """;
 
-            var act = () => cmd.ExecuteNonQueryAsync();
-            var ex = await act.Should().ThrowAsync<Npgsql.PostgresException>();
-            ex.Which.SqlState.Should().Be("23503", "Foreign key violation must be raised by PostgreSQL engine");
-            ex.Which.ConstraintName.Should().Be("fk_campuses_schools_tenant_id_school_id");
+            var ex = await Should.ThrowAsync<Npgsql.PostgresException>(() => cmd.ExecuteNonQueryAsync());
+            ex.SqlState.ShouldBe("23503", "Foreign key violation must be raised by PostgreSQL engine");
+            ex.ConstraintName.ShouldBe("fk_campuses_schools_tenant_id_school_id");
         }
     }
 
@@ -369,7 +371,7 @@ public class MultiTenantIsolationTests
         {
             cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
             var residualSetting = (string?)await cmd.ExecuteScalarAsync();
-            residualSetting.Should().BeEmpty("Connection close must reset app.current_tenant_id to empty string");
+            residualSetting.ShouldBeEmpty("Connection close must reset app.current_tenant_id to empty string");
         }
     }
 
@@ -392,14 +394,14 @@ public class MultiTenantIsolationTests
 
         // Verify school was not persisted
         var schoolExists = await dbA.Schools.AnyAsync(s => s.Code == "TEMP");
-        schoolExists.Should().BeFalse();
+        schoolExists.ShouldBeFalse();
 
         // Verify transaction-local setting is cleared
         await using var conn = await _fixture.OpenRawConnectionAsync(null);
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
         var setting = (string?)await cmd.ExecuteScalarAsync();
-        setting.Should().BeEmpty("Rollback must not leak transaction-local tenant context");
+        setting.ShouldBeEmpty("Rollback must not leak transaction-local tenant context");
     }
 
     [Fact]
@@ -428,15 +430,17 @@ public class MultiTenantIsolationTests
         await using (var dbA = _fixture.CreateDbContext(contextA))
         {
             var schoolsA = await dbA.Schools.ToListAsync();
-            schoolsA.Should().ContainSingle(s => s.Code == "TA-ISO");
-            schoolsA.Should().NotContain(s => s.Code == "TB-ISO");
+            schoolsA.Count.ShouldBe(1);
+            schoolsA.ShouldContain(s => s.Code == "TA-ISO");
+            schoolsA.ShouldNotContain(s => s.Code == "TB-ISO");
         }
 
         await using (var dbB = _fixture.CreateDbContext(contextB))
         {
             var schoolsB = await dbB.Schools.ToListAsync();
-            schoolsB.Should().ContainSingle(s => s.Code == "TB-ISO");
-            schoolsB.Should().NotContain(s => s.Code == "TA-ISO");
+            schoolsB.Count.ShouldBe(1);
+            schoolsB.ShouldContain(s => s.Code == "TB-ISO");
+            schoolsB.ShouldNotContain(s => s.Code == "TA-ISO");
         }
     }
 
@@ -457,7 +461,7 @@ public class MultiTenantIsolationTests
 
             cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
             var settingA = (string?)await cmd.ExecuteScalarAsync();
-            settingA.Should().Be(tenantA.ToString());
+            settingA.ShouldBe(tenantA.ToString());
         } // Returns connection to Npgsql pool, invoking ConnectionClosing reset
 
         // 2. Borrower B checks out connection without tenant context (or after pool return)
@@ -466,7 +470,7 @@ public class MultiTenantIsolationTests
         {
             cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
             var residual = (string?)await cmd.ExecuteScalarAsync();
-            residual.Should().BeEmpty("Pooled connection must not leak Tenant A's identity to subsequent neutral borrower");
+            residual.ShouldBeEmpty("Pooled connection must not leak Tenant A's identity to subsequent neutral borrower");
         }
 
         // 3. Borrower C checks out connection with Tenant B context
@@ -475,7 +479,7 @@ public class MultiTenantIsolationTests
         {
             cmd.CommandText = "SELECT current_setting('app.current_tenant_id', true);";
             var settingB = (string?)await cmd.ExecuteScalarAsync();
-            settingB.Should().Be(tenantB.ToString(), "Pooled connection must reflect Tenant B identity");
+            settingB.ShouldBe(tenantB.ToString(), "Pooled connection must reflect Tenant B identity");
         }
     }
 
@@ -505,15 +509,17 @@ public class MultiTenantIsolationTests
         await using (var dbA = _fixture.CreateDbContext(contextA))
         {
             var resultsA = await dbA.Schools.AsNoTracking().ToListAsync();
-            resultsA.Should().ContainSingle(s => s.Code == "NTX-A");
-            resultsA.Should().NotContain(s => s.Code == "NTX-B");
+            resultsA.Count.ShouldBe(1);
+            resultsA.ShouldContain(s => s.Code == "NTX-A");
+            resultsA.ShouldNotContain(s => s.Code == "NTX-B");
         }
 
         await using (var dbB = _fixture.CreateDbContext(contextB))
         {
             var resultsB = await dbB.Schools.AsNoTracking().ToListAsync();
-            resultsB.Should().ContainSingle(s => s.Code == "NTX-B");
-            resultsB.Should().NotContain(s => s.Code == "NTX-A");
+            resultsB.Count.ShouldBe(1);
+            resultsB.ShouldContain(s => s.Code == "NTX-B");
+            resultsB.ShouldNotContain(s => s.Code == "NTX-A");
         }
     }
 
@@ -535,7 +541,7 @@ public class MultiTenantIsolationTests
         }
 
         var existsCommitted = await dbA.Schools.AnyAsync(s => s.Code == "COMM-01");
-        existsCommitted.Should().BeTrue();
+        existsCommitted.ShouldBeTrue();
 
         // 2. Transaction Rollback
         await using (var tx = await dbA.Database.BeginTransactionAsync())
@@ -547,6 +553,6 @@ public class MultiTenantIsolationTests
         }
 
         var existsRolledBack = await dbA.Schools.AnyAsync(s => s.Code == "ROLL-01");
-        existsRolledBack.Should().BeFalse();
+        existsRolledBack.ShouldBeFalse();
     }
 }

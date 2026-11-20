@@ -1,5 +1,4 @@
 using System.Reflection;
-using FluentAssertions;
 using NetArchTest.Rules;
 using SchoolOS.BuildingBlocks.Localization;
 using SchoolOS.BuildingBlocks.Observability;
@@ -7,6 +6,7 @@ using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.BuildingBlocks.SharedKernel;
 using SchoolOS.BuildingBlocks.Web;
+using Shouldly;
 using Xunit;
 
 namespace SchoolOS.ArchitectureTests;
@@ -29,7 +29,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.PlatformModules.Licensing")
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.IsSuccessful.ShouldBeTrue();
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.PlatformModules.Licensing")
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.IsSuccessful.ShouldBeTrue();
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.PlatformModules.Licensing")
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.IsSuccessful.ShouldBeTrue();
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.Modules.Admissions")
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.IsSuccessful.ShouldBeTrue();
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class ModuleBoundaryTests
                 .HaveDependencyOnAny(forbidden)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue($"BuildingBlock {assembly.GetName().Name} must stay decoupled from hosts and modules.");
+            result.IsSuccessful.ShouldBeTrue($"BuildingBlock {assembly.GetName().Name} must stay decoupled from hosts and modules.");
         }
     }
 }

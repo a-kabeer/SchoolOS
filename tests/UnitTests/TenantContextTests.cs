@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using FluentAssertions;
 using SchoolOS.BuildingBlocks.Security;
+using Shouldly;
 using Xunit;
 
 namespace SchoolOS.UnitTests;
@@ -10,7 +10,6 @@ public class TenantContextTests
     [Fact]
     public void TenantContext_WithValidClaims_ShouldResolveProperties()
     {
-        // Arrange
         var tenantId = Guid.CreateVersion7();
         var campusId = Guid.CreateVersion7();
         var userId = "user-123";
@@ -27,39 +26,32 @@ public class TenantContextTests
         var identity = new ClaimsIdentity(claims, "TestAuth");
         var principal = new ClaimsPrincipal(identity);
 
-        // Act
         var context = new TenantContext(principal);
 
-        // Assert
-        context.IsAuthenticated.Should().BeTrue();
-        context.TenantId.Should().Be(tenantId);
-        context.CampusId.Should().Be(campusId);
-        context.UserId.Should().Be(userId);
-        context.HasScope("schools:read").Should().BeTrue();
-        context.HasScope("role:Principal").Should().BeTrue();
-        context.HasScope("finance:post").Should().BeFalse();
+        context.IsAuthenticated.ShouldBeTrue();
+        context.TenantId.ShouldBe(tenantId);
+        context.CampusId.ShouldBe(campusId);
+        context.UserId.ShouldBe(userId);
+        context.HasScope("schools:read").ShouldBeTrue();
+        context.HasScope("role:Principal").ShouldBeTrue();
+        context.HasScope("finance:post").ShouldBeFalse();
     }
 
     [Fact]
     public void TenantContext_Unauthenticated_ShouldFailClosed()
     {
-        // Arrange
-        var principal = new ClaimsPrincipal(new ClaimsIdentity()); // Unauthenticated
-
-        // Act
+        var principal = new ClaimsPrincipal(new ClaimsIdentity());
         var context = new TenantContext(principal);
 
-        // Assert
-        context.IsAuthenticated.Should().BeFalse();
-        context.TenantId.Should().BeNull();
-        context.CampusId.Should().BeNull();
-        context.UserId.Should().BeNull();
+        context.IsAuthenticated.ShouldBeFalse();
+        context.TenantId.ShouldBeNull();
+        context.CampusId.ShouldBeNull();
+        context.UserId.ShouldBeNull();
     }
 
     [Fact]
     public void TenantContext_AuthenticatedWithoutTenantId_ShouldFailClosed()
     {
-        // Arrange: Authenticated user with sub but no tenant_id claim
         var claims = new[]
         {
             new Claim("sub", "global-user")
@@ -67,19 +59,16 @@ public class TenantContextTests
         var identity = new ClaimsIdentity(claims, "TestAuth");
         var principal = new ClaimsPrincipal(identity);
 
-        // Act
         var context = new TenantContext(principal);
 
-        // Assert: User is authenticated, but TenantId must be null (failing closed for tenant operations)
-        context.IsAuthenticated.Should().BeTrue();
-        context.TenantId.Should().BeNull();
-        context.UserId.Should().Be("global-user");
+        context.IsAuthenticated.ShouldBeTrue();
+        context.TenantId.ShouldBeNull();
+        context.UserId.ShouldBe("global-user");
     }
 
     [Fact]
     public void TenantContext_WithMalformedTenantId_ShouldFailClosed()
     {
-        // Arrange: Tenant ID claim is not a valid GUID
         var claims = new[]
         {
             new Claim("sub", "user-456"),
@@ -88,11 +77,9 @@ public class TenantContextTests
         var identity = new ClaimsIdentity(claims, "TestAuth");
         var principal = new ClaimsPrincipal(identity);
 
-        // Act
         var context = new TenantContext(principal);
 
-        // Assert
-        context.IsAuthenticated.Should().BeTrue();
-        context.TenantId.Should().BeNull();
+        context.IsAuthenticated.ShouldBeTrue();
+        context.TenantId.ShouldBeNull();
     }
 }

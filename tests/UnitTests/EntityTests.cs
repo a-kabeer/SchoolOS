@@ -1,5 +1,5 @@
-using FluentAssertions;
 using SchoolOS.BuildingBlocks.SharedKernel;
+using Shouldly;
 using Xunit;
 
 namespace SchoolOS.UnitTests;
@@ -24,8 +24,8 @@ public class EntityTests
         var entity1 = new TestEntity(id);
         var entity2 = new TestEntity(id);
 
-        entity1.Should().Be(entity2);
-        (entity1 == entity2).Should().BeTrue();
+        entity1.ShouldBe(entity2);
+        (entity1 == entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -34,8 +34,8 @@ public class EntityTests
         var entity1 = new TestEntity(Guid.CreateVersion7());
         var entity2 = new TestEntity(Guid.CreateVersion7());
 
-        entity1.Should().NotBe(entity2);
-        (entity1 != entity2).Should().BeTrue();
+        entity1.ShouldNotBe(entity2);
+        (entity1 != entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -45,10 +45,11 @@ public class EntityTests
         var domainEvent = new TestDomainEvent();
 
         entity.AddDomainEvent(domainEvent);
-        entity.DomainEvents.Should().ContainSingle().Which.Should().Be(domainEvent);
+        entity.DomainEvents.Count.ShouldBe(1);
+        entity.DomainEvents.Single().ShouldBe(domainEvent);
 
         entity.ClearDomainEvents();
-        entity.DomainEvents.Should().BeEmpty();
+        entity.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -61,9 +62,9 @@ public class EntityTests
         entity.SetCreated(createdAt, "admin-1");
         entity.SetUpdated(updatedAt, "admin-2");
 
-        entity.CreatedAtUtc.Should().Be(createdAt);
-        entity.CreatedBy.Should().Be("admin-1");
-        entity.UpdatedAtUtc.Should().Be(updatedAt);
-        entity.UpdatedBy.Should().Be("admin-2");
+        entity.CreatedAtUtc.ShouldBe(createdAt);
+        entity.CreatedBy.ShouldBe("admin-1");
+        entity.UpdatedAtUtc.ShouldBe(updatedAt);
+        entity.UpdatedBy.ShouldBe("admin-2");
     }
 }

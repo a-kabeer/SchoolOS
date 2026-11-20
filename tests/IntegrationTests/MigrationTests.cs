@@ -1,7 +1,7 @@
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.Modules.Organization.Persistence;
+using Shouldly;
 using Xunit;
 
 namespace SchoolOS.IntegrationTests;
@@ -28,10 +28,10 @@ public class MigrationTests
         await using var db = new OrganizationDbContext(options, systemContext);
 
         var pendingMigrations = await db.Database.GetPendingMigrationsAsync();
-        pendingMigrations.Should().BeEmpty("All EF Core migrations should have been applied during database fixture initialization");
+        pendingMigrations.ShouldBeEmpty("All EF Core migrations should have been applied during database fixture initialization");
 
         var appliedMigrations = await db.Database.GetAppliedMigrationsAsync();
-        appliedMigrations.Should().Contain(m => m.Contains("Initial_Organization_Create"));
+        appliedMigrations.ShouldContain(m => m.Contains("Initial_Organization_Create"));
     }
 
     [Fact]
@@ -45,11 +45,9 @@ public class MigrationTests
         var systemContext = new TenantContext(null, null, "migration-upgrade-tester");
         await using var db = new OrganizationDbContext(options, systemContext);
 
-        // Re-applying migrations on an already-migrated database should execute cleanly and idempotently
-        var act = () => db.Database.MigrateAsync();
-        await act.Should().NotThrowAsync();
+        await Should.NotThrowAsync(() => db.Database.MigrateAsync());
 
         var canConnect = await db.Database.CanConnectAsync();
-        canConnect.Should().BeTrue();
+        canConnect.ShouldBeTrue();
     }
 }
