@@ -1,0 +1,143 @@
+name: SchoolOS CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+      - 'integrate/**'
+      - 'setup/**'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  GITLEAKS_VERSION: 8.18.4
+
+jobs:
+  security-and-governance:
+    name: Compliance, Docs & Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate documentation governance and registers
+        run: node scripts/validate-docs.mjs
+
+      - name: Run SchoolOS static security & engineering compliance guard
+        run: python3 scripts/compliance-guard.py
+
+      - name: Install gitleaks (pinned, SHA-256 verified)
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          file="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfLO "$base/$file"
+          curl -sSfL "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt" | grep " $file\$" | sha256sum -c -
+          tar -xzf "$file" gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+
+      - name: Scan commits for secrets
+        shell: bash
+        run: gitleaks detect --source . --redact --no-banner
+
+  backend:
+    name: Backend Build & Tests (.NET 10)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: schoolos_dev
+          POSTGRES_PASSWORD: schoolos_dev_password
+          POSTGRES_DB: schoolos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore SchoolOS.sln
+
+      - name: Build solution (warnings are errors)
+        run: dotnet build SchoolOS.sln --no-restore --configuration Release
+
+      - name: Run Unit Tests
+        run: dotnet test tests/UnitTests/SchoolOS.UnitTests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Run Architecture Tests
+        run: dotnet test tests/ArchitectureTests/SchoolOS.ArchitectureTests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Run Multi-Tenant Integration Tests
+        run: dotnet test tests/IntegrationTests/SchoolOS.IntegrationTests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Vulnerability Audit (Hard Failure Gate)
+        run: |
+          AUDIT_OUTPUT=$(dotnet list SchoolOS.sln package --vulnerable --include-transitive)
+          echo "$AUDIT_OUTPUT"
+          if echo "$AUDIT_OUTPUT" | grep -E '\b(Critical|High|Moderate|Low)\b'; then
+            echo "::error::Vulnerable NuGet packages detected! Failing CI build."
+            exit 1
+          fi
+
+  frontend:
+    name: Frontend Build, Tests & Audit (React + Vite)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend/schoolos-web
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: frontend/schoolos-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm security audit (high+)
+        run: npm audit --audit-level=high
+
+      - name: Verify EN/AR/UR locale parity
+        run: npm run verify-locales
+
+      - name: Lint frontend sources
+        run: npm run lint
+
+      - name: Run frontend Vitest unit tests
+        run: npm test
+
+      - name: Typecheck and Build
+        run: npm run build

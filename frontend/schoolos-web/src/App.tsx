@@ -1,17 +1,63 @@
-import React from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { LocaleProvider } from '@/context/LocaleContext';
+import { AuthProvider } from '@/context/AuthContext';
+import { ToastProvider } from '@/context/ToastContext';
+import { AppDataProvider } from '@/context/AppDataContext';
+import { AppLayout } from '@/components/layout';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Dashboard3Page } from '@/pages/dashboards/Dashboard3Page';
+import { LoginPage } from '@/pages/auth/LoginPage';
+import { RegisterPage } from '@/pages/auth/RegisterPage';
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
+import { ChangePasswordPage } from '@/pages/schoolos/ChangePasswordPage';
+import { RequestSchoolPage } from '@/pages/schoolos/RequestSchoolPage';
+import { PlatformAdminPage } from '@/pages/schoolos/PlatformAdminPage';
+import { SchoolsManagementPage } from '@/pages/schoolos/SchoolsManagementPage';
+import { SchoolBrandingPage } from '@/pages/schoolos/SchoolBrandingPage';
+import { AccessControlPage } from '@/pages/schoolos/AccessControlPage';
+import { AdmissionsPage } from '@/pages/schoolos/AdmissionsPage';
 
-export const App: React.FC = () => {
+export function AppRoutes() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-slate-50">
-      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">SchoolOS</h1>
-        <p className="text-sm text-slate-500 mb-6">
-          Educational Operating Platform — Phase 0 Foundation
-        </p>
-        <div className="p-3 bg-emerald-50 text-emerald-800 rounded-lg text-xs font-medium">
-          Frontend Shell Scaffolding Operational
-        </div>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/auth/login" element={<LoginPage />} />
+      <Route path="/auth/register" element={<RegisterPage />} />
+      <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/request-school" element={<RequestSchoolPage />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/auth/change-password" element={<ChangePasswordPage />} />
+
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Navigate to="/admissions" replace />} />
+          <Route path="/admissions" element={<AdmissionsPage />} />
+          <Route path="/org/schools" element={<SchoolsManagementPage />} />
+          <Route path="/org/branding" element={<SchoolBrandingPage />} />
+          <Route path="/org/access" element={<AccessControlPage />} />
+          <Route path="/platform" element={<PlatformAdminPage />} />
+          <Route path="/dashboards/dashboard3" element={<Dashboard3Page />} />
+          <Route path="*" element={<Navigate to="/admissions" replace />} />
+        </Route>
+      </Route>
+    </Routes>
   );
-};
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <LocaleProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <AppDataProvider>
+                <AppRoutes />
+              </AppDataProvider>
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </LocaleProvider>
+    </BrowserRouter>
+  );
+}

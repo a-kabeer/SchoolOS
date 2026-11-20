@@ -7,9 +7,20 @@
     <ProjectReference Include="..\..\BuildingBlocks\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Security\SchoolOS.BuildingBlocks.Security.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Observability\SchoolOS.BuildingBlocks.Observability.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Persistence\SchoolOS.BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Secrets\SchoolOS.BuildingBlocks.Secrets.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Localization\SchoolOS.BuildingBlocks.Localization.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Web\SchoolOS.BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\..\PlatformModules\Tenants\SchoolOS.PlatformModules.Tenants.csproj" />
+    <ProjectReference Include="..\..\PlatformModules\Subscriptions\SchoolOS.PlatformModules.Subscriptions.csproj" />
+    <ProjectReference Include="..\..\PlatformModules\Licensing\SchoolOS.PlatformModules.Licensing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

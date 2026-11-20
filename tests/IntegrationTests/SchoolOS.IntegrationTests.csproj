@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BuildingBlocks\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Security\SchoolOS.BuildingBlocks.Security.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Persistence\SchoolOS.BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Localization\SchoolOS.BuildingBlocks.Localization.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Identity\SchoolOS.Modules.Identity.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Organization\SchoolOS.Modules.Organization.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Admissions\SchoolOS.Modules.Admissions.csproj" />
+    <ProjectReference Include="..\..\src\PlatformModules\Tenants\SchoolOS.PlatformModules.Tenants.csproj" />
+    <ProjectReference Include="..\..\src\PlatformModules\Subscriptions\SchoolOS.PlatformModules.Subscriptions.csproj" />
+    <ProjectReference Include="..\..\src\PlatformModules\Licensing\SchoolOS.PlatformModules.Licensing.csproj" />
+    <ProjectReference Include="..\..\src\Hosts\SchoolOS.Cloud.Api\SchoolOS.Cloud.Api.csproj" />
+    <ProjectReference Include="..\..\src\Hosts\SchoolOS.Local.Api\SchoolOS.Local.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+</Project>

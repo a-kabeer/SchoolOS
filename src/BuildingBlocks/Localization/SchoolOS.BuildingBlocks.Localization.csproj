@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SchoolOS Multi-Language Localization BuildingBlock (en/ur/ar, RTL metadata &amp; validation messages)</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\SharedKernel\SchoolOS.BuildingBlocks.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>
