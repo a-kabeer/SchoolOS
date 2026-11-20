@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\BuildingBlocks\Web\SchoolOS.BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\..\Modules\Identity\SchoolOS.Modules.Identity.csproj" />
     <ProjectReference Include="..\..\Modules\Organization\SchoolOS.Modules.Organization.csproj" />
+    <ProjectReference Include="..\..\Modules\Students\SchoolOS.Modules.Students.csproj" />
     <ProjectReference Include="..\..\Modules\Admissions\SchoolOS.Modules.Admissions.csproj" />
   </ItemGroup>
 

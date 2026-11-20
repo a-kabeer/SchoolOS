@@ -538,6 +538,50 @@ public sealed class IdentityAuthenticationService
     }
 
     /// <summary>
+    /// Revokes the active session on logout and records a <see cref="SecurityAuditEventType.SignedOut"/> audit event (ADR-023 / DOC-63).
+    /// </summary>
+    public async Task<bool> SignOutAsync(
+        Guid userId,
+        Guid? sessionId,
+        string? rawRefreshToken,
+        CancellationToken cancellationToken = default)
+    {
+        var now = _timeProvider.GetUtcNow();
+        UserSession? session = null;
+
+        if (sessionId.HasValue)
+        {
+            session = await _db.UserSessions.FirstOrDefaultAsync(
+                s => s.Id == sessionId.Value && s.UserId == userId && !s.IsRevoked,
+                cancellationToken);
+        }
+
+        if (session is null && !string.IsNullOrWhiteSpace(rawRefreshToken))
+        {
+            var tokenHash = UserSession.HashRefreshToken(rawRefreshToken);
+            session = await _db.UserSessions.FirstOrDefaultAsync(
+                s => s.UserId == userId && !s.IsRevoked && s.RefreshTokenHash == tokenHash,
+                cancellationToken);
+        }
+
+        if (session is not null)
+        {
+            session.Revoke("UserLogout", now);
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+
+        await _auditLog.WriteAsync(
+            SecurityAuditEventType.SignedOut,
+            SecurityAuditOutcome.Success,
+            actorUserId: userId.ToString(),
+            targetType: nameof(UserSession),
+            targetId: session?.Id.ToString() ?? sessionId?.ToString(),
+            cancellationToken: cancellationToken);
+
+        return session is not null;
+    }
+
+    /// <summary>
     /// Verifies server-side <see cref="UserCampusAssignment"/> and re-issues a campus-scoped JWT (DOC-63 §5.3).
     /// </summary>
     public async Task<AuthenticatedSessionResult> SwitchCampusContextAsync(

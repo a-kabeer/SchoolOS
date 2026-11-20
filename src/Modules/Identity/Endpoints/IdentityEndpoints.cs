@@ -84,6 +84,23 @@ public static class IdentityEndpoints
             return Results.Ok(new LoginResponse(result.AccessToken, result.ExpiresInSeconds, result.User));
         });
 
+        authGroup.MapPost("/logout", async (
+            HttpContext httpContext,
+            [FromServices] ITenantContext tenantContext,
+            [FromServices] IdentityAuthenticationService authService,
+            CancellationToken ct) =>
+        {
+            if (!tenantContext.IsAuthenticated || !Guid.TryParse(tenantContext.UserId, out var userId))
+            {
+                return Results.Unauthorized();
+            }
+
+            var rawToken = httpContext.Request.Cookies[IdentityAuthenticationService.RefreshCookieName];
+            await authService.SignOutAsync(userId, tenantContext.SessionId, rawToken, ct);
+            httpContext.Response.Cookies.Delete(IdentityAuthenticationService.RefreshCookieName);
+            return Results.NoContent();
+        }).RequireAuthorization(SecurityPolicies.TenantScopedPolicy);
+
         authGroup.MapPost("/change-password", async (
             [FromBody] ChangePasswordRequest request,
             [FromServices] ITenantContext tenantContext,

@@ -7,6 +7,20 @@ using System.Text.Json.Serialization;
 namespace SchoolOS.BuildingBlocks.Security;
 
 /// <summary>
+/// Evaluated local offline license lifecycle state (ADR-012 / DOC-15 §2).
+/// </summary>
+public enum LicenseLeaseStatus
+{
+    Missing = 0,
+    Valid = 1,
+    Grace = 2,
+    Restricted = 3,
+    Expired = 4,
+    InvalidSignature = 5,
+    ClockRollbackReview = 6
+}
+
+/// <summary>
 /// Unsigned payload of a Cloud-issued, Local-verified school subscription lease.
 /// </summary>
 public sealed record LicenseLeasePayload(
@@ -15,7 +29,11 @@ public sealed record LicenseLeasePayload(
     DateTimeOffset ExpiresAtUtc,
     string KeyId,
     string? PlanCode,
-    IReadOnlyList<ModuleCode> EnabledModules);
+    IReadOnlyList<ModuleCode> EnabledModules,
+    long SequenceNumber = 1,
+    Guid? NodeId = null,
+    DateTimeOffset? PaidThroughUtc = null,
+    DateTimeOffset? GraceUntilUtc = null);
 
 /// <summary>
 /// Signed offline license lease envelope synced from the Cloud Control Plane to Local Data Plane nodes.
@@ -32,7 +50,16 @@ public sealed record LicenseLeaseValidationResult(
     bool IsValid,
     string? FailureReason,
     LicenseLeasePayload? Payload,
-    IReadOnlySet<ModuleCode> EntitledModules);
+    IReadOnlySet<ModuleCode> EntitledModules,
+    LicenseLeaseStatus Status = LicenseLeaseStatus.Valid);
+
+/// <summary>
+/// Persisted lease state including monotonic sequence and last trusted clock observation.
+/// </summary>
+public sealed record StoredLicenseLeaseState(
+    SignedLicenseLease? Lease,
+    long HighestSequenceNumber,
+    DateTimeOffset? LastTrustedUtc);
 
 /// <summary>
 /// Stores and retrieves the active signed license lease per tenant on a Local node.
@@ -42,6 +69,15 @@ public interface ILicenseLeaseStore
     ValueTask<SignedLicenseLease?> GetLeaseAsync(Guid tenantId, CancellationToken cancellationToken = default);
     ValueTask SetLeaseAsync(Guid tenantId, SignedLicenseLease lease, CancellationToken cancellationToken = default);
     ValueTask ClearLeaseAsync(Guid tenantId, CancellationToken cancellationToken = default);
+
+    async ValueTask<StoredLicenseLeaseState> GetStateAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        var lease = await GetLeaseAsync(tenantId, cancellationToken);
+        return new StoredLicenseLeaseState(lease, 0, null);
+    }
+
+    ValueTask RecordTrustedTimeAsync(Guid tenantId, DateTimeOffset utcNow, CancellationToken cancellationToken = default)
+        => ValueTask.CompletedTask;
 }
 
 /// <summary>
@@ -104,26 +140,34 @@ public static class OfflineLicenseLeaseVerifier
         SignedLicenseLease? lease,
         Guid expectedTenantId,
         string ecPublicKeyPem,
-        DateTimeOffset utcNow)
+        DateTimeOffset utcNow,
+        Guid? expectedNodeId = null,
+        long? minimumSequenceNumber = null,
+        DateTimeOffset? lastTrustedUtc = null)
     {
+        if (lastTrustedUtc.HasValue && utcNow < lastTrustedUtc.Value.Subtract(MaxClockSkew))
+        {
+            return Fail("CLOCK_ROLLBACK_DETECTED", LicenseLeaseStatus.ClockRollbackReview);
+        }
+
         if (lease is null)
         {
-            return Fail("LEASE_MISSING");
+            return Fail("LEASE_MISSING", LicenseLeaseStatus.Missing);
         }
 
         if (!string.Equals(lease.Algorithm, "ES256", StringComparison.Ordinal))
         {
-            return Fail("UNSUPPORTED_ALGORITHM");
+            return Fail("UNSUPPORTED_ALGORITHM", LicenseLeaseStatus.InvalidSignature);
         }
 
         if (string.IsNullOrWhiteSpace(lease.PayloadJson) || string.IsNullOrWhiteSpace(lease.SignatureBase64Url))
         {
-            return Fail("MALFORMED_LEASE");
+            return Fail("MALFORMED_LEASE", LicenseLeaseStatus.InvalidSignature);
         }
 
         if (string.IsNullOrWhiteSpace(ecPublicKeyPem))
         {
-            return Fail("PUBLIC_KEY_MISSING");
+            return Fail("PUBLIC_KEY_MISSING", LicenseLeaseStatus.InvalidSignature);
         }
 
         byte[] signatureBytes;
@@ -133,7 +177,7 @@ public static class OfflineLicenseLeaseVerifier
         }
         catch (FormatException)
         {
-            return Fail("INVALID_SIGNATURE_ENCODING");
+            return Fail("INVALID_SIGNATURE_ENCODING", LicenseLeaseStatus.InvalidSignature);
         }
 
         try
@@ -143,12 +187,12 @@ public static class OfflineLicenseLeaseVerifier
             var payloadBytes = Encoding.UTF8.GetBytes(lease.PayloadJson);
             if (!ecdsa.VerifyData(payloadBytes, signatureBytes, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation))
             {
-                return Fail("INVALID_SIGNATURE");
+                return Fail("INVALID_SIGNATURE", LicenseLeaseStatus.InvalidSignature);
             }
         }
         catch (Exception ex) when (ex is CryptographicException or ArgumentException)
         {
-            return Fail("INVALID_SIGNATURE_KEY");
+            return Fail("INVALID_SIGNATURE_KEY", LicenseLeaseStatus.InvalidSignature);
         }
 
         LicenseLeasePayload? payload;
@@ -158,23 +202,38 @@ public static class OfflineLicenseLeaseVerifier
         }
         catch (JsonException)
         {
-            return Fail("INVALID_PAYLOAD_JSON");
+            return Fail("INVALID_PAYLOAD_JSON", LicenseLeaseStatus.InvalidSignature);
         }
 
         if (payload is null || payload.TenantId == Guid.Empty || payload.TenantId != expectedTenantId)
         {
-            return Fail("TENANT_MISMATCH");
+            return Fail("TENANT_MISMATCH", LicenseLeaseStatus.InvalidSignature);
+        }
+
+        if (expectedNodeId.HasValue && payload.NodeId != expectedNodeId.Value)
+        {
+            return Fail("NODE_MISMATCH", LicenseLeaseStatus.InvalidSignature);
+        }
+
+        if (minimumSequenceNumber.HasValue && payload.SequenceNumber < minimumSequenceNumber.Value)
+        {
+            return Fail("SEQUENCE_ROLLBACK", LicenseLeaseStatus.InvalidSignature);
         }
 
         if (payload.IssuedAtUtc > utcNow.Add(MaxClockSkew))
         {
-            return Fail("LEASE_NOT_YET_VALID");
+            return Fail("LEASE_NOT_YET_VALID", LicenseLeaseStatus.InvalidSignature);
         }
 
-        if (payload.ExpiresAtUtc <= utcNow)
+        var paidThrough = payload.PaidThroughUtc ?? payload.ExpiresAtUtc;
+        var graceUntil = payload.GraceUntilUtc ?? payload.ExpiresAtUtc;
+
+        if (payload.ExpiresAtUtc <= utcNow || graceUntil <= utcNow)
         {
-            return Fail("LEASE_EXPIRED");
+            return Fail("LEASE_EXPIRED", LicenseLeaseStatus.Restricted);
         }
+
+        var status = utcNow > paidThrough ? LicenseLeaseStatus.Grace : LicenseLeaseStatus.Valid;
 
         var modules = new HashSet<ModuleCode>(CoreModules);
         if (payload.EnabledModules is not null)
@@ -188,14 +247,14 @@ public static class OfflineLicenseLeaseVerifier
             }
         }
 
-        return new LicenseLeaseValidationResult(true, null, payload, modules);
+        return new LicenseLeaseValidationResult(true, null, payload, modules, status);
     }
 
     public static IReadOnlySet<ModuleCode> CoreModules { get; } =
         Enum.GetValues<ModuleCode>().Where(m => m.IsCoreModule()).ToHashSet();
 
-    private static LicenseLeaseValidationResult Fail(string reason) =>
-        new(false, reason, null, CoreModules);
+    private static LicenseLeaseValidationResult Fail(string reason, LicenseLeaseStatus status) =>
+        new(false, reason, null, CoreModules, status);
 
     private static string Base64UrlEncode(byte[] bytes) =>
         Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
@@ -219,6 +278,7 @@ public static class OfflineLicenseLeaseVerifier
 public sealed class OfflineLicenseVerificationOptions
 {
     public string PublicKeyPem { get; set; } = string.Empty;
+    public Guid? ExpectedNodeId { get; set; }
 }
 
 /// <summary>
@@ -265,17 +325,26 @@ public sealed class OfflineLicenseLeaseModuleAccess : IModuleAccess
             return new HashSet<ModuleCode>();
         }
 
-        var lease = await _store.GetLeaseAsync(tenantId, cancellationToken);
-        if (lease is null)
+        var state = await _store.GetStateAsync(tenantId, cancellationToken);
+        if (state.Lease is null)
         {
             return OfflineLicenseLeaseVerifier.CoreModules;
         }
 
+        var now = _timeProvider.GetUtcNow();
         var result = OfflineLicenseLeaseVerifier.Verify(
-            lease,
+            state.Lease,
             tenantId,
             _options.PublicKeyPem,
-            _timeProvider.GetUtcNow());
+            now,
+            _options.ExpectedNodeId,
+            minimumSequenceNumber: state.HighestSequenceNumber > 0 ? state.HighestSequenceNumber : null,
+            lastTrustedUtc: state.LastTrustedUtc);
+
+        if (result.IsValid)
+        {
+            await _store.RecordTrustedTimeAsync(tenantId, now, cancellationToken);
+        }
 
         return result.EntitledModules;
     }

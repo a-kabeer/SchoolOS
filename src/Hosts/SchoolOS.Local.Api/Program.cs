@@ -3,9 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Localization;
 using SchoolOS.BuildingBlocks.Observability;
 using SchoolOS.BuildingBlocks.Persistence;
+using SchoolOS.BuildingBlocks.Persistence.Audit;
+using SchoolOS.BuildingBlocks.Persistence.Interceptors;
 using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.BuildingBlocks.Web;
+using SchoolOS.Local.Api.LocalPlatform;
 using SchoolOS.Modules.Admissions;
 using SchoolOS.Modules.Admissions.Endpoints;
 using SchoolOS.Modules.Identity;
@@ -14,6 +17,8 @@ using SchoolOS.Modules.Organization;
 using SchoolOS.Modules.Organization.Domain;
 using SchoolOS.Modules.Organization.Endpoints;
 using SchoolOS.Modules.Organization.Persistence;
+using SchoolOS.Modules.Students;
+using SchoolOS.Modules.Students.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 var isDevOrTesting = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing");
@@ -29,12 +34,29 @@ builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentO
 var offlineLicenseOptions = new OfflineLicenseVerificationOptions();
 builder.Configuration.GetSection("OfflineLicense").Bind(offlineLicenseOptions);
 builder.Services.AddSingleton(offlineLicenseOptions);
-builder.Services.AddSingleton<ILicenseLeaseStore, InMemoryLicenseLeaseStore>();
-builder.Services.AddScoped<IModuleAccess, OfflineLicenseLeaseModuleAccess>();
 builder.Services.AddPersistenceBuildingBlocks();
+builder.Services.AddDbContext<LocalPlatformDbContext>((sp, options) =>
+{
+    var localConn = builder.Configuration.GetConnectionString("LocalDatabase")
+                    ?? builder.Configuration.GetConnectionString("SchoolOSDatabase")
+                    ?? builder.Configuration["Database:ConnectionString"];
+    if (!string.IsNullOrEmpty(localConn))
+    {
+        options.UseNpgsql(localConn, npgsql => npgsql.MigrationsHistoryTable("__ef_migrations_history", "platform_local"))
+               .UseSnakeCaseNamingConvention();
+    }
+
+    options.AddInterceptors(
+        sp.GetRequiredService<AuditSaveChangesInterceptor>(),
+        sp.GetRequiredService<PostgresTenantSessionInterceptor>(),
+        sp.GetRequiredService<PostgresTenantTransactionInterceptor>());
+});
+builder.Services.AddScoped<ILicenseLeaseStore, PostgresLicenseLeaseStore>();
+builder.Services.AddScoped<IModuleAccess, OfflineLicenseLeaseModuleAccess>();
 builder.Services.AddObservabilityBuildingBlocks(builder.Configuration, builder.Environment, "SchoolOS.Local.Api");
 builder.Services.AddIdentityModule(builder.Configuration);
 builder.Services.AddOrganizationModule(builder.Configuration);
+builder.Services.AddStudentsModule(builder.Configuration);
 builder.Services.AddAdmissionsModule(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -196,40 +218,102 @@ orgGroup.MapPost("/schools/{schoolId:guid}/campuses", async (
     return Results.Created($"/api/v1/organization/campuses/{campus.Id}", response);
 }).RequireAuthorization(SecurityPolicies.OrganizationAdminPolicy);
 
-app.MapPost("/api/v1/local/licensing/lease", async (
-    [FromBody] SignedLicenseLease lease,
+app.MapGet("/api/v1/local/licensing/status", async (
     [FromServices] ITenantContext tenantContext,
     [FromServices] ILicenseLeaseStore store,
     [FromServices] OfflineLicenseVerificationOptions verificationOptions,
-    TimeProvider timeProvider) =>
+    TimeProvider timeProvider,
+    CancellationToken ct) =>
 {
     if (!tenantContext.IsAuthenticated || !tenantContext.TenantId.HasValue)
     {
         return Results.Unauthorized();
     }
 
+    var state = await store.GetStateAsync(tenantContext.TenantId.Value, ct);
+    var now = timeProvider.GetUtcNow();
     var verified = OfflineLicenseLeaseVerifier.Verify(
-        lease,
+        state.Lease,
         tenantContext.TenantId.Value,
         verificationOptions.PublicKeyPem,
-        timeProvider.GetUtcNow());
+        now,
+        verificationOptions.ExpectedNodeId,
+        minimumSequenceNumber: state.HighestSequenceNumber > 0 ? state.HighestSequenceNumber : null,
+        lastTrustedUtc: state.LastTrustedUtc);
+
+    return Results.Ok(new
+    {
+        status = verified.Status.ToString(),
+        isValid = verified.IsValid,
+        failureReason = verified.FailureReason,
+        tenantId = tenantContext.TenantId.Value,
+        sequenceNumber = verified.Payload?.SequenceNumber ?? state.HighestSequenceNumber,
+        expiresAtUtc = verified.Payload?.ExpiresAtUtc,
+        paidThroughUtc = verified.Payload?.PaidThroughUtc,
+        graceUntilUtc = verified.Payload?.GraceUntilUtc,
+        enabledModules = verified.EntitledModules.Select(m => m.ToString()).ToList()
+    });
+}).RequireAuthorization(SecurityPolicies.TenantScopedPolicy);
+
+app.MapPost("/api/v1/local/licensing/lease", async (
+    [FromBody] SignedLicenseLease lease,
+    [FromServices] ITenantContext tenantContext,
+    [FromServices] ILicenseLeaseStore store,
+    [FromServices] OfflineLicenseVerificationOptions verificationOptions,
+    [FromServices] ISecurityAuditLog auditLog,
+    TimeProvider timeProvider,
+    CancellationToken ct) =>
+{
+    if (!tenantContext.IsAuthenticated || !tenantContext.TenantId.HasValue)
+    {
+        return Results.Unauthorized();
+    }
+
+    var tenantId = tenantContext.TenantId.Value;
+    var existingState = await store.GetStateAsync(tenantId, ct);
+    var verified = OfflineLicenseLeaseVerifier.Verify(
+        lease,
+        tenantId,
+        verificationOptions.PublicKeyPem,
+        timeProvider.GetUtcNow(),
+        verificationOptions.ExpectedNodeId,
+        minimumSequenceNumber: existingState.HighestSequenceNumber > 0 ? existingState.HighestSequenceNumber : null,
+        lastTrustedUtc: existingState.LastTrustedUtc);
 
     if (!verified.IsValid)
     {
-        return Results.BadRequest(new { code = verified.FailureReason ?? "INVALID_LICENSE_LEASE" });
+        await auditLog.WriteAsync(
+            SecurityAuditEventType.AccessDenied,
+            SecurityAuditOutcome.Failure,
+            actorUserId: tenantContext.UserId,
+            targetType: "OfflineLicenseLease",
+            targetId: verified.FailureReason ?? "INVALID_LICENSE_LEASE",
+            cancellationToken: ct);
+        return Results.BadRequest(new { code = verified.FailureReason ?? "INVALID_LICENSE_LEASE", status = verified.Status.ToString() });
     }
 
-    await store.SetLeaseAsync(tenantContext.TenantId.Value, lease);
+    await store.SetLeaseAsync(tenantId, lease, ct);
+    await auditLog.WriteAsync(
+        SecurityAuditEventType.LicenseLeaseIssued,
+        SecurityAuditOutcome.Success,
+        actorUserId: tenantContext.UserId,
+        targetType: "OfflineLicenseLease",
+        targetId: verified.Payload?.KeyId,
+        cancellationToken: ct);
+
     return Results.Ok(new
     {
         verified = true,
-        tenantId = tenantContext.TenantId.Value,
+        status = verified.Status.ToString(),
+        tenantId,
+        sequenceNumber = verified.Payload?.SequenceNumber,
         expiresAtUtc = verified.Payload?.ExpiresAtUtc,
         enabledModules = verified.EntitledModules.ToList()
     });
 }).RequireAuthorization(SecurityPolicies.OrganizationAdminPolicy);
 
 app.MapEndpointGroups(typeof(OrganizationSchoolsDetailsEndpointGroup).Assembly);
+app.MapEndpointGroups(typeof(StudentsEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(AdmissionsEndpointGroup).Assembly);
 
 app.Run();
