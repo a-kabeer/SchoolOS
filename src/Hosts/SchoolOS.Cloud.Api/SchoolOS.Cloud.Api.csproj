@@ -11,6 +11,8 @@
     <ProjectReference Include="..\..\BuildingBlocks\Secrets\SchoolOS.BuildingBlocks.Secrets.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Web\SchoolOS.BuildingBlocks.Web.csproj" />
     <ProjectReference Include="..\..\PlatformModules\Tenants\SchoolOS.PlatformModules.Tenants.csproj" />
+    <ProjectReference Include="..\..\PlatformModules\Subscriptions\SchoolOS.PlatformModules.Subscriptions.csproj" />
+    <ProjectReference Include="..\..\PlatformModules\Licensing\SchoolOS.PlatformModules.Licensing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

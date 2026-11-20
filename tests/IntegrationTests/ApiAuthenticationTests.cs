@@ -12,6 +12,7 @@ using SchoolOS.BuildingBlocks.Persistence.Interceptors;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.Modules.Identity.Persistence;
 using SchoolOS.Modules.Organization.Persistence;
+using SchoolOS.PlatformModules.Subscriptions.Persistence;
 using SchoolOS.PlatformModules.Tenants.Persistence;
 using Xunit;
 
@@ -63,6 +64,7 @@ public class CloudApiFactory : WebApplicationFactory<SchoolOS.Cloud.Api.Program>
         builder.ConfigureServices(services =>
         {
             TestDbContextExtensions.ReplaceDbContextWithInMemory<PlatformDbContext>(services, _dbName);
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<SubscriptionsDbContext>(services, _dbName, includeChangeAudit: true);
         });
     }
 }

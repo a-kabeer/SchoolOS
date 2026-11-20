@@ -26,8 +26,8 @@ public class TenantContext : ITenantContext
     public Guid? SessionId { get; }
     public int CredentialVersion { get; } = 1;
     public bool MustChangePassword { get; }
-    public bool IsAuthenticated { get; }
-    public bool IsPlatformAdmin { get; }
+    public bool IsAuthenticated { get; private set; }
+    public bool IsPlatformAdmin { get; private set; }
 
     /// <summary>
     /// Resolves TenantContext from ambient IHttpContextAccessor.
@@ -187,5 +187,90 @@ public class TenantContext : ITenantContext
 
         TenantId = tenantId;
         UserId = systemActorId;
+    }
+
+    /// <summary>
+    /// Attaches an explicit anonymous/system attribution identifier (e.g. <c>public:school-request</c>) on
+    /// unauthenticated endpoints without forging authentication or tenant scope.
+    /// </summary>
+    public void EnterPublicActorScope(string actorId)
+    {
+        if (IsAuthenticated || TenantId.HasValue || !string.IsNullOrWhiteSpace(UserId))
+        {
+            throw new InvalidOperationException("Cannot set public actor scope on an initialized TenantContext.");
+        }
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(actorId);
+        if (!actorId.StartsWith("public:", StringComparison.Ordinal) &&
+            !actorId.StartsWith("system:", StringComparison.Ordinal))
+        {
+            throw new ArgumentException("Actor identifier must start with 'public:' or 'system:'.", nameof(actorId));
+        }
+
+        UserId = actorId;
+    }
+
+    /// <summary>
+    /// Initializes an internal background-worker context for automated Control Plane jobs (such as subscription
+    /// lifecycle sweeps) where no HTTP user exists, permitting subsequent <see cref="BeginPlatformTenantScope"/> calls.
+    /// </summary>
+    public void EnterSystemJobScope(string systemActorId, bool isPlatformWorker = false)
+    {
+        if (IsAuthenticated || TenantId.HasValue || !string.IsNullOrWhiteSpace(UserId))
+        {
+            throw new InvalidOperationException("Cannot initialize a system job scope on an already initialized TenantContext.");
+        }
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(systemActorId);
+        if (!systemActorId.StartsWith("system:", StringComparison.Ordinal))
+        {
+            throw new ArgumentException("System job scope requires an explicit 'system:' actor identifier.", nameof(systemActorId));
+        }
+
+        UserId = systemActorId;
+        IsAuthenticated = true;
+        IsPlatformAdmin = isPlatformWorker;
+    }
+
+    /// <summary>
+    /// Temporarily scopes an authenticated Cloud <c>PlatformAdmin</c> context (with no ambient tenant)
+    /// to operate on a specific target tenant database record while keeping EF query filters and PostgreSQL RLS intact.
+    /// </summary>
+    public IDisposable BeginPlatformTenantScope(Guid targetTenantId)
+    {
+        if (!IsPlatformAdmin)
+        {
+            throw new UnauthorizedAccessException("Only PlatformAdmin contexts may enter a platform tenant operation scope.");
+        }
+
+        if (targetTenantId == Guid.Empty)
+        {
+            throw new ArgumentException("Target tenant ID cannot be empty.", nameof(targetTenantId));
+        }
+
+        if (TenantId.HasValue && TenantId.Value != targetTenantId)
+        {
+            throw new InvalidOperationException("Cannot nest a different tenant scope inside an already tenant-bound context.");
+        }
+
+        var previousTenantId = TenantId;
+        TenantId = targetTenantId;
+        return new ScopeReset(this, previousTenantId);
+    }
+
+    private sealed class ScopeReset(TenantContext owner, Guid? previousTenantId) : IDisposable
+    {
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            owner.TenantId = previousTenantId;
+            _disposed = true;
+        }
     }
 }

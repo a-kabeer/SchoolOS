@@ -10,6 +10,10 @@ namespace SchoolOS.PlatformModules.Tenants.Persistence;
 public class PlatformDbContext : DbContext
 {
     public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<SchoolRequest> SchoolRequests => Set<SchoolRequest>();
+    public DbSet<Country> Countries => Set<Country>();
+    public DbSet<State> States => Set<State>();
+    public DbSet<City> Cities => Set<City>();
 
     public PlatformDbContext(DbContextOptions<PlatformDbContext> options)
         : base(options)

@@ -21,6 +21,11 @@ await builder.AddPlatformSecretsAsync(SecretsDependencyInjection.LocalStartupSec
 builder.Services.AddSecretsBuildingBlocks(builder.Configuration);
 builder.Services.AddWebHardeningBuildingBlocks(builder.Configuration);
 builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
+var offlineLicenseOptions = new OfflineLicenseVerificationOptions();
+builder.Configuration.GetSection("OfflineLicense").Bind(offlineLicenseOptions);
+builder.Services.AddSingleton(offlineLicenseOptions);
+builder.Services.AddSingleton<ILicenseLeaseStore, InMemoryLicenseLeaseStore>();
+builder.Services.AddScoped<IModuleAccess, OfflineLicenseLeaseModuleAccess>();
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks(builder.Configuration, builder.Environment, "SchoolOS.Local.Api");
 builder.Services.AddIdentityModule(builder.Configuration);

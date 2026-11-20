@@ -21,7 +21,10 @@ public class ModuleBoundaryTests
                 "SchoolOS.Cloud.Api",
                 "SchoolOS.Local.Api",
                 "SchoolOS.Modules.Organization",
-                "SchoolOS.PlatformModules.Tenants")
+                "SchoolOS.Modules.Identity",
+                "SchoolOS.PlatformModules.Tenants",
+                "SchoolOS.PlatformModules.Subscriptions",
+                "SchoolOS.PlatformModules.Licensing")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
@@ -36,7 +39,10 @@ public class ModuleBoundaryTests
                 "SchoolOS.Cloud.Api",
                 "SchoolOS.Local.Api",
                 "SchoolOS.Modules.Organization",
-                "SchoolOS.PlatformModules.Tenants")
+                "SchoolOS.Modules.Identity",
+                "SchoolOS.PlatformModules.Tenants",
+                "SchoolOS.PlatformModules.Subscriptions",
+                "SchoolOS.PlatformModules.Licensing")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
@@ -48,7 +54,10 @@ public class ModuleBoundaryTests
         var localAssembly = Assembly.Load("SchoolOS.Local.Api");
         var result = Types.InAssembly(localAssembly)
             .ShouldNot()
-            .HaveDependencyOn("SchoolOS.PlatformModules.Tenants")
+            .HaveDependencyOnAny(
+                "SchoolOS.PlatformModules.Tenants",
+                "SchoolOS.PlatformModules.Subscriptions",
+                "SchoolOS.PlatformModules.Licensing")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
@@ -77,7 +86,9 @@ public class ModuleBoundaryTests
             "SchoolOS.Local.Api",
             "SchoolOS.Modules.Organization",
             "SchoolOS.Modules.Identity",
-            "SchoolOS.PlatformModules.Tenants"
+            "SchoolOS.PlatformModules.Tenants",
+            "SchoolOS.PlatformModules.Subscriptions",
+            "SchoolOS.PlatformModules.Licensing"
         ];
 
         foreach (var assembly in new[] { typeof(ISecretProvider).Assembly, typeof(ObservabilityOptions).Assembly, typeof(IEndpointGroup).Assembly })

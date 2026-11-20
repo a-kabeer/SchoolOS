@@ -5,8 +5,13 @@ using SchoolOS.BuildingBlocks.Persistence;
 using SchoolOS.BuildingBlocks.Secrets;
 using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.BuildingBlocks.Web;
+using SchoolOS.PlatformModules.Licensing;
+using SchoolOS.PlatformModules.Licensing.Endpoints;
+using SchoolOS.PlatformModules.Subscriptions;
+using SchoolOS.PlatformModules.Subscriptions.Endpoints;
 using SchoolOS.PlatformModules.Tenants;
 using SchoolOS.PlatformModules.Tenants.Domain;
+using SchoolOS.PlatformModules.Tenants.Endpoints;
 using SchoolOS.PlatformModules.Tenants.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +27,8 @@ builder.Services.AddSecurityBuildingBlocks(builder.Configuration, isDevelopmentO
 builder.Services.AddPersistenceBuildingBlocks();
 builder.Services.AddObservabilityBuildingBlocks(builder.Configuration, builder.Environment, "SchoolOS.Cloud.Api");
 builder.Services.AddPlatformTenantsModule(builder.Configuration);
+builder.Services.AddSubscriptionsModule(builder.Configuration, enableBackgroundWorker: !isDevOrTesting);
+builder.Services.AddLicensingModule(builder.Configuration, isDevelopmentOrTesting: isDevOrTesting);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -111,6 +118,10 @@ tenantGroup.MapPost("/", async (
     var response = new TenantResponse(tenant.Id, tenant.Name, tenant.Slug, tenant.Status, tenant.IsActive, tenant.CreatedAtUtc);
     return Results.Created($"/api/v1/platform/tenants/{tenant.Id}", response);
 });
+
+app.MapEndpointGroups(typeof(PublicSchoolRequestsEndpointGroup).Assembly);
+app.MapEndpointGroups(typeof(PlatformSubscriptionsEndpointGroup).Assembly);
+app.MapEndpointGroups(typeof(PlatformLicensingEndpointGroup).Assembly);
 
 app.Run();
 
