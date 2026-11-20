@@ -1,5 +1,4 @@
-using System;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using SchoolOS.BuildingBlocks.Persistence;
 
@@ -7,8 +6,7 @@ using SchoolOS.BuildingBlocks.Persistence;
 
 namespace SchoolOS.PlatformModules.Subscriptions.Persistence.Migrations;
 
-[DbContext(typeof(SubscriptionsDbContext))]
-[Migration("20261120000300_Initial_Subscriptions_Create")]
+/// <inheritdoc />
 public partial class Initial_Subscriptions_Create : Migration
 {
     private static readonly string[] TenantScopedTables =
@@ -22,15 +20,98 @@ public partial class Initial_Subscriptions_Create : Migration
         "renewal_reminders"
     ];
 
+    /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.EnsureSchema(name: "subscriptions");
+        migrationBuilder.EnsureSchema(
+            name: "subscriptions");
 
-        migrationBuilder.CreateSequence<long>(
+        migrationBuilder.CreateSequence(
             name: "invoice_number_seq",
+            schema: "subscriptions");
+
+        migrationBuilder.CreateTable(
+            name: "add_on_requests",
             schema: "subscriptions",
-            startValue: 1L,
-            incrementBy: 1);
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
+                module_id = table.Column<Guid>(type: "uuid", nullable: false),
+                module_code = table.Column<int>(type: "integer", nullable: false),
+                requested_by_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                notes = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                status = table.Column<int>(type: "integer", nullable: false),
+                requested_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                decided_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                decided_by_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_add_on_requests", x => x.id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "change_audit_entries",
+            schema: "subscriptions",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                occurred_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                actor_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                tenant_id = table.Column<Guid>(type: "uuid", nullable: true),
+                entity_type = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                entity_id = table.Column<Guid>(type: "uuid", nullable: false),
+                action = table.Column<int>(type: "integer", nullable: false),
+                changes_json = table.Column<string>(type: "text", nullable: false),
+                trace_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_change_audit_entries", x => x.id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "module_dependencies",
+            schema: "subscriptions",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                module_id = table.Column<Guid>(type: "uuid", nullable: false),
+                requires_module_id = table.Column<Guid>(type: "uuid", nullable: false),
+                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_module_dependencies", x => x.id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "plans",
+            schema: "subscriptions",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                is_active = table.Column<bool>(type: "boolean", nullable: false),
+                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_plans", x => x.id);
+            });
 
         migrationBuilder.CreateTable(
             name: "portal_modules",
@@ -49,58 +130,9 @@ public partial class Initial_Subscriptions_Create : Migration
                 updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
             },
-            constraints: table => table.PrimaryKey("pk_portal_modules", x => x.id));
-
-        migrationBuilder.CreateTable(
-            name: "module_dependencies",
-            schema: "subscriptions",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                module_id = table.Column<Guid>(type: "uuid", nullable: false),
-                requires_module_id = table.Column<Guid>(type: "uuid", nullable: false),
-                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
-            },
-            constraints: table => table.PrimaryKey("pk_module_dependencies", x => x.id));
-
-        migrationBuilder.CreateTable(
-            name: "plans",
-            schema: "subscriptions",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                is_active = table.Column<bool>(type: "boolean", nullable: false),
-                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
-            },
-            constraints: table => table.PrimaryKey("pk_plans", x => x.id));
-
-        migrationBuilder.CreateTable(
-            name: "plan_modules",
-            schema: "subscriptions",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                plan_id = table.Column<Guid>(type: "uuid", nullable: false),
-                module_id = table.Column<Guid>(type: "uuid", nullable: false),
-                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
-            },
             constraints: table =>
             {
-                table.PrimaryKey("pk_plan_modules", x => x.id);
-                table.ForeignKey("fk_plan_modules_plans_plan_id", x => x.plan_id, "plans", "id", "subscriptions", onDelete: ReferentialAction.Cascade);
-                table.ForeignKey("fk_plan_modules_portal_modules_module_id", x => x.module_id, "portal_modules", "id", "subscriptions", onDelete: ReferentialAction.Restrict);
+                table.PrimaryKey("pk_portal_modules", x => x.id);
             });
 
         migrationBuilder.CreateTable(
@@ -118,19 +150,23 @@ public partial class Initial_Subscriptions_Create : Migration
                 updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
             },
-            constraints: table => table.PrimaryKey("pk_price_books", x => x.id));
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_price_books", x => x.id);
+            });
 
         migrationBuilder.CreateTable(
-            name: "price_book_items",
+            name: "renewal_reminders",
             schema: "subscriptions",
             columns: table => new
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
-                price_book_id = table.Column<Guid>(type: "uuid", nullable: false),
-                plan_id = table.Column<Guid>(type: "uuid", nullable: true),
-                module_id = table.Column<Guid>(type: "uuid", nullable: true),
-                billing_cycle = table.Column<int>(type: "integer", nullable: false),
-                price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
+                subscription_id = table.Column<Guid>(type: "uuid", nullable: false),
+                period_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                days_before = table.Column<int>(type: "integer", nullable: false),
+                queued_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                sent_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                 created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                 created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                 updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -138,8 +174,30 @@ public partial class Initial_Subscriptions_Create : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("pk_price_book_items", x => x.id);
-                table.ForeignKey("fk_price_book_items_price_books_price_book_id", x => x.price_book_id, "price_books", "id", "subscriptions", onDelete: ReferentialAction.Cascade);
+                table.PrimaryKey("pk_renewal_reminders", x => x.id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "security_audit_events",
+            schema: "subscriptions",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                occurred_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                event_type = table.Column<int>(type: "integer", nullable: false),
+                outcome = table.Column<int>(type: "integer", nullable: false),
+                actor_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                actor_tenant_id = table.Column<Guid>(type: "uuid", nullable: true),
+                actor_campus_id = table.Column<Guid>(type: "uuid", nullable: true),
+                target_type = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                target_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                source_ip = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                user_agent = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                trace_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_security_audit_events", x => x.id);
             });
 
         migrationBuilder.CreateTable(
@@ -174,19 +232,13 @@ public partial class Initial_Subscriptions_Create : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "tenant_modules",
+            name: "plan_modules",
             schema: "subscriptions",
             columns: table => new
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
-                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                subscription_id = table.Column<Guid>(type: "uuid", nullable: false),
+                plan_id = table.Column<Guid>(type: "uuid", nullable: false),
                 module_id = table.Column<Guid>(type: "uuid", nullable: false),
-                module_code = table.Column<int>(type: "integer", nullable: false),
-                is_school_wide = table.Column<bool>(type: "boolean", nullable: false),
-                campus_id = table.Column<Guid>(type: "uuid", nullable: true),
-                status = table.Column<int>(type: "integer", nullable: false),
-                valid_to = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                 created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                 created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                 updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -194,13 +246,48 @@ public partial class Initial_Subscriptions_Create : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("pk_tenant_modules", x => x.id);
+                table.PrimaryKey("pk_plan_modules", x => x.id);
                 table.ForeignKey(
-                    name: "fk_tenant_modules_subscriptions_tenant_id_subscription_id",
-                    columns: x => new { x.tenant_id, x.subscription_id },
+                    name: "fk_plan_modules_plans_plan_id",
+                    column: x => x.plan_id,
                     principalSchema: "subscriptions",
-                    principalTable: "subscriptions",
-                    principalColumns: new[] { "tenant_id", "id" },
+                    principalTable: "plans",
+                    principalColumn: "id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "fk_plan_modules_portal_modules_module_id",
+                    column: x => x.module_id,
+                    principalSchema: "subscriptions",
+                    principalTable: "portal_modules",
+                    principalColumn: "id",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "price_book_items",
+            schema: "subscriptions",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                price_book_id = table.Column<Guid>(type: "uuid", nullable: false),
+                plan_id = table.Column<Guid>(type: "uuid", nullable: true),
+                module_id = table.Column<Guid>(type: "uuid", nullable: true),
+                billing_cycle = table.Column<int>(type: "integer", nullable: false),
+                price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_price_book_items", x => x.id);
+                table.ForeignKey(
+                    name: "fk_price_book_items_price_books_price_book_id",
+                    column: x => x.price_book_id,
+                    principalSchema: "subscriptions",
+                    principalTable: "price_books",
+                    principalColumn: "id",
                     onDelete: ReferentialAction.Cascade);
             });
 
@@ -236,6 +323,37 @@ public partial class Initial_Subscriptions_Create : Migration
                 table.UniqueConstraint("ak_invoices_tenant_id_id", x => new { x.tenant_id, x.id });
                 table.ForeignKey(
                     name: "fk_invoices_subscriptions_tenant_id_subscription_id",
+                    columns: x => new { x.tenant_id, x.subscription_id },
+                    principalSchema: "subscriptions",
+                    principalTable: "subscriptions",
+                    principalColumns: new[] { "tenant_id", "id" },
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "tenant_modules",
+            schema: "subscriptions",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
+                subscription_id = table.Column<Guid>(type: "uuid", nullable: false),
+                module_id = table.Column<Guid>(type: "uuid", nullable: false),
+                module_code = table.Column<int>(type: "integer", nullable: false),
+                is_school_wide = table.Column<bool>(type: "boolean", nullable: false),
+                campus_id = table.Column<Guid>(type: "uuid", nullable: true),
+                status = table.Column<int>(type: "integer", nullable: false),
+                valid_to = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_tenant_modules", x => x.id);
+                table.ForeignKey(
+                    name: "fk_tenant_modules_subscriptions_tenant_id_subscription_id",
                     columns: x => new { x.tenant_id, x.subscription_id },
                     principalSchema: "subscriptions",
                     principalTable: "subscriptions",
@@ -300,96 +418,145 @@ public partial class Initial_Subscriptions_Create : Migration
                     onDelete: ReferentialAction.Cascade);
             });
 
-        migrationBuilder.CreateTable(
-            name: "add_on_requests",
+        migrationBuilder.CreateIndex(
+            name: "ix_add_on_requests_tenant_id",
             schema: "subscriptions",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                module_id = table.Column<Guid>(type: "uuid", nullable: false),
-                module_code = table.Column<int>(type: "integer", nullable: false),
-                requested_by_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                notes = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                status = table.Column<int>(type: "integer", nullable: false),
-                requested_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                decided_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                decided_by_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
-            },
-            constraints: table => table.PrimaryKey("pk_add_on_requests", x => x.id));
+            table: "add_on_requests",
+            column: "tenant_id");
 
-        migrationBuilder.CreateTable(
-            name: "renewal_reminders",
+        migrationBuilder.CreateIndex(
+            name: "ix_add_on_requests_tenant_id_status",
             schema: "subscriptions",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                subscription_id = table.Column<Guid>(type: "uuid", nullable: false),
-                period_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                days_before = table.Column<int>(type: "integer", nullable: false),
-                queued_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                sent_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
-            },
-            constraints: table => table.PrimaryKey("pk_renewal_reminders", x => x.id));
+            table: "add_on_requests",
+            columns: new[] { "tenant_id", "status" });
 
-        migrationBuilder.CreateTable(
-            name: "change_audit_entries",
+        migrationBuilder.CreateIndex(
+            name: "ix_invoice_lines_tenant_id",
             schema: "subscriptions",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                occurred_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                actor_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                tenant_id = table.Column<Guid>(type: "uuid", nullable: true),
-                entity_type = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                entity_id = table.Column<Guid>(type: "uuid", nullable: false),
-                action = table.Column<int>(type: "integer", nullable: false),
-                changes_json = table.Column<string>(type: "text", nullable: false),
-                trace_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
-            },
-            constraints: table => table.PrimaryKey("pk_change_audit_entries", x => x.id));
+            table: "invoice_lines",
+            column: "tenant_id");
 
-        migrationBuilder.CreateTable(
-            name: "security_audit_events",
+        migrationBuilder.CreateIndex(
+            name: "ix_invoice_lines_tenant_id_invoice_id",
             schema: "subscriptions",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                occurred_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                event_type = table.Column<int>(type: "integer", nullable: false),
-                outcome = table.Column<int>(type: "integer", nullable: false),
-                actor_user_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                actor_tenant_id = table.Column<Guid>(type: "uuid", nullable: true),
-                actor_campus_id = table.Column<Guid>(type: "uuid", nullable: true),
-                target_type = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                target_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                source_ip = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                user_agent = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                trace_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
-            },
-            constraints: table => table.PrimaryKey("pk_security_audit_events", x => x.id));
+            table: "invoice_lines",
+            columns: new[] { "tenant_id", "invoice_id" });
 
-        migrationBuilder.CreateIndex("ix_portal_modules_code", "portal_modules", "code", "subscriptions", unique: true);
-        migrationBuilder.CreateIndex("ix_module_dependencies_module_id_requires_module_id", "module_dependencies", new[] { "module_id", "requires_module_id" }, "subscriptions", unique: true);
-        migrationBuilder.CreateIndex("ix_plans_code", "plans", "code", "subscriptions", unique: true);
-        migrationBuilder.CreateIndex("ix_plan_modules_plan_id_module_id", "plan_modules", new[] { "plan_id", "module_id" }, "subscriptions", unique: true);
-        migrationBuilder.CreateIndex("ix_price_books_country_code_is_active", "price_books", new[] { "country_code", "is_active" }, "subscriptions");
-        migrationBuilder.CreateIndex("ix_price_book_items_price_book_id_plan_id_module_id_billing_cycle", "price_book_items", new[] { "price_book_id", "plan_id", "module_id", "billing_cycle" }, "subscriptions", unique: true);
-        migrationBuilder.CreateIndex("ix_subscriptions_tenant_id_status", "subscriptions", new[] { "tenant_id", "status" }, "subscriptions");
-        migrationBuilder.CreateIndex("ix_tenant_modules_tenant_id_subscription_id_module_id", "tenant_modules", new[] { "tenant_id", "subscription_id", "module_id" }, "subscriptions", unique: true);
-        migrationBuilder.CreateIndex("ix_invoices_invoice_number", "invoices", "invoice_number", "subscriptions", unique: true);
-        migrationBuilder.CreateIndex("ix_invoices_tenant_id_subscription_id_status", "invoices", new[] { "tenant_id", "subscription_id", "status" }, "subscriptions");
-        migrationBuilder.CreateIndex("ix_add_on_requests_tenant_id_status", "add_on_requests", new[] { "tenant_id", "status" }, "subscriptions");
-        migrationBuilder.CreateIndex("ix_renewal_reminders_tenant_id_subscription_id_period_end_days_before", "renewal_reminders", new[] { "tenant_id", "subscription_id", "period_end", "days_before" }, "subscriptions", unique: true);
+        migrationBuilder.CreateIndex(
+            name: "ix_invoices_invoice_number",
+            schema: "subscriptions",
+            table: "invoices",
+            column: "invoice_number",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_invoices_tenant_id",
+            schema: "subscriptions",
+            table: "invoices",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_invoices_tenant_id_subscription_id_status",
+            schema: "subscriptions",
+            table: "invoices",
+            columns: new[] { "tenant_id", "subscription_id", "status" });
+
+        migrationBuilder.CreateIndex(
+            name: "ix_module_dependencies_module_id_requires_module_id",
+            schema: "subscriptions",
+            table: "module_dependencies",
+            columns: new[] { "module_id", "requires_module_id" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_payments_tenant_id",
+            schema: "subscriptions",
+            table: "payments",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_payments_tenant_id_invoice_id",
+            schema: "subscriptions",
+            table: "payments",
+            columns: new[] { "tenant_id", "invoice_id" });
+
+        migrationBuilder.CreateIndex(
+            name: "ix_plan_modules_module_id",
+            schema: "subscriptions",
+            table: "plan_modules",
+            column: "module_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_plan_modules_plan_id_module_id",
+            schema: "subscriptions",
+            table: "plan_modules",
+            columns: new[] { "plan_id", "module_id" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_plans_code",
+            schema: "subscriptions",
+            table: "plans",
+            column: "code",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_portal_modules_code",
+            schema: "subscriptions",
+            table: "portal_modules",
+            column: "code",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_price_book_items_price_book_id_plan_id_module_id_billing_cy",
+            schema: "subscriptions",
+            table: "price_book_items",
+            columns: new[] { "price_book_id", "plan_id", "module_id", "billing_cycle" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_price_books_country_code_is_active",
+            schema: "subscriptions",
+            table: "price_books",
+            columns: new[] { "country_code", "is_active" });
+
+        migrationBuilder.CreateIndex(
+            name: "ix_renewal_reminders_tenant_id",
+            schema: "subscriptions",
+            table: "renewal_reminders",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_renewal_reminders_tenant_id_subscription_id_period_end_days",
+            schema: "subscriptions",
+            table: "renewal_reminders",
+            columns: new[] { "tenant_id", "subscription_id", "period_end", "days_before" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_subscriptions_tenant_id",
+            schema: "subscriptions",
+            table: "subscriptions",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_subscriptions_tenant_id_status",
+            schema: "subscriptions",
+            table: "subscriptions",
+            columns: new[] { "tenant_id", "status" });
+
+        migrationBuilder.CreateIndex(
+            name: "ix_tenant_modules_tenant_id",
+            schema: "subscriptions",
+            table: "tenant_modules",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_tenant_modules_tenant_id_subscription_id_module_id",
+            schema: "subscriptions",
+            table: "tenant_modules",
+            columns: new[] { "tenant_id", "subscription_id", "module_id" },
+            unique: true);
 
         migrationBuilder.Sql("""
             DO $$
@@ -407,6 +574,7 @@ public partial class Initial_Subscriptions_Create : Migration
         }
     }
 
+    /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         foreach (var table in TenantScopedTables)
@@ -415,22 +583,68 @@ public partial class Initial_Subscriptions_Create : Migration
             migrationBuilder.Sql(PostgresRlsHelper.GenerateDisableRlsSql("subscriptions", table));
         }
 
-        migrationBuilder.DropTable("security_audit_events", "subscriptions");
-        migrationBuilder.DropTable("change_audit_entries", "subscriptions");
-        migrationBuilder.DropTable("renewal_reminders", "subscriptions");
-        migrationBuilder.DropTable("add_on_requests", "subscriptions");
-        migrationBuilder.DropTable("payments", "subscriptions");
-        migrationBuilder.DropTable("invoice_lines", "subscriptions");
-        migrationBuilder.DropTable("invoices", "subscriptions");
-        migrationBuilder.DropTable("tenant_modules", "subscriptions");
-        migrationBuilder.DropTable("subscriptions", "subscriptions");
-        migrationBuilder.DropTable("price_book_items", "subscriptions");
-        migrationBuilder.DropTable("price_books", "subscriptions");
-        migrationBuilder.DropTable("plan_modules", "subscriptions");
-        migrationBuilder.DropTable("plans", "subscriptions");
-        migrationBuilder.DropTable("module_dependencies", "subscriptions");
-        migrationBuilder.DropTable("portal_modules", "subscriptions");
+        migrationBuilder.DropTable(
+            name: "add_on_requests",
+            schema: "subscriptions");
 
-        migrationBuilder.DropSequence(name: "invoice_number_seq", schema: "subscriptions");
+        migrationBuilder.DropTable(
+            name: "change_audit_entries",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "invoice_lines",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "module_dependencies",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "payments",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "plan_modules",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "price_book_items",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "renewal_reminders",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "security_audit_events",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "tenant_modules",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "invoices",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "plans",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "portal_modules",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "price_books",
+            schema: "subscriptions");
+
+        migrationBuilder.DropTable(
+            name: "subscriptions",
+            schema: "subscriptions");
+
+        migrationBuilder.DropSequence(
+            name: "invoice_number_seq",
+            schema: "subscriptions");
     }
 }

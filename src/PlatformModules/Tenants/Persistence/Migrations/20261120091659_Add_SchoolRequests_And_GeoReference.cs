@@ -1,18 +1,37 @@
-using System;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace SchoolOS.PlatformModules.Tenants.Persistence.Migrations;
-
-[DbContext(typeof(PlatformDbContext))]
-[Migration("20261120000200_Add_SchoolRequests_And_GeoReference")]
+/// <inheritdoc />
 public partial class Add_SchoolRequests_And_GeoReference : Migration
 {
+    /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.EnsureSchema(name: "platform");
+        migrationBuilder.CreateTable(
+            name: "countries",
+            schema: "platform",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                code = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
+                name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                languages_csv = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                default_language = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                time_zone_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                currency_code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                is_active = table.Column<bool>(type: "boolean", nullable: false),
+                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_countries", x => x.id);
+            });
 
         migrationBuilder.CreateTable(
             name: "school_requests",
@@ -37,29 +56,6 @@ public partial class Add_SchoolRequests_And_GeoReference : Migration
             constraints: table =>
             {
                 table.PrimaryKey("pk_school_requests", x => x.id);
-            });
-
-        migrationBuilder.CreateTable(
-            name: "countries",
-            schema: "platform",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                code = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
-                name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                languages_csv = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                default_language = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                time_zone_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                currency_code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                is_active = table.Column<bool>(type: "boolean", nullable: false),
-                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
-            },
-            constraints: table =>
-            {
-                table.PrimaryKey("pk_countries", x => x.id);
             });
 
         migrationBuilder.CreateTable(
@@ -116,10 +112,11 @@ public partial class Add_SchoolRequests_And_GeoReference : Migration
             });
 
         migrationBuilder.CreateIndex(
-            name: "ix_school_requests_status",
+            name: "ix_cities_state_id_name",
             schema: "platform",
-            table: "school_requests",
-            column: "status");
+            table: "cities",
+            columns: new[] { "state_id", "name" },
+            unique: true);
 
         migrationBuilder.CreateIndex(
             name: "ix_countries_code",
@@ -129,25 +126,36 @@ public partial class Add_SchoolRequests_And_GeoReference : Migration
             unique: true);
 
         migrationBuilder.CreateIndex(
+            name: "ix_school_requests_status",
+            schema: "platform",
+            table: "school_requests",
+            column: "status");
+
+        migrationBuilder.CreateIndex(
             name: "ix_states_country_id_code",
             schema: "platform",
             table: "states",
             columns: new[] { "country_id", "code" },
             unique: true);
-
-        migrationBuilder.CreateIndex(
-            name: "ix_cities_state_id_name",
-            schema: "platform",
-            table: "cities",
-            columns: new[] { "state_id", "name" },
-            unique: true);
     }
 
+    /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.DropTable(name: "cities", schema: "platform");
-        migrationBuilder.DropTable(name: "states", schema: "platform");
-        migrationBuilder.DropTable(name: "countries", schema: "platform");
-        migrationBuilder.DropTable(name: "school_requests", schema: "platform");
+        migrationBuilder.DropTable(
+            name: "cities",
+            schema: "platform");
+
+        migrationBuilder.DropTable(
+            name: "school_requests",
+            schema: "platform");
+
+        migrationBuilder.DropTable(
+            name: "states",
+            schema: "platform");
+
+        migrationBuilder.DropTable(
+            name: "countries",
+            schema: "platform");
     }
 }

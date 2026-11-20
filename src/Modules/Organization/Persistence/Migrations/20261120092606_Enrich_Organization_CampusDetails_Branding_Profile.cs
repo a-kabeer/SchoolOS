@@ -1,5 +1,4 @@
-using System;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using SchoolOS.BuildingBlocks.Persistence;
 
@@ -7,8 +6,7 @@ using SchoolOS.BuildingBlocks.Persistence;
 
 namespace SchoolOS.Modules.Organization.Persistence.Migrations;
 
-[DbContext(typeof(OrganizationDbContext))]
-[Migration("20261120000400_Enrich_Organization_CampusDetails_Branding_Profile")]
+/// <inheritdoc />
 public partial class Enrich_Organization_CampusDetails_Branding_Profile : Migration
 {
     private static readonly string[] NewTenantScopedTables =
@@ -20,6 +18,7 @@ public partial class Enrich_Organization_CampusDetails_Branding_Profile : Migrat
         "school_profiles"
     ];
 
+    /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.AddUniqueConstraint(
@@ -27,6 +26,36 @@ public partial class Enrich_Organization_CampusDetails_Branding_Profile : Migrat
             schema: "organization",
             table: "campuses",
             columns: new[] { "tenant_id", "id" });
+
+        migrationBuilder.CreateTable(
+            name: "branding_images",
+            schema: "organization",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
+                school_id = table.Column<Guid>(type: "uuid", nullable: false),
+                slot = table.Column<int>(type: "integer", nullable: false),
+                content_type = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                data = table.Column<byte[]>(type: "bytea", nullable: false),
+                sha256hash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_branding_images", x => x.id);
+                table.ForeignKey(
+                    name: "fk_branding_images_schools_tenant_id_school_id",
+                    columns: x => new { x.tenant_id, x.school_id },
+                    principalSchema: "organization",
+                    principalTable: "schools",
+                    principalColumns: new[] { "tenant_id", "id" },
+                    onDelete: ReferentialAction.Cascade);
+            });
 
         migrationBuilder.CreateTable(
             name: "campus_details",
@@ -90,36 +119,6 @@ public partial class Enrich_Organization_CampusDetails_Branding_Profile : Migrat
             });
 
         migrationBuilder.CreateTable(
-            name: "branding_images",
-            schema: "organization",
-            columns: table => new
-            {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
-                tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                school_id = table.Column<Guid>(type: "uuid", nullable: false),
-                slot = table.Column<int>(type: "integer", nullable: false),
-                content_type = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                data = table.Column<byte[]>(type: "bytea", nullable: false),
-                sha256_hash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
-            },
-            constraints: table =>
-            {
-                table.PrimaryKey("pk_branding_images", x => x.id);
-                table.ForeignKey(
-                    name: "fk_branding_images_schools_tenant_id_school_id",
-                    columns: x => new { x.tenant_id, x.school_id },
-                    principalSchema: "organization",
-                    principalTable: "schools",
-                    principalColumns: new[] { "tenant_id", "id" },
-                    onDelete: ReferentialAction.Cascade);
-            });
-
-        migrationBuilder.CreateTable(
             name: "school_brandings",
             schema: "organization",
             columns: table => new
@@ -178,11 +177,81 @@ public partial class Enrich_Organization_CampusDetails_Branding_Profile : Migrat
                     onDelete: ReferentialAction.Cascade);
             });
 
-        migrationBuilder.CreateIndex("ix_campus_details_tenant_id_campus_id", "campus_details", new[] { "tenant_id", "campus_id" }, "organization", unique: true);
-        migrationBuilder.CreateIndex("ix_campus_phones_tenant_id_campus_id", "campus_phones", new[] { "tenant_id", "campus_id" }, "organization");
-        migrationBuilder.CreateIndex("ix_branding_images_tenant_id_school_id_slot", "branding_images", new[] { "tenant_id", "school_id", "slot" }, "organization", unique: true);
-        migrationBuilder.CreateIndex("ix_school_brandings_tenant_id_school_id", "school_brandings", new[] { "tenant_id", "school_id" }, "organization", unique: true);
-        migrationBuilder.CreateIndex("ix_school_profiles_tenant_id_school_id", "school_profiles", new[] { "tenant_id", "school_id" }, "organization", unique: true);
+        migrationBuilder.CreateIndex(
+            name: "ix_branding_images_tenant_id",
+            schema: "organization",
+            table: "branding_images",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_branding_images_tenant_id_school_id_slot",
+            schema: "organization",
+            table: "branding_images",
+            columns: new[] { "tenant_id", "school_id", "slot" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_campus_details_campus_id",
+            schema: "organization",
+            table: "campus_details",
+            column: "campus_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_campus_details_tenant_id",
+            schema: "organization",
+            table: "campus_details",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_campus_details_tenant_id_campus_id",
+            schema: "organization",
+            table: "campus_details",
+            columns: new[] { "tenant_id", "campus_id" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_campus_phones_campus_id",
+            schema: "organization",
+            table: "campus_phones",
+            column: "campus_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_campus_phones_tenant_id",
+            schema: "organization",
+            table: "campus_phones",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_campus_phones_tenant_id_campus_id",
+            schema: "organization",
+            table: "campus_phones",
+            columns: new[] { "tenant_id", "campus_id" });
+
+        migrationBuilder.CreateIndex(
+            name: "ix_school_brandings_tenant_id",
+            schema: "organization",
+            table: "school_brandings",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_school_brandings_tenant_id_school_id",
+            schema: "organization",
+            table: "school_brandings",
+            columns: new[] { "tenant_id", "school_id" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_school_profiles_tenant_id",
+            schema: "organization",
+            table: "school_profiles",
+            column: "tenant_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_school_profiles_tenant_id_school_id",
+            schema: "organization",
+            table: "school_profiles",
+            columns: new[] { "tenant_id", "school_id" },
+            unique: true);
 
         foreach (var table in NewTenantScopedTables)
         {
@@ -190,6 +259,7 @@ public partial class Enrich_Organization_CampusDetails_Branding_Profile : Migrat
         }
     }
 
+    /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         foreach (var table in NewTenantScopedTables)
@@ -197,11 +267,25 @@ public partial class Enrich_Organization_CampusDetails_Branding_Profile : Migrat
             migrationBuilder.Sql(PostgresRlsHelper.GenerateDisableRlsSql("organization", table));
         }
 
-        migrationBuilder.DropTable("school_profiles", "organization");
-        migrationBuilder.DropTable("school_brandings", "organization");
-        migrationBuilder.DropTable("branding_images", "organization");
-        migrationBuilder.DropTable("campus_phones", "organization");
-        migrationBuilder.DropTable("campus_details", "organization");
+        migrationBuilder.DropTable(
+            name: "branding_images",
+            schema: "organization");
+
+        migrationBuilder.DropTable(
+            name: "campus_details",
+            schema: "organization");
+
+        migrationBuilder.DropTable(
+            name: "campus_phones",
+            schema: "organization");
+
+        migrationBuilder.DropTable(
+            name: "school_brandings",
+            schema: "organization");
+
+        migrationBuilder.DropTable(
+            name: "school_profiles",
+            schema: "organization");
 
         migrationBuilder.DropUniqueConstraint(
             name: "ak_campuses_tenant_id_id",
