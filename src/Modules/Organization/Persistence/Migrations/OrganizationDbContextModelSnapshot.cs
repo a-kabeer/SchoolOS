@@ -8,591 +8,880 @@ using SchoolOS.Modules.Organization.Persistence;
 
 #nullable disable
 
-namespace SchoolOS.Modules.Organization.Persistence.Migrations
+namespace SchoolOS.Modules.Organization.Persistence.Migrations;
+
+[DbContext(typeof(OrganizationDbContext))]
+partial class OrganizationDbContextModelSnapshot : ModelSnapshot
 {
-    [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    protected override void BuildModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasDefaultSchema("organization")
-                .HasAnnotation("ProductVersion", "10.0.15")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.BrandingImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("content_type");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("bytea")
-                        .HasColumnName("data");
-
-                    b.Property<Guid>("SchoolId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("school_id");
-
-                    b.Property<string>("Sha256Hash")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("sha256hash");
-
-                    b.Property<int>("Slot")
-                        .HasColumnType("integer")
-                        .HasColumnName("slot");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_branding_images");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_branding_images_tenant_id");
-
-                    b.HasIndex("TenantId", "SchoolId", "Slot")
-                        .IsUnique()
-                        .HasDatabaseName("ix_branding_images_tenant_id_school_id_slot");
-
-                    b.ToTable("branding_images", "organization");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.Campus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("address");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<Guid>("SchoolId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("school_id");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_campuses");
-
-                    b.HasAlternateKey("TenantId", "Id")
-                        .HasName("ak_campuses_tenant_id_id");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_campuses_tenant_id");
-
-                    b.HasIndex("SchoolId", "Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_campuses_school_id_code");
-
-                    b.HasIndex("TenantId", "SchoolId")
-                        .HasDatabaseName("ix_campuses_tenant_id_school_id");
-
-                    b.ToTable("campuses", "organization");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusDetails", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AddressLine1")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("address_line1");
-
-                    b.Property<Guid>("CampusId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("campus_id");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("city");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(254)
-                        .HasColumnType("character varying(254)")
-                        .HasColumnName("email");
-
-                    b.Property<decimal?>("Latitude")
-                        .HasPrecision(9, 6)
-                        .HasColumnType("numeric(9,6)")
-                        .HasColumnName("latitude");
-
-                    b.Property<decimal?>("Longitude")
-                        .HasPrecision(9, 6)
-                        .HasColumnType("numeric(9,6)")
-                        .HasColumnName("longitude");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("postal_code");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<string>("TimezoneId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("timezone_id");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("WebsiteUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("website_url");
-
-                    b.HasKey("Id")
-                        .HasName("pk_campus_details");
-
-                    b.HasIndex("CampusId")
-                        .HasDatabaseName("ix_campus_details_campus_id");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_campus_details_tenant_id");
-
-                    b.HasIndex("TenantId", "CampusId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_campus_details_tenant_id_campus_id");
-
-                    b.ToTable("campus_details", "organization");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusPhone", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CampusId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("campus_id");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("IsPrimary")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_primary");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("label");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
-                        .HasColumnName("phone_number");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_campus_phones");
-
-                    b.HasIndex("CampusId")
-                        .HasDatabaseName("ix_campus_phones_campus_id");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_campus_phones_tenant_id");
-
-                    b.HasIndex("TenantId", "CampusId")
-                        .HasDatabaseName("ix_campus_phones_tenant_id_campus_id");
-
-                    b.ToTable("campus_phones", "organization");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.School", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_schools");
-
-                    b.HasAlternateKey("TenantId", "Id")
-                        .HasName("ak_schools_tenant_id_id");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_schools_tenant_id");
-
-                    b.HasIndex("TenantId", "Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_schools_tenant_id_code");
-
-                    b.ToTable("schools", "organization");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolBranding", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AccentColorHex")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)")
-                        .HasColumnName("accent_color_hex");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("PrimaryColorHex")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)")
-                        .HasColumnName("primary_color_hex");
-
-                    b.Property<Guid>("SchoolId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("school_id");
-
-                    b.Property<string>("SecondaryColorHex")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)")
-                        .HasColumnName("secondary_color_hex");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_school_brandings");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_school_brandings_tenant_id");
-
-                    b.HasIndex("TenantId", "SchoolId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_school_brandings_tenant_id_school_id");
-
-                    b.ToTable("school_brandings", "organization");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolProfile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ContactEmail")
-                        .HasMaxLength(254)
-                        .HasColumnType("character varying(254)")
-                        .HasColumnName("contact_email");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("DefaultLanguage")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("default_language");
-
-                    b.Property<int?>("EstablishedYear")
-                        .HasColumnType("integer")
-                        .HasColumnName("established_year");
-
-                    b.Property<string>("PrincipalName")
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("principal_name");
-
-                    b.Property<Guid>("SchoolId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("school_id");
-
-                    b.Property<string>("Tagline")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("tagline");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("WebsiteUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("website_url");
-
-                    b.HasKey("Id")
-                        .HasName("pk_school_profiles");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_school_profiles_tenant_id");
-
-                    b.HasIndex("TenantId", "SchoolId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_school_profiles_tenant_id_school_id");
-
-                    b.ToTable("school_profiles", "organization");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.BrandingImage", b =>
-                {
-                    b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId", "SchoolId")
-                        .HasPrincipalKey("TenantId", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_branding_images_schools_tenant_id_school_id");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.Campus", b =>
-                {
-                    b.HasOne("SchoolOS.Modules.Organization.Domain.School", "School")
-                        .WithMany("Campuses")
-                        .HasForeignKey("TenantId", "SchoolId")
-                        .HasPrincipalKey("TenantId", "Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_campuses_schools_tenant_id_school_id");
-
-                    b.Navigation("School");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusDetails", b =>
-                {
-                    b.HasOne("SchoolOS.Modules.Organization.Domain.Campus", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId", "CampusId")
-                        .HasPrincipalKey("TenantId", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_campus_details_campuses_tenant_id_campus_id");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusPhone", b =>
-                {
-                    b.HasOne("SchoolOS.Modules.Organization.Domain.Campus", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId", "CampusId")
-                        .HasPrincipalKey("TenantId", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_campus_phones_campuses_tenant_id_campus_id");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolBranding", b =>
-                {
-                    b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId", "SchoolId")
-                        .HasPrincipalKey("TenantId", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_school_brandings_schools_tenant_id_school_id");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolProfile", b =>
-                {
-                    b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId", "SchoolId")
-                        .HasPrincipalKey("TenantId", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_school_profiles_schools_tenant_id_school_id");
-                });
-
-            modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.School", b =>
-                {
-                    b.Navigation("Campuses");
-                });
+        modelBuilder
+            .HasDefaultSchema("organization")
+            .HasAnnotation("ProductVersion", "10.0.15")
+            .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+        NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.AcademicYear", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("code");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<DateOnly>("EndDate")
+                    .HasColumnType("date")
+                    .HasColumnName("end_date");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<bool>("IsCurrent")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_current");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(120)
+                    .HasColumnType("character varying(120)")
+                    .HasColumnName("name");
+
+                b.Property<Guid>("SchoolId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("school_id");
+
+                b.Property<DateOnly>("StartDate")
+                    .HasColumnType("date")
+                    .HasColumnName("start_date");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_academic_years");
+
+                b.HasAlternateKey("TenantId", "Id")
+                    .HasName("ak_academic_years_tenant_id_id");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_academic_years_tenant_id");
+
+                b.HasIndex("TenantId", "SchoolId")
+                    .IsUnique()
+                    .HasDatabaseName("ix_academic_years_single_current_per_school")
+                    .HasFilter("is_current = true");
+
+                b.HasIndex("TenantId", "SchoolId", "Code")
+                    .IsUnique()
+                    .HasDatabaseName("ix_academic_years_tenant_id_school_id_code");
+
+                b.ToTable("academic_years", "organization", t =>
+                    {
+                        t.HasCheckConstraint("ck_academic_years_date_range", "end_date >= start_date");
+                    });
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.BrandingImage", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("ContentType")
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnType("character varying(64)")
+                    .HasColumnName("content_type");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<byte[]>("Data")
+                    .IsRequired()
+                    .HasColumnType("bytea")
+                    .HasColumnName("data");
+
+                b.Property<Guid>("SchoolId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("school_id");
+
+                b.Property<string>("Sha256Hash")
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnType("character varying(64)")
+                    .HasColumnName("sha256hash");
+
+                b.Property<int>("Slot")
+                    .HasColumnType("integer")
+                    .HasColumnName("slot");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTimeOffset>("UpdatedAt")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_branding_images");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_branding_images_tenant_id");
+
+                b.HasIndex("TenantId", "SchoolId", "Slot")
+                    .IsUnique()
+                    .HasDatabaseName("ix_branding_images_tenant_id_school_id_slot");
+
+                b.ToTable("branding_images", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.Campus", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("Address")
+                    .HasMaxLength(500)
+                    .HasColumnType("character varying(500)")
+                    .HasColumnName("address");
+
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("character varying(50)")
+                    .HasColumnName("code");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)")
+                    .HasColumnName("name");
+
+                b.Property<Guid>("SchoolId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("school_id");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_campuses");
+
+                b.HasAlternateKey("TenantId", "Id")
+                    .HasName("ak_campuses_tenant_id_id");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_campuses_tenant_id");
+
+                b.HasIndex("SchoolId", "Code")
+                    .IsUnique()
+                    .HasDatabaseName("ix_campuses_school_id_code");
+
+                b.HasIndex("TenantId", "SchoolId")
+                    .HasDatabaseName("ix_campuses_tenant_id_school_id");
+
+                b.ToTable("campuses", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusDetails", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("AddressLine1")
+                    .IsRequired()
+                    .HasMaxLength(300)
+                    .HasColumnType("character varying(300)")
+                    .HasColumnName("address_line1");
+
+                b.Property<Guid>("CampusId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("campus_id");
+
+                b.Property<string>("City")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("city");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<string>("Email")
+                    .HasMaxLength(254)
+                    .HasColumnType("character varying(254)")
+                    .HasColumnName("email");
+
+                b.Property<decimal?>("Latitude")
+                    .HasPrecision(9, 6)
+                    .HasColumnType("numeric(9,6)")
+                    .HasColumnName("latitude");
+
+                b.Property<decimal?>("Longitude")
+                    .HasPrecision(9, 6)
+                    .HasColumnType("numeric(9,6)")
+                    .HasColumnName("longitude");
+
+                b.Property<string>("PostalCode")
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .HasColumnType("character varying(10)")
+                    .HasColumnName("postal_code");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<string>("TimezoneId")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("timezone_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.Property<string>("WebsiteUrl")
+                    .HasMaxLength(2048)
+                    .HasColumnType("character varying(2048)")
+                    .HasColumnName("website_url");
+
+                b.HasKey("Id")
+                    .HasName("pk_campus_details");
+
+                b.HasIndex("CampusId")
+                    .HasDatabaseName("ix_campus_details_campus_id");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_campus_details_tenant_id");
+
+                b.HasIndex("TenantId", "CampusId")
+                    .IsUnique()
+                    .HasDatabaseName("ix_campus_details_tenant_id_campus_id");
+
+                b.ToTable("campus_details", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusPhone", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<Guid>("CampusId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("campus_id");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<bool>("IsPrimary")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_primary");
+
+                b.Property<string>("Label")
+                    .IsRequired()
+                    .HasMaxLength(60)
+                    .HasColumnType("character varying(60)")
+                    .HasColumnName("label");
+
+                b.Property<string>("PhoneNumber")
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .HasColumnType("character varying(30)")
+                    .HasColumnName("phone_number");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_campus_phones");
+
+                b.HasIndex("CampusId")
+                    .HasDatabaseName("ix_campus_phones_campus_id");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_campus_phones_tenant_id");
+
+                b.HasIndex("TenantId", "CampusId")
+                    .HasDatabaseName("ix_campus_phones_tenant_id_campus_id");
+
+                b.ToTable("campus_phones", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.GradeLevel", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("code");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(120)
+                    .HasColumnType("character varying(120)")
+                    .HasColumnName("name");
+
+                b.Property<Guid>("SchoolId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("school_id");
+
+                b.Property<int>("SequenceOrder")
+                    .HasColumnType("integer")
+                    .HasColumnName("sequence_order");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_grade_levels");
+
+                b.HasAlternateKey("TenantId", "Id")
+                    .HasName("ak_grade_levels_tenant_id_id");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_grade_levels_tenant_id");
+
+                b.HasIndex("TenantId", "SchoolId", "Code")
+                    .IsUnique()
+                    .HasDatabaseName("ix_grade_levels_tenant_id_school_id_code");
+
+                b.ToTable("grade_levels", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.School", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("character varying(50)")
+                    .HasColumnName("code");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)")
+                    .HasColumnName("name");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_schools");
+
+                b.HasAlternateKey("TenantId", "Id")
+                    .HasName("ak_schools_tenant_id_id");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_schools_tenant_id");
+
+                b.HasIndex("TenantId", "Code")
+                    .IsUnique()
+                    .HasDatabaseName("ix_schools_tenant_id_code");
+
+                b.ToTable("schools", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolBranding", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("AccentColorHex")
+                    .IsRequired()
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("accent_color_hex");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<string>("PrimaryColorHex")
+                    .IsRequired()
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("primary_color_hex");
+
+                b.Property<Guid>("SchoolId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("school_id");
+
+                b.Property<string>("SecondaryColorHex")
+                    .IsRequired()
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("secondary_color_hex");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_school_brandings");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_school_brandings_tenant_id");
+
+                b.HasIndex("TenantId", "SchoolId")
+                    .IsUnique()
+                    .HasDatabaseName("ix_school_brandings_tenant_id_school_id");
+
+                b.ToTable("school_brandings", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolProfile", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<string>("ContactEmail")
+                    .HasMaxLength(254)
+                    .HasColumnType("character varying(254)")
+                    .HasColumnName("contact_email");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<string>("DefaultLanguage")
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .HasColumnType("character varying(10)")
+                    .HasColumnName("default_language");
+
+                b.Property<int?>("EstablishedYear")
+                    .HasColumnType("integer")
+                    .HasColumnName("established_year");
+
+                b.Property<string>("PrincipalName")
+                    .HasMaxLength(150)
+                    .HasColumnType("character varying(150)")
+                    .HasColumnName("principal_name");
+
+                b.Property<Guid>("SchoolId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("school_id");
+
+                b.Property<string>("Tagline")
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)")
+                    .HasColumnName("tagline");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.Property<string>("WebsiteUrl")
+                    .HasMaxLength(2048)
+                    .HasColumnType("character varying(2048)")
+                    .HasColumnName("website_url");
+
+                b.HasKey("Id")
+                    .HasName("pk_school_profiles");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_school_profiles_tenant_id");
+
+                b.HasIndex("TenantId", "SchoolId")
+                    .IsUnique()
+                    .HasDatabaseName("ix_school_profiles_tenant_id_school_id");
+
+                b.ToTable("school_profiles", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.Section", b =>
+            {
+                b.Property<Guid>("Id")
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
+
+                b.Property<Guid>("AcademicYearId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("academic_year_id");
+
+                b.Property<Guid>("CampusId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("campus_id");
+
+                b.Property<int?>("Capacity")
+                    .HasColumnType("integer")
+                    .HasColumnName("capacity");
+
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(40)
+                    .HasColumnType("character varying(40)")
+                    .HasColumnName("code");
+
+                b.Property<DateTime>("CreatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("created_at_utc");
+
+                b.Property<string>("CreatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("created_by");
+
+                b.Property<Guid>("GradeLevelId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("grade_level_id");
+
+                b.Property<bool>("IsActive")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_active");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(120)
+                    .HasColumnType("character varying(120)")
+                    .HasColumnName("name");
+
+                b.Property<Guid>("SchoolId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("school_id");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("uuid")
+                    .HasColumnName("tenant_id");
+
+                b.Property<DateTime?>("UpdatedAtUtc")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("updated_at_utc");
+
+                b.Property<string>("UpdatedBy")
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)")
+                    .HasColumnName("updated_by");
+
+                b.HasKey("Id")
+                    .HasName("pk_sections");
+
+                b.HasAlternateKey("TenantId", "Id")
+                    .HasName("ak_sections_tenant_id_id");
+
+                b.HasIndex("CampusId")
+                    .HasDatabaseName("ix_sections_campus_id");
+
+                b.HasIndex("TenantId")
+                    .HasDatabaseName("ix_sections_tenant_id");
+
+                b.HasIndex("TenantId", "AcademicYearId")
+                    .HasDatabaseName("ix_sections_tenant_id_academic_year_id");
+
+                b.HasIndex("TenantId", "GradeLevelId")
+                    .HasDatabaseName("ix_sections_tenant_id_grade_level_id");
+
+                b.HasIndex("TenantId", "CampusId", "AcademicYearId", "GradeLevelId", "Code")
+                    .IsUnique()
+                    .HasDatabaseName("ix_sections_tenant_id_campus_id_academic_year_id_grade_level_i");
+
+                b.ToTable("sections", "organization");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.AcademicYear", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "SchoolId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_academic_years_schools_tenant_id_school_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.BrandingImage", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "SchoolId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired()
+                    .HasConstraintName("fk_branding_images_schools_tenant_id_school_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.Campus", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.School", "School")
+                    .WithMany("Campuses")
+                    .HasForeignKey("TenantId", "SchoolId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_campuses_schools_tenant_id_school_id");
+
+                b.Navigation("School");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusDetails", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.Campus", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "CampusId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired()
+                    .HasConstraintName("fk_campus_details_campuses_tenant_id_campus_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.CampusPhone", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.Campus", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "CampusId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired()
+                    .HasConstraintName("fk_campus_phones_campuses_tenant_id_campus_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.GradeLevel", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "SchoolId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_grade_levels_schools_tenant_id_school_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolBranding", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "SchoolId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired()
+                    .HasConstraintName("fk_school_brandings_schools_tenant_id_school_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.SchoolProfile", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.School", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "SchoolId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired()
+                    .HasConstraintName("fk_school_profiles_schools_tenant_id_school_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.Section", b =>
+            {
+                b.HasOne("SchoolOS.Modules.Organization.Domain.AcademicYear", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "AcademicYearId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_sections_academic_years_tenant_id_academic_year_id");
+
+                b.HasOne("SchoolOS.Modules.Organization.Domain.Campus", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "CampusId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_sections_campuses_tenant_id_campus_id");
+
+                b.HasOne("SchoolOS.Modules.Organization.Domain.GradeLevel", null)
+                    .WithMany()
+                    .HasForeignKey("TenantId", "GradeLevelId")
+                    .HasPrincipalKey("TenantId", "Id")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired()
+                    .HasConstraintName("fk_sections_grade_levels_tenant_id_grade_level_id");
+            });
+
+        modelBuilder.Entity("SchoolOS.Modules.Organization.Domain.School", b =>
+            {
+                b.Navigation("Campuses");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

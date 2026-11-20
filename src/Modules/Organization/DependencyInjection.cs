@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SchoolOS.BuildingBlocks.Persistence.Interceptors;
+using SchoolOS.Modules.Organization.Application;
+using SchoolOS.Modules.Organization.Contracts;
 using SchoolOS.Modules.Organization.Persistence;
 
 namespace SchoolOS.Modules.Organization;
@@ -29,6 +31,8 @@ public static class DependencyInjection
 
             options.AddInterceptors(auditInterceptor, sessionInterceptor, txInterceptor);
         });
+
+        services.AddScoped<IOrganizationAcademicReader, OrganizationAcademicReader>();
 
         return services;
     }
