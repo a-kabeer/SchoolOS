@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using SchoolOS.BuildingBlocks.Security;
+using SchoolOS.Modules.Attendance.Contracts;
 using SchoolOS.Modules.Attendance.Domain;
 using SchoolOS.Modules.Attendance.Persistence;
 using SchoolOS.Modules.Organization.Contracts;
@@ -75,7 +76,7 @@ public sealed record AttendanceSummaryDto(
     int HalfDayCount,
     decimal AttendancePercentage);
 
-public sealed class AttendanceService
+public sealed class AttendanceService : ITeacherAssignmentReader
 {
     private readonly AttendanceDbContext _db;
     private readonly IOrganizationAcademicReader _organization;
@@ -449,6 +450,26 @@ public sealed class AttendanceService
             : Math.Round(((present + late + (halfDay * 0.5m)) / total) * 100m, 2, MidpointRounding.AwayFromZero);
 
         return new AttendanceSummaryDto(total, present, absent, late, excused, halfDay, percentage);
+    }
+
+    public async Task<bool> IsTeacherAssignedToSectionAsync(
+        Guid tenantId,
+        Guid userId,
+        Guid academicYearId,
+        Guid sectionId,
+        CancellationToken cancellationToken = default)
+    {
+        return await (
+            from a in _db.TeacherSectionAssignments.AsNoTracking()
+            join s in _db.StaffMembers.AsNoTracking() on a.StaffMemberId equals s.Id
+            where a.TenantId == tenantId
+                && s.UserId == userId
+                && s.IsActive
+                && a.IsActive
+                && a.SectionId == sectionId
+                && a.AcademicYearId == academicYearId
+            select a.Id
+        ).AnyAsync(cancellationToken);
     }
 
     private Guid RequireTenantId()
