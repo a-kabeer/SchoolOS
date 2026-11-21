@@ -115,6 +115,31 @@ public static partial class PostgresRlsHelper
     }
 
     /// <summary>
+    /// Generates idempotent SQL to create a least-privilege, non-superuser, <c>NOBYPASSRLS</c> runtime role if it does not exist.
+    /// </summary>
+    public static string GenerateEnsureLeastPrivilegeRoleSql(string tenantRoleName, string password)
+    {
+        ValidateIdentifier(tenantRoleName, nameof(tenantRoleName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(password);
+
+        if (string.Equals(tenantRoleName, "public", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException("Role name cannot be PUBLIC.", nameof(tenantRoleName));
+        }
+
+        var escapedPassword = password.Replace("'", "''", StringComparison.Ordinal);
+        return $"""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{tenantRoleName}') THEN
+                    CREATE ROLE {tenantRoleName} WITH LOGIN PASSWORD '{escapedPassword}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+                END IF;
+            END
+            $$;
+            """;
+    }
+
+    /// <summary>
     /// Generates least-privilege DML-only grants for the tenant runtime role on a schema.
     /// Explicitly revokes DDL (<c>CREATE</c>) and privileged table actions (<c>TRUNCATE</c>, <c>TRIGGER</c>, <c>REFERENCES</c>).
     /// </summary>

@@ -126,6 +126,27 @@ app.MapEndpointGroups(typeof(PublicSchoolRequestsEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(PlatformSubscriptionsEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(PlatformLicensingEndpointGroup).Assembly);
 
+var runMigrateOnly = args.Contains("--migrate", StringComparer.OrdinalIgnoreCase);
+var runSeedCatalogOnly = args.Contains("--seed-catalog", StringComparer.OrdinalIgnoreCase);
+var autoMigrate = builder.Configuration.GetValue<bool>("Bootstrap:AutoMigrateOnStartup");
+var runtimeRoleName = builder.Configuration["Bootstrap:RuntimeRoleName"] ?? "schoolos_app";
+var runtimeRolePassword = builder.Configuration["Bootstrap:RuntimeRolePassword"];
+
+if (runMigrateOnly || runSeedCatalogOnly || autoMigrate)
+{
+    await SchoolOS.Cloud.Api.CloudDatabaseBootstrapper.ApplyMigrationsAndGrantsAsync(app.Services, runtimeRoleName, runtimeRolePassword);
+}
+
+if (runSeedCatalogOnly || (builder.Configuration.GetValue<bool>("Bootstrap:SeedCatalogOnStartup") && app.Environment.IsDevelopment()))
+{
+    await SchoolOS.Cloud.Api.CloudDatabaseBootstrapper.SeedCatalogAsync(app.Services);
+}
+
+if (runMigrateOnly || runSeedCatalogOnly)
+{
+    return;
+}
+
 app.Run();
 
 public record CreateTenantRequest(string Name, string Slug);

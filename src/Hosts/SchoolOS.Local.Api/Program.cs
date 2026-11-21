@@ -328,6 +328,28 @@ app.MapEndpointGroups(typeof(AttendanceEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(FeesEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(ExamsEndpointGroup).Assembly);
 
+var runMigrateOnly = args.Contains("--migrate", StringComparer.OrdinalIgnoreCase);
+var runSeedDevOnly = args.Contains("--seed-dev", StringComparer.OrdinalIgnoreCase);
+var autoMigrate = builder.Configuration.GetValue<bool>("Bootstrap:AutoMigrateOnStartup");
+var devBootstrapOptions = builder.Configuration.GetSection(DevBootstrapOptions.SectionName).Get<DevBootstrapOptions>() ?? new DevBootstrapOptions();
+var runtimeRoleName = builder.Configuration["Bootstrap:RuntimeRoleName"] ?? "schoolos_app";
+var runtimeRolePassword = builder.Configuration["Bootstrap:RuntimeRolePassword"];
+
+if (runMigrateOnly || runSeedDevOnly || autoMigrate)
+{
+    await LocalDatabaseBootstrapper.ApplyMigrationsAndGrantsAsync(app.Services, runtimeRoleName, runtimeRolePassword);
+}
+
+if (runSeedDevOnly || (devBootstrapOptions.Enabled && app.Environment.IsDevelopment()))
+{
+    await LocalDatabaseBootstrapper.SeedDevelopmentEnvironmentAsync(app.Services, app.Environment, devBootstrapOptions);
+}
+
+if (runMigrateOnly || runSeedDevOnly)
+{
+    return;
+}
+
 app.Run();
 
 public record CreateSchoolRequest(string Name, string Code);
