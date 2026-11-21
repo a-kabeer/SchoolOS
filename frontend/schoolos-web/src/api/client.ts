@@ -369,6 +369,95 @@ export interface AttendanceCorrectionDto {
   correctedAtUtc: string;
 }
 
+export interface FeeHeadDto {
+  id: string;
+  schoolId: string;
+  code: string;
+  name: string;
+  frequency: string;
+  isOptional: boolean;
+  isActive: boolean;
+}
+
+export interface FeeScheduleDto {
+  id: string;
+  schoolId: string;
+  campusId: string;
+  academicYearId: string;
+  gradeLevelId: string;
+  feeHeadId: string;
+  feeHeadCode: string;
+  feeHeadName: string;
+  amount: number;
+  currencyCode: string;
+  siblingDiscountPercent: number;
+  lateFeePerDay: number;
+  isActive: boolean;
+}
+
+export interface FeeChallanDto {
+  id: string;
+  campusId: string;
+  studentId: string;
+  householdId?: string | null;
+  academicYearId: string;
+  gradeLevelId: string;
+  billingPeriod: string;
+  challanNumber: string;
+  currencyCode: string;
+  issueDate: string;
+  dueDate: string;
+  grossAmount: number;
+  discountAmount: number;
+  lateFeeAmount: number;
+  netAmount: number;
+  paidAmount: number;
+  balanceAmount: number;
+  status: string;
+  voidReason?: string | null;
+  lines: Array<{ id: string; feeHeadId: string; description: string; grossAmount: number; discountAmount: number; netAmount: number }>;
+}
+
+export interface FeeReceiptDto {
+  id: string;
+  campusId: string;
+  challanId: string;
+  studentId: string;
+  receiptNumber: string;
+  paymentDate: string;
+  amount: number;
+  currencyCode: string;
+  method: string;
+  externalReference?: string | null;
+  collectedBy: string;
+  collectedAtUtc: string;
+  status: string;
+  reversalReason?: string | null;
+  reversedBy?: string | null;
+  reversedAtUtc?: string | null;
+}
+
+export interface DefaulterAgingSummaryDto {
+  asOfDate: string;
+  outstandingChallanCount: number;
+  totalOutstanding: number;
+  currentAmount: number;
+  days1To30Amount: number;
+  days31To60Amount: number;
+  days61PlusAmount: number;
+  items: Array<{
+    challanId: string;
+    studentId: string;
+    challanNumber: string;
+    billingPeriod: string;
+    dueDate: string;
+    daysOverdue: number;
+    agingBucket: string;
+    balanceAmount: number;
+    currencyCode: string;
+  }>;
+}
+
 export const schoolOsApi = {
   async login(payload: LoginRequestPayload): Promise<AuthSessionUser> {
     const data = await apiRequest<AuthTokenResponse>('/api/v1/auth/login', {
@@ -738,5 +827,100 @@ export const schoolOsApi = {
     if (params?.date) sp.set('date', params.date);
     const qs = sp.toString() ? `?${sp.toString()}` : '';
     return apiRequest<AttendanceCorrectionDto[]>(`/api/v1/attendance/corrections${qs}`);
+  },
+
+  // Fees & Collection Module (/api/v1/fees)
+  listFeeHeads(schoolId?: string) {
+    const qs = schoolId ? `?schoolId=${encodeURIComponent(schoolId)}` : '';
+    return apiRequest<FeeHeadDto[]>(`/api/v1/fees/heads${qs}`);
+  },
+
+  createFeeHead(body: { schoolId: string; code: string; name: string; frequency: string; isOptional?: boolean }) {
+    return apiRequest<FeeHeadDto>('/api/v1/fees/heads', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  listFeeSchedules(params?: { campusId?: string; academicYearId?: string; gradeLevelId?: string }) {
+    const sp = new URLSearchParams();
+    if (params?.campusId) sp.set('campusId', params.campusId);
+    if (params?.academicYearId) sp.set('academicYearId', params.academicYearId);
+    if (params?.gradeLevelId) sp.set('gradeLevelId', params.gradeLevelId);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<FeeScheduleDto[]>(`/api/v1/fees/schedules${qs}`);
+  },
+
+  createFeeSchedule(body: {
+    campusId: string;
+    academicYearId: string;
+    gradeLevelId: string;
+    feeHeadId: string;
+    amount: number;
+    currencyCode?: string;
+    siblingDiscountPercent?: number;
+    lateFeePerDay?: number;
+  }) {
+    return apiRequest<FeeScheduleDto>('/api/v1/fees/schedules', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  listFeeChallans(params?: { campusId?: string; billingPeriod?: string; status?: string }) {
+    const sp = new URLSearchParams();
+    if (params?.campusId) sp.set('campusId', params.campusId);
+    if (params?.billingPeriod) sp.set('billingPeriod', params.billingPeriod);
+    if (params?.status) sp.set('status', params.status);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<FeeChallanDto[]>(`/api/v1/fees/challans${qs}`);
+  },
+
+  generateMonthlyChallans(body: {
+    campusId: string;
+    academicYearId: string;
+    gradeLevelId: string;
+    billingPeriod: string;
+    issueDate: string;
+    dueDate: string;
+  }) {
+    return apiRequest<{ generatedCount: number; skippedExistingCount: number; totalNetAmount: number; createdChallanIds: string[] }>(
+      '/api/v1/fees/challans/generate',
+      { method: 'POST', body: JSON.stringify(body) }
+    );
+  },
+
+  voidFeeChallan(id: string, reason: string) {
+    return apiRequest<{ id: string; status: string }>(`/api/v1/fees/challans/${id}/void`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  listFeeReceipts(params?: { challanId?: string; studentId?: string }) {
+    const sp = new URLSearchParams();
+    if (params?.challanId) sp.set('challanId', params.challanId);
+    if (params?.studentId) sp.set('studentId', params.studentId);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<FeeReceiptDto[]>(`/api/v1/fees/receipts${qs}`);
+  },
+
+  postFeeReceipt(body: { challanId: string; amount: number; paymentDate: string; method: string; externalReference?: string }) {
+    return apiRequest<FeeReceiptDto>('/api/v1/fees/receipts', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  reverseFeeReceipt(id: string, reason: string) {
+    return apiRequest<{ id: string; status: string }>(`/api/v1/fees/receipts/${id}/reverse`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  getDefaulterAging(asOfDate?: string) {
+    const qs = asOfDate ? `?asOfDate=${encodeURIComponent(asOfDate)}` : '';
+    return apiRequest<DefaulterAgingSummaryDto>(`/api/v1/fees/defaulters${qs}`);
   },
 };
