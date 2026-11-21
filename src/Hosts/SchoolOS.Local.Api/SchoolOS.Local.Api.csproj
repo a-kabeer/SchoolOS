@@ -15,6 +15,7 @@
     <ProjectReference Include="..\..\Modules\Organization\SchoolOS.Modules.Organization.csproj" />
     <ProjectReference Include="..\..\Modules\Students\SchoolOS.Modules.Students.csproj" />
     <ProjectReference Include="..\..\Modules\Admissions\SchoolOS.Modules.Admissions.csproj" />
+    <ProjectReference Include="..\..\Modules\Attendance\SchoolOS.Modules.Attendance.csproj" />
   </ItemGroup>
 
   <ItemGroup>

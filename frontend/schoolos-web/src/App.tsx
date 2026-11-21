@@ -18,6 +18,7 @@ import { SchoolBrandingPage } from '@/pages/schoolos/SchoolBrandingPage';
 import { AccessControlPage } from '@/pages/schoolos/AccessControlPage';
 import { AdmissionsPage } from '@/pages/schoolos/AdmissionsPage';
 import { StudentsPage } from '@/pages/schoolos/StudentsPage';
+import { AttendancePage } from '@/pages/schoolos/AttendancePage';
 
 export function AppRoutes() {
   return (
@@ -33,6 +34,7 @@ export function AppRoutes() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Navigate to="/students" replace />} />
           <Route path="/students" element={<StudentsPage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/admissions" element={<AdmissionsPage />} />
           <Route path="/org/schools" element={<SchoolsManagementPage />} />
           <Route path="/org/branding" element={<SchoolBrandingPage />} />

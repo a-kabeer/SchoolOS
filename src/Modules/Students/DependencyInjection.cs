@@ -40,6 +40,7 @@ public static class DependencyInjection
 
         services.AddScoped<StudentLifecycleService>();
         services.AddScoped<IStudentAdmissionBridge>(sp => sp.GetRequiredService<StudentLifecycleService>());
+        services.AddScoped<IStudentRosterReader>(sp => sp.GetRequiredService<StudentLifecycleService>());
 
         return services;
     }

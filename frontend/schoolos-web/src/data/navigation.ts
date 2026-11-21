@@ -11,6 +11,12 @@ export const SIDEBAR_NAVIGATION: NavSection[] = [
         iconName: 'Users',
       },
       {
+        id: 'attendance',
+        label: 'Attendance',
+        path: '/attendance',
+        iconName: 'CheckCircle2',
+      },
+      {
         id: 'admissions',
         label: 'Admissions',
         path: '/admissions',

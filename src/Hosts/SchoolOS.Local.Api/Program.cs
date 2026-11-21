@@ -11,6 +11,8 @@ using SchoolOS.BuildingBlocks.Web;
 using SchoolOS.Local.Api.LocalPlatform;
 using SchoolOS.Modules.Admissions;
 using SchoolOS.Modules.Admissions.Endpoints;
+using SchoolOS.Modules.Attendance;
+using SchoolOS.Modules.Attendance.Endpoints;
 using SchoolOS.Modules.Identity;
 using SchoolOS.Modules.Identity.Endpoints;
 using SchoolOS.Modules.Organization;
@@ -58,6 +60,7 @@ builder.Services.AddIdentityModule(builder.Configuration);
 builder.Services.AddOrganizationModule(builder.Configuration);
 builder.Services.AddStudentsModule(builder.Configuration);
 builder.Services.AddAdmissionsModule(builder.Configuration);
+builder.Services.AddAttendanceModule(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -315,6 +318,7 @@ app.MapPost("/api/v1/local/licensing/lease", async (
 app.MapEndpointGroups(typeof(OrganizationSchoolsDetailsEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(StudentsEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(AdmissionsEndpointGroup).Assembly);
+app.MapEndpointGroups(typeof(AttendanceEndpointGroup).Assembly);
 
 app.Run();
 

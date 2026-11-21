@@ -291,6 +291,84 @@ export interface HouseholdDto {
   }>;
 }
 
+export interface StaffMemberDto {
+  id: string;
+  schoolId: string;
+  campusId: string;
+  userId?: string | null;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  phone?: string | null;
+  roleType: string;
+  isActive: boolean;
+}
+
+export interface TeacherAssignmentDto {
+  id: string;
+  campusId: string;
+  staffMemberId: string;
+  staffName: string;
+  employeeCode: string;
+  academicYearId: string;
+  gradeLevelId: string;
+  sectionId: string;
+  isHomeroomTeacher: boolean;
+  isActive: boolean;
+}
+
+export type AttendanceStatusValue = 'Present' | 'Absent' | 'Late' | 'Excused' | 'HalfDay';
+
+export interface RosterAttendanceEntryDto {
+  studentId: string;
+  admissionNumber: string;
+  firstName: string;
+  lastName: string;
+  rollNumber?: string | null;
+  status?: AttendanceStatusValue | null;
+  remarks?: string | null;
+  lastCorrectionReason?: string | null;
+  lastUpdatedAtUtc?: string | null;
+}
+
+export interface SectionRegisterViewDto {
+  registerId?: string | null;
+  campusId: string;
+  academicYearId: string;
+  gradeLevelId: string;
+  sectionId: string;
+  sectionName: string;
+  attendanceDate: string;
+  isMarked: boolean;
+  isLocked: boolean;
+  notes?: string | null;
+  students: RosterAttendanceEntryDto[];
+}
+
+export interface AttendanceSummaryDto {
+  totalMarks: number;
+  presentCount: number;
+  absentCount: number;
+  lateCount: number;
+  excusedCount: number;
+  halfDayCount: number;
+  attendancePercentage: number;
+}
+
+export interface AttendanceCorrectionDto {
+  id: string;
+  entryId: string;
+  registerId: string;
+  studentId: string;
+  attendanceDate: string;
+  previousStatus: string;
+  newStatus: string;
+  reason: string;
+  correctedBy: string;
+  correctedAtUtc: string;
+}
+
 export const schoolOsApi = {
   async login(payload: LoginRequestPayload): Promise<AuthSessionUser> {
     const data = await apiRequest<AuthTokenResponse>('/api/v1/auth/login', {
@@ -592,5 +670,73 @@ export const schoolOsApi = {
       method: 'POST',
       body: JSON.stringify(body),
     });
+  },
+
+  // Staff & Daily Attendance Module (/api/v1/attendance)
+  listStaffMembers(campusId?: string) {
+    const qs = campusId ? `?campusId=${encodeURIComponent(campusId)}` : '';
+    return apiRequest<StaffMemberDto[]>(`/api/v1/attendance/staff${qs}`);
+  },
+
+  createStaffMember(body: {
+    campusId: string;
+    employeeCode: string;
+    firstName: string;
+    lastName: string;
+    roleType: string;
+    userId?: string | null;
+    email?: string;
+    phone?: string;
+  }) {
+    return apiRequest<StaffMemberDto>('/api/v1/attendance/staff', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  listTeacherAssignments(params?: { academicYearId?: string; sectionId?: string }) {
+    const sp = new URLSearchParams();
+    if (params?.academicYearId) sp.set('academicYearId', params.academicYearId);
+    if (params?.sectionId) sp.set('sectionId', params.sectionId);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<TeacherAssignmentDto[]>(`/api/v1/attendance/staff/assignments${qs}`);
+  },
+
+  assignTeacherSection(staffId: string, body: { academicYearId: string; gradeLevelId: string; sectionId: string; isHomeroomTeacher: boolean }) {
+    return apiRequest<{ id: string }>(`/api/v1/attendance/staff/${staffId}/assignments`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  getSectionAttendanceRegister(sectionId: string, date: string) {
+    return apiRequest<SectionRegisterViewDto>(`/api/v1/attendance/sections/${sectionId}/register?date=${encodeURIComponent(date)}`);
+  },
+
+  markSectionAttendance(sectionId: string, body: {
+    attendanceDate: string;
+    notes?: string;
+    entries: Array<{ studentId: string; status: AttendanceStatusValue; remarks?: string; correctionReason?: string }>;
+  }) {
+    return apiRequest<{ registerId: string; attendanceDate: string; createdCount: number; updatedCount: number; correctionsRecorded: number }>(
+      `/api/v1/attendance/sections/${sectionId}/register`,
+      { method: 'POST', body: JSON.stringify(body) }
+    );
+  },
+
+  getSectionAttendanceSummary(sectionId: string, from?: string, to?: string) {
+    const sp = new URLSearchParams();
+    if (from) sp.set('from', from);
+    if (to) sp.set('to', to);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<AttendanceSummaryDto>(`/api/v1/attendance/sections/${sectionId}/summary${qs}`);
+  },
+
+  listAttendanceCorrections(params?: { studentId?: string; date?: string }) {
+    const sp = new URLSearchParams();
+    if (params?.studentId) sp.set('studentId', params.studentId);
+    if (params?.date) sp.set('date', params.date);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<AttendanceCorrectionDto[]>(`/api/v1/attendance/corrections${qs}`);
   },
 };
