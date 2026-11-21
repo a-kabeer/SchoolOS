@@ -61,7 +61,12 @@ export const tokenStore = {
   },
 
   isAuthenticated(): boolean {
-    return Boolean(state.accessToken && state.user && Date.now() < state.expiresAtMs);
+    return Boolean(
+      state.accessToken &&
+      state.user &&
+      Number.isFinite(state.expiresAtMs) &&
+      Date.now() < state.expiresAtMs
+    );
   },
 
   registerRefreshHandler(handler: RefreshHandler | null): void {
@@ -70,7 +75,17 @@ export const tokenStore = {
 
   setSession(accessToken: string, expiresInSeconds: number, user: AuthSessionUser): void {
     clearRefreshTimer();
-    const expiresAtMs = Date.now() + Math.max(expiresInSeconds, 1) * 1000;
+    if (!accessToken || !user || !Number.isFinite(expiresInSeconds) || expiresInSeconds <= 0) {
+      state = {
+        accessToken: null,
+        expiresAtMs: 0,
+        user: null,
+      };
+      notify();
+      return;
+    }
+
+    const expiresAtMs = Date.now() + expiresInSeconds * 1000;
     state = {
       accessToken,
       expiresAtMs,
