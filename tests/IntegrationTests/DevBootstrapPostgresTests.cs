@@ -8,6 +8,7 @@ using SchoolOS.BuildingBlocks.Persistence;
 using SchoolOS.BuildingBlocks.Persistence.Audit;
 using SchoolOS.BuildingBlocks.Persistence.Interceptors;
 using SchoolOS.BuildingBlocks.Security;
+using SchoolOS.Cloud.Api;
 using SchoolOS.Local.Api.LocalPlatform;
 using SchoolOS.Modules.Admissions;
 using SchoolOS.Modules.Attendance;
@@ -17,6 +18,9 @@ using SchoolOS.Modules.Identity;
 using SchoolOS.Modules.Identity.Application;
 using SchoolOS.Modules.Organization;
 using SchoolOS.Modules.Students;
+using SchoolOS.PlatformModules.Subscriptions;
+using SchoolOS.PlatformModules.Subscriptions.Persistence;
+using SchoolOS.PlatformModules.Tenants;
 using Shouldly;
 using Xunit;
 using Microsoft.EntityFrameworkCore;
@@ -116,7 +120,7 @@ public sealed class DevBootstrapPostgresTests
             Enabled = true,
             TenantId = Guid.CreateVersion7(),
             AdminEmail = "admin@schoolos.local",
-            AdminPassword = "DevBootstrap#Password2026!",
+            AdminPassword = "ChangeMe#LocalDev2026!",
             DevLicensePrivateKeyPem = privatePem
         };
 
@@ -156,5 +160,65 @@ public sealed class DevBootstrapPostgresTests
         loginResult.User.Permissions.ShouldContain("attendance:create");
         loginResult.User.Permissions.ShouldContain("fees:create");
         loginResult.User.Permissions.ShouldContain("exams:create");
+    }
+
+    [Fact]
+    public async Task CloudDatabaseBootstrapper_ShouldMigrateCloudSchemas_GrantLeastPrivilege_AndSeedCatalogIdempotently()
+    {
+        const string cloudDbName = "schoolos_cloud_bootstrap_test";
+        var cloudAdminConn =
+            $"Host=127.0.0.1;Port=5432;Database={cloudDbName};Username=schoolos_dev;Password=schoolos_dev_password;Include Error Detail=true";
+
+        await using (var master = new NpgsqlConnection(PostgresDatabaseFixture.MasterConnectionString))
+        {
+            await master.OpenAsync();
+            await using var cmd = master.CreateCommand();
+            cmd.CommandText = $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{cloudDbName}' AND pid <> pg_backend_pid();";
+            await cmd.ExecuteNonQueryAsync();
+            cmd.CommandText = $"DROP DATABASE IF EXISTS {cloudDbName};";
+            await cmd.ExecuteNonQueryAsync();
+            cmd.CommandText = $"CREATE DATABASE {cloudDbName};";
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:PlatformDatabase"] = cloudAdminConn
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSecurityBuildingBlocks(config, isDevelopmentOrTesting: true);
+        services.AddPersistenceBuildingBlocks();
+        services.AddPlatformTenantsModule(config);
+        services.AddSubscriptionsModule(config);
+
+        await using var sp = services.BuildServiceProvider();
+
+        // 1. Migrate both Cloud schemas (platform, subscriptions) and apply schoolos_app grants
+        await CloudDatabaseBootstrapper.ApplyMigrationsAndGrantsAsync(sp, "schoolos_app");
+
+        await using (var conn = new NpgsqlConnection(cloudAdminConn))
+        {
+            await conn.OpenAsync();
+            await using var cmd = conn.CreateCommand();
+            cmd.CommandText = """
+                SELECT COUNT(*) FROM pg_namespace
+                WHERE nspname IN ('platform','subscriptions');
+                """;
+            Convert.ToInt64(await cmd.ExecuteScalarAsync()).ShouldBe(2L);
+        }
+
+        // 2. Seed catalog twice — must stamp system actor audit metadata and stay idempotent
+        await CloudDatabaseBootstrapper.SeedCatalogAsync(sp);
+        await CloudDatabaseBootstrapper.SeedCatalogAsync(sp);
+
+        using var verifyScope = sp.CreateScope();
+        var subDb = verifyScope.ServiceProvider.GetRequiredService<SubscriptionsDbContext>();
+        var plans = await subDb.Plans.AsNoTracking().ToListAsync();
+        plans.Count.ShouldBeGreaterThan(0);
+        plans.ShouldAllBe(p => p.CreatedBy == "system:cloud-catalog-seeder");
     }
 }
