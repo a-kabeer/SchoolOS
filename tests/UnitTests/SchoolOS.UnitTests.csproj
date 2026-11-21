@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\src\PlatformModules\Subscriptions\SchoolOS.PlatformModules.Subscriptions.csproj" />
     <ProjectReference Include="..\..\src\PlatformModules\Licensing\SchoolOS.PlatformModules.Licensing.csproj" />
     <ProjectReference Include="..\..\src\Modules\Attendance\SchoolOS.Modules.Attendance.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Exams\SchoolOS.Modules.Exams.csproj" />
   </ItemGroup>
 
   <ItemGroup>

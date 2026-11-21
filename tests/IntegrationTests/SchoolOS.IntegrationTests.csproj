@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\src\Hosts\SchoolOS.Cloud.Api\SchoolOS.Cloud.Api.csproj" />
     <ProjectReference Include="..\..\src\Hosts\SchoolOS.Local.Api\SchoolOS.Local.Api.csproj" />
     <ProjectReference Include="..\..\src\Modules\Attendance\SchoolOS.Modules.Attendance.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Exams\SchoolOS.Modules.Exams.csproj" />
   </ItemGroup>
 
   <ItemGroup>

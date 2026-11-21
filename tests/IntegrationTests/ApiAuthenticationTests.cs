@@ -14,6 +14,7 @@ using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.Local.Api.LocalPlatform;
 using SchoolOS.Modules.Admissions.Persistence;
 using SchoolOS.Modules.Attendance.Persistence;
+using SchoolOS.Modules.Exams.Persistence;
 using SchoolOS.Modules.Identity.Persistence;
 using SchoolOS.Modules.Organization.Persistence;
 using SchoolOS.Modules.Students.Persistence;
@@ -97,6 +98,7 @@ public class LocalApiFactory : WebApplicationFactory<SchoolOS.Local.Api.Program>
             TestDbContextExtensions.ReplaceDbContextWithInMemory<StudentsDbContext>(services, _dbName, includeChangeAudit: true);
             TestDbContextExtensions.ReplaceDbContextWithInMemory<AdmissionsDbContext>(services, _dbName, includeChangeAudit: true);
             TestDbContextExtensions.ReplaceDbContextWithInMemory<AttendanceDbContext>(services, _dbName, includeChangeAudit: true);
+            TestDbContextExtensions.ReplaceDbContextWithInMemory<ExamsDbContext>(services, _dbName, includeChangeAudit: true);
             TestDbContextExtensions.ReplaceDbContextWithInMemory<LocalPlatformDbContext>(services, _dbName);
 
             var existingOpts = services.Where(d => d.ServiceType == typeof(OfflineLicenseVerificationOptions)).ToList();
