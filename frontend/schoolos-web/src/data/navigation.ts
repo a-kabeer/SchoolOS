@@ -23,6 +23,12 @@ export const SIDEBAR_NAVIGATION: NavSection[] = [
         iconName: 'Receipt',
       },
       {
+        id: 'exams',
+        label: 'Exams & Report Cards',
+        path: '/exams',
+        iconName: 'FileText',
+      },
+      {
         id: 'admissions',
         label: 'Admissions',
         path: '/admissions',

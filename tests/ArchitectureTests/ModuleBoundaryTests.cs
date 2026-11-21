@@ -78,7 +78,8 @@ public class ModuleBoundaryTests
                 "SchoolOS.Modules.Students",
                 "SchoolOS.Modules.Admissions",
                 "SchoolOS.Modules.Attendance",
-                "SchoolOS.Modules.Fees")
+                "SchoolOS.Modules.Fees",
+                "SchoolOS.Modules.Exams")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue();
@@ -97,6 +98,7 @@ public class ModuleBoundaryTests
             "SchoolOS.Modules.Admissions",
             "SchoolOS.Modules.Attendance",
             "SchoolOS.Modules.Fees",
+            "SchoolOS.Modules.Exams",
             "SchoolOS.PlatformModules.Tenants",
             "SchoolOS.PlatformModules.Subscriptions",
             "SchoolOS.PlatformModules.Licensing"
@@ -162,8 +164,22 @@ public class ModuleBoundaryTests
                 "SchoolOS.Modules.Students.Persistence",
                 "SchoolOS.Modules.Admissions.Persistence",
                 "SchoolOS.Modules.Attendance.Persistence",
+                "SchoolOS.Modules.Exams.Persistence",
                 "SchoolOS.Modules.Identity.Persistence")
             .GetResult();
         feesResult.IsSuccessful.ShouldBeTrue("Fees module must consume Organization and Students via published Contracts, not DbContexts.");
+
+        var examsAssembly = Assembly.Load("SchoolOS.Modules.Exams");
+        var examsResult = Types.InAssembly(examsAssembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(
+                "SchoolOS.Modules.Organization.Persistence",
+                "SchoolOS.Modules.Students.Persistence",
+                "SchoolOS.Modules.Admissions.Persistence",
+                "SchoolOS.Modules.Attendance.Persistence",
+                "SchoolOS.Modules.Fees.Persistence",
+                "SchoolOS.Modules.Identity.Persistence")
+            .GetResult();
+        examsResult.IsSuccessful.ShouldBeTrue("Exams module must consume Organization, Students, and Attendance via published Contracts, not DbContexts.");
     }
 }

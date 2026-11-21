@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SchoolOS.BuildingBlocks.Persistence.Audit;
 using SchoolOS.BuildingBlocks.Persistence.Interceptors;
 using SchoolOS.Modules.Attendance.Application;
+using SchoolOS.Modules.Attendance.Contracts;
 using SchoolOS.Modules.Attendance.Persistence;
 
 namespace SchoolOS.Modules.Attendance;
@@ -38,6 +39,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<AttendanceService>();
+        services.AddScoped<ITeacherAssignmentReader>(sp => sp.GetRequiredService<AttendanceService>());
 
         return services;
     }

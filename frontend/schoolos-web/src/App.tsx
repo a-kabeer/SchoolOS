@@ -20,6 +20,7 @@ import { AdmissionsPage } from '@/pages/schoolos/AdmissionsPage';
 import { StudentsPage } from '@/pages/schoolos/StudentsPage';
 import { AttendancePage } from '@/pages/schoolos/AttendancePage';
 import { FeesPage } from '@/pages/schoolos/FeesPage';
+import { ExamsPage } from '@/pages/schoolos/ExamsPage';
 
 export function AppRoutes() {
   return (
@@ -37,6 +38,7 @@ export function AppRoutes() {
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/fees" element={<FeesPage />} />
+          <Route path="/exams" element={<ExamsPage />} />
           <Route path="/admissions" element={<AdmissionsPage />} />
           <Route path="/org/schools" element={<SchoolsManagementPage />} />
           <Route path="/org/branding" element={<SchoolBrandingPage />} />

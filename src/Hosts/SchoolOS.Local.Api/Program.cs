@@ -15,6 +15,8 @@ using SchoolOS.Modules.Attendance;
 using SchoolOS.Modules.Attendance.Endpoints;
 using SchoolOS.Modules.Fees;
 using SchoolOS.Modules.Fees.Endpoints;
+using SchoolOS.Modules.Exams;
+using SchoolOS.Modules.Exams.Endpoints;
 using SchoolOS.Modules.Identity;
 using SchoolOS.Modules.Identity.Endpoints;
 using SchoolOS.Modules.Organization;
@@ -64,6 +66,7 @@ builder.Services.AddStudentsModule(builder.Configuration);
 builder.Services.AddAdmissionsModule(builder.Configuration);
 builder.Services.AddAttendanceModule(builder.Configuration);
 builder.Services.AddFeesModule(builder.Configuration);
+builder.Services.AddExamsModule(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -323,6 +326,7 @@ app.MapEndpointGroups(typeof(StudentsEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(AdmissionsEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(AttendanceEndpointGroup).Assembly);
 app.MapEndpointGroups(typeof(FeesEndpointGroup).Assembly);
+app.MapEndpointGroups(typeof(ExamsEndpointGroup).Assembly);
 
 app.Run();
 
