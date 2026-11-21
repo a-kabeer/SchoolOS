@@ -5,17 +5,68 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-schoolos_dev}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-schoolos_dev_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}
       POSTGRES_DB: ${POSTGRES_DB:-schoolos_local_dev}
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-schoolos_dev} -d $${POSTGRES_DB:-schoolos_local_dev}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  local-api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.local-api
+    container_name: schoolos-local-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__LocalDatabase: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-schoolos_local_dev};Username=${POSTGRES_USER:-schoolos_dev};Password=${POSTGRES_PASSWORD}"
+      Bootstrap__AutoMigrateOnStartup: ${BOOTSTRAP_AUTO_MIGRATE:-true}
+      Bootstrap__RuntimeRoleName: ${RUNTIME_DB_ROLE:-schoolos_app}
+      Bootstrap__RuntimeRolePassword: ${RUNTIME_DB_PASSWORD:-}
+      DevBootstrap__Enabled: ${DEV_BOOTSTRAP_ENABLED:-false}
+      DevBootstrap__AdminEmail: ${DEV_ADMIN_EMAIL:-admin@schoolos.local}
+      DevBootstrap__AdminPassword: ${DEV_ADMIN_PASSWORD:-}
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  cloud-api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.cloud-api
+    container_name: schoolos-cloud-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__PlatformDatabase: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-schoolos_local_dev};Username=${POSTGRES_USER:-schoolos_dev};Password=${POSTGRES_PASSWORD}"
+      Bootstrap__AutoMigrateOnStartup: ${BOOTSTRAP_AUTO_MIGRATE:-true}
+      Bootstrap__SeedCatalogOnStartup: ${BOOTSTRAP_SEED_CATALOG:-false}
+      Bootstrap__RuntimeRoleName: ${RUNTIME_DB_ROLE:-schoolos_app}
+      Bootstrap__RuntimeRolePassword: ${RUNTIME_DB_PASSWORD:-}
+    ports:
+      - "127.0.0.1:8081:8081"
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    container_name: schoolos-web
+    restart: unless-stopped
+    depends_on:
+      - local-api
+    ports:
+      - "127.0.0.1:3000:80"
 
 volumes:
   postgres_data:

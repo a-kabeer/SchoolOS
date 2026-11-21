@@ -13,9 +13,10 @@ public static class DependencyInjection
     public static IServiceCollection AddOrganizationModule(
         this IServiceCollection services,
         IConfiguration configuration,
-        string connectionStringName = "SchoolOSDatabase")
+        string connectionStringName = "LocalDatabase")
     {
         var connectionString = configuration.GetConnectionString(connectionStringName)
+            ?? configuration.GetConnectionString("SchoolOSDatabase")
             ?? configuration["Database:ConnectionString"];
 
         services.AddDbContext<OrganizationDbContext>((sp, options) =>
