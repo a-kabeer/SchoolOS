@@ -73,7 +73,7 @@ public sealed record LinkGuardianCommand(
     bool ReceivesAcademicNotices,
     bool ReceivesFinancialNotices);
 
-public sealed class StudentLifecycleService : IStudentAdmissionBridge, IStudentRosterReader
+public sealed class StudentLifecycleService : IStudentAdmissionBridge, IStudentRosterReader, IStudentBillingReader
 {
     private readonly StudentsDbContext _db;
     private readonly IOrganizationAcademicReader _organization;
@@ -322,6 +322,83 @@ public sealed class StudentLifecycleService : IStudentAdmissionBridge, IStudentR
                 s.LastName,
                 e.RollNumber)
         ).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<BillableStudentEnrollmentItem>> GetBillableStudentsAsync(
+        Guid tenantId,
+        Guid campusId,
+        Guid academicYearId,
+        Guid gradeLevelId,
+        CancellationToken cancellationToken = default)
+    {
+        var enrolled = await (
+            from e in _db.Enrollments.AsNoTracking()
+            join s in _db.Students.AsNoTracking() on e.StudentId equals s.Id
+            where e.TenantId == tenantId
+                && e.CampusId == campusId
+                && e.AcademicYearId == academicYearId
+                && e.GradeLevelId == gradeLevelId
+                && e.Status == EnrollmentStatus.Active
+                && s.Status == StudentLifecycleStatus.Active
+            orderby s.AdmissionNumber
+            select new
+            {
+                s.Id,
+                EnrollmentId = e.Id,
+                e.CampusId,
+                e.AcademicYearId,
+                e.GradeLevelId,
+                s.AdmissionNumber,
+                s.FirstName,
+                s.LastName
+            }
+        ).ToListAsync(cancellationToken);
+
+        if (enrolled.Count == 0)
+        {
+            return [];
+        }
+
+        var studentIds = enrolled.Select(x => x.Id).ToList();
+        var memberships = await _db.HouseholdMembers.AsNoTracking()
+            .Where(m => m.IsActive && m.StudentId.HasValue && studentIds.Contains(m.StudentId.Value))
+            .Select(m => new { StudentId = m.StudentId!.Value, m.HouseholdId })
+            .ToListAsync(cancellationToken);
+
+        var householdByStudent = memberships
+            .GroupBy(m => m.StudentId)
+            .ToDictionary(g => g.Key, g => g.First().HouseholdId);
+
+        var householdIds = householdByStudent.Values.Distinct().ToList();
+        var siblingCountsByHousehold = householdIds.Count == 0
+            ? new Dictionary<Guid, int>()
+            : await (
+                from m in _db.HouseholdMembers.AsNoTracking()
+                join s in _db.Students.AsNoTracking() on m.StudentId equals s.Id
+                where m.IsActive
+                    && m.StudentId.HasValue
+                    && householdIds.Contains(m.HouseholdId)
+                    && s.Status == StudentLifecycleStatus.Active
+                group m by m.HouseholdId into g
+                select new { HouseholdId = g.Key, Count = g.Count() }
+            ).ToDictionaryAsync(x => x.HouseholdId, x => x.Count, cancellationToken);
+
+        return enrolled.Select(x =>
+        {
+            Guid? hhId = householdByStudent.TryGetValue(x.Id, out var h) ? h : null;
+            var siblingCount = hhId.HasValue && siblingCountsByHousehold.TryGetValue(hhId.Value, out var c) ? c : 1;
+            return new BillableStudentEnrollmentItem(
+                x.Id,
+                x.EnrollmentId,
+                x.CampusId,
+                x.AcademicYearId,
+                x.GradeLevelId,
+                x.AdmissionNumber,
+                x.FirstName,
+                x.LastName,
+                hhId,
+                siblingCount);
+        }).ToList();
     }
 
     public async Task<Student> UpdateStudentAsync(
