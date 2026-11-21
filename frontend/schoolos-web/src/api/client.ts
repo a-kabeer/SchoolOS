@@ -23,14 +23,21 @@ export interface LoginRequestPayload {
 
 export interface AuthTokenResponse {
   accessToken: string;
-  expiresInSeconds: number;
+  expiresIn?: number;
+  expiresInSeconds?: number;
   user: {
     id: string;
     email: string;
-    firstName: string;
-    lastName: string;
+    fullName?: string;
+    firstName?: string;
+    lastName?: string;
+    tenantId?: string;
+    schoolId?: string | null;
+    activeCampusId?: string | null;
+    userType?: string | number;
     mustChangePassword: boolean;
     preferredLanguage?: string;
+    roles?: string[];
     permissions?: string[];
   };
 }
@@ -48,17 +55,30 @@ export function setApiLanguage(lang: string): void {
   currentLanguage = lang;
 }
 
+function resolveExpiresInSeconds(resp: AuthTokenResponse): number {
+  const raw = resp.expiresIn ?? resp.expiresInSeconds;
+  return typeof raw === 'number' && Number.isFinite(raw) && raw > 0 ? raw : Number.NaN;
+}
+
 function buildUserFromAuthResponse(resp: AuthTokenResponse): AuthSessionUser {
   const claims = decodeJwtClaims(resp.accessToken);
   const roleClaim = claims?.role ?? claims?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-  const primaryRole = Array.isArray(roleClaim) ? String(roleClaim[0] ?? 'User') : String(roleClaim ?? 'User');
-  const tenantId = typeof claims?.tenant_id === 'string' ? claims.tenant_id : null;
-  const campusId = typeof claims?.campus_id === 'string' ? claims.campus_id : null;
+  const primaryRole = Array.isArray(roleClaim)
+    ? String(roleClaim[0] ?? resp.user.roles?.[0] ?? 'User')
+    : String(roleClaim ?? resp.user.roles?.[0] ?? 'User');
+  const tenantId = typeof claims?.tenant_id === 'string' ? claims.tenant_id : (resp.user.tenantId ?? null);
+  const campusId = typeof claims?.campus_id === 'string' ? claims.campus_id : (resp.user.activeCampusId ?? null);
+
+  const fullName = typeof resp.user.fullName === 'string' ? resp.user.fullName.trim() : '';
+  const combinedName = [resp.user.firstName, resp.user.lastName]
+    .filter((part): part is string => typeof part === 'string' && part.trim().length > 0)
+    .join(' ')
+    .trim();
 
   return {
     id: resp.user.id,
     email: resp.user.email,
-    name: `${resp.user.firstName} ${resp.user.lastName}`.trim() || resp.user.email,
+    name: fullName || combinedName || resp.user.email,
     role: primaryRole,
     tenantId,
     campusId,
@@ -90,8 +110,14 @@ export async function refreshAccessToken(): Promise<boolean> {
       }
 
       const payload = (await response.json()) as AuthTokenResponse;
-      tokenStore.setSession(payload.accessToken, payload.expiresInSeconds, buildUserFromAuthResponse(payload));
-      return true;
+      const expiresIn = resolveExpiresInSeconds(payload);
+      if (!payload.accessToken || !Number.isFinite(expiresIn) || expiresIn <= 0) {
+        tokenStore.clearSession();
+        return false;
+      }
+
+      tokenStore.setSession(payload.accessToken, expiresIn, buildUserFromAuthResponse(payload));
+      return tokenStore.isAuthenticated();
     } catch {
       return false;
     } finally {
@@ -567,8 +593,13 @@ export const schoolOsApi = {
       body: JSON.stringify(payload),
       skipAuthRefresh: true,
     });
+    const expiresIn = resolveExpiresInSeconds(data);
+    if (!data.accessToken || !Number.isFinite(expiresIn) || expiresIn <= 0) {
+      tokenStore.clearSession();
+      throw new ApiError('Invalid authentication session response from server.', 500, 'INVALID_AUTH_RESPONSE');
+    }
     const user = buildUserFromAuthResponse(data);
-    tokenStore.setSession(data.accessToken, data.expiresInSeconds, user);
+    tokenStore.setSession(data.accessToken, expiresIn, user);
     return user;
   },
 
