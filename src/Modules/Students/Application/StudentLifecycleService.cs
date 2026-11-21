@@ -73,7 +73,7 @@ public sealed record LinkGuardianCommand(
     bool ReceivesAcademicNotices,
     bool ReceivesFinancialNotices);
 
-public sealed class StudentLifecycleService : IStudentAdmissionBridge
+public sealed class StudentLifecycleService : IStudentAdmissionBridge, IStudentRosterReader
 {
     private readonly StudentsDbContext _db;
     private readonly IOrganizationAcademicReader _organization;
@@ -295,6 +295,33 @@ public sealed class StudentLifecycleService : IStudentAdmissionBridge
                 s.Status.ToString(),
                 s.SourceEnquiryId))
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<EnrolledStudentRosterItem>> GetActiveSectionRosterAsync(
+        Guid tenantId,
+        Guid campusId,
+        Guid academicYearId,
+        Guid sectionId,
+        CancellationToken cancellationToken = default)
+    {
+        return await (
+            from e in _db.Enrollments.AsNoTracking()
+            join s in _db.Students.AsNoTracking() on e.StudentId equals s.Id
+            where e.TenantId == tenantId
+                && e.CampusId == campusId
+                && e.AcademicYearId == academicYearId
+                && e.SectionId == sectionId
+                && e.Status == EnrollmentStatus.Active
+                && s.Status == StudentLifecycleStatus.Active
+            orderby e.RollNumber, s.AdmissionNumber
+            select new EnrolledStudentRosterItem(
+                s.Id,
+                e.Id,
+                s.AdmissionNumber,
+                s.FirstName,
+                s.LastName,
+                e.RollNumber)
+        ).ToListAsync(cancellationToken);
     }
 
     public async Task<Student> UpdateStudentAsync(
