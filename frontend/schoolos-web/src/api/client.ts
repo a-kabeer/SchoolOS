@@ -369,6 +369,108 @@ export interface AttendanceCorrectionDto {
   correctedAtUtc: string;
 }
 
+export interface SubjectDto {
+  id: string;
+  schoolId: string;
+  gradeLevelId: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+}
+
+export interface ExamTermDto {
+  id: string;
+  schoolId: string;
+  campusId: string;
+  academicYearId: string;
+  code: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+}
+
+export interface ExamPaperDto {
+  id: string;
+  campusId: string;
+  examTermId: string;
+  examTermName: string;
+  gradeLevelId: string;
+  subjectId: string;
+  subjectCode: string;
+  subjectName: string;
+  maxMarks: number;
+  passingMarks: number;
+  weightagePercent: number;
+  examDate?: string | null;
+}
+
+export interface MarkSheetSummaryDto {
+  id: string;
+  campusId: string;
+  examPaperId: string;
+  sectionId: string;
+  examTermName: string;
+  subjectName: string;
+  maxMarks: number;
+  status: string;
+  submittedBy?: string | null;
+  submittedAtUtc?: string | null;
+  approvedBy?: string | null;
+  approvedAtUtc?: string | null;
+  reviewNotes?: string | null;
+}
+
+export interface MarkSheetStudentRowDto {
+  studentId: string;
+  admissionNumber: string;
+  firstName: string;
+  lastName: string;
+  rollNumber?: string | null;
+  marksObtained?: number | null;
+  isAbsent: boolean;
+  remarks?: string | null;
+  percentage?: number | null;
+  letterGrade?: string | null;
+  isPassed?: boolean | null;
+}
+
+export interface SectionMarkSheetViewDto {
+  markSheetId?: string | null;
+  examPaperId: string;
+  sectionId: string;
+  sectionName: string;
+  subjectName: string;
+  maxMarks: number;
+  passingMarks: number;
+  status: string;
+  reviewNotes?: string | null;
+  students: MarkSheetStudentRowDto[];
+}
+
+export interface StudentReportCardDto {
+  examTermId: string;
+  examTermName: string;
+  studentId: string;
+  totalMaxMarks: number;
+  totalObtainedMarks: number;
+  overallPercentage: number;
+  overallGrade: string;
+  isOverallPassed: boolean;
+  subjects: Array<{
+    subjectId: string;
+    subjectCode: string;
+    subjectName: string;
+    maxMarks: number;
+    passingMarks: number;
+    marksObtained: number;
+    isAbsent: boolean;
+    percentage: number;
+    letterGrade: string;
+    isPassed: boolean;
+  }>;
+}
+
 export const schoolOsApi = {
   async login(payload: LoginRequestPayload): Promise<AuthSessionUser> {
     const data = await apiRequest<AuthTokenResponse>('/api/v1/auth/login', {
@@ -738,5 +840,81 @@ export const schoolOsApi = {
     if (params?.date) sp.set('date', params.date);
     const qs = sp.toString() ? `?${sp.toString()}` : '';
     return apiRequest<AttendanceCorrectionDto[]>(`/api/v1/attendance/corrections${qs}`);
+  },
+
+  // Examinations, Gradebooks & Report Cards (/api/v1/exams)
+  listSubjects(gradeLevelId?: string) {
+    const qs = gradeLevelId ? `?gradeLevelId=${encodeURIComponent(gradeLevelId)}` : '';
+    return apiRequest<SubjectDto[]>(`/api/v1/exams/subjects${qs}`);
+  },
+
+  createSubject(body: { schoolId: string; gradeLevelId: string; code: string; name: string }) {
+    return apiRequest<SubjectDto>('/api/v1/exams/subjects', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  listExamTerms(params?: { campusId?: string; academicYearId?: string }) {
+    const sp = new URLSearchParams();
+    if (params?.campusId) sp.set('campusId', params.campusId);
+    if (params?.academicYearId) sp.set('academicYearId', params.academicYearId);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<ExamTermDto[]>(`/api/v1/exams/terms${qs}`);
+  },
+
+  createExamTerm(body: { campusId: string; academicYearId: string; code: string; name: string; startDate: string; endDate: string }) {
+    return apiRequest<ExamTermDto>('/api/v1/exams/terms', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  listExamPapers(params?: { examTermId?: string; gradeLevelId?: string }) {
+    const sp = new URLSearchParams();
+    if (params?.examTermId) sp.set('examTermId', params.examTermId);
+    if (params?.gradeLevelId) sp.set('gradeLevelId', params.gradeLevelId);
+    const qs = sp.toString() ? `?${sp.toString()}` : '';
+    return apiRequest<ExamPaperDto[]>(`/api/v1/exams/papers${qs}`);
+  },
+
+  createExamPaper(body: { examTermId: string; gradeLevelId: string; subjectId: string; maxMarks: number; passingMarks: number; weightagePercent?: number; examDate?: string }) {
+    return apiRequest<{ id: string }>('/api/v1/exams/papers', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  listMarkSheets(status?: string) {
+    const qs = status ? `?status=${encodeURIComponent(status)}` : '';
+    return apiRequest<MarkSheetSummaryDto[]>(`/api/v1/exams/marksheets${qs}`);
+  },
+
+  getSectionMarkSheet(paperId: string, sectionId: string) {
+    return apiRequest<SectionMarkSheetViewDto>(`/api/v1/exams/papers/${paperId}/sections/${sectionId}/marksheet`);
+  },
+
+  saveSectionMarks(paperId: string, sectionId: string, entries: Array<{ studentId: string; marksObtained: number; isAbsent: boolean; remarks?: string }>) {
+    return apiRequest<{ markSheetId: string; status: string; marksCount: number }>(
+      `/api/v1/exams/papers/${paperId}/sections/${sectionId}/marks`,
+      { method: 'POST', body: JSON.stringify({ entries }) }
+    );
+  },
+
+  submitMarkSheet(markSheetId: string) {
+    return apiRequest<{ id: string; status: string }>(`/api/v1/exams/marksheets/${markSheetId}/submit`, {
+      method: 'POST',
+    });
+  },
+
+  reviewMarkSheet(markSheetId: string, approve: boolean, reviewNotes?: string) {
+    return apiRequest<{ id: string; status: string }>(`/api/v1/exams/marksheets/${markSheetId}/review`, {
+      method: 'POST',
+      body: JSON.stringify({ approve, reviewNotes }),
+    });
+  },
+
+  getStudentReportCard(termId: string, studentId: string) {
+    return apiRequest<StudentReportCardDto>(`/api/v1/exams/terms/${termId}/students/${studentId}/report-card`);
   },
 };

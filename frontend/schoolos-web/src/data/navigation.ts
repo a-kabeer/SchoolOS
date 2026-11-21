@@ -17,6 +17,12 @@ export const SIDEBAR_NAVIGATION: NavSection[] = [
         iconName: 'CheckCircle2',
       },
       {
+        id: 'exams',
+        label: 'Exams & Report Cards',
+        path: '/exams',
+        iconName: 'FileText',
+      },
+      {
         id: 'admissions',
         label: 'Admissions',
         path: '/admissions',
