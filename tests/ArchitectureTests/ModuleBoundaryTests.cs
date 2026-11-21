@@ -78,6 +78,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.Modules.Students",
                 "SchoolOS.Modules.Admissions",
                 "SchoolOS.Modules.Attendance",
+                "SchoolOS.Modules.Fees",
                 "SchoolOS.Modules.Exams")
             .GetResult();
 
@@ -96,6 +97,7 @@ public class ModuleBoundaryTests
             "SchoolOS.Modules.Students",
             "SchoolOS.Modules.Admissions",
             "SchoolOS.Modules.Attendance",
+            "SchoolOS.Modules.Fees",
             "SchoolOS.Modules.Exams",
             "SchoolOS.PlatformModules.Tenants",
             "SchoolOS.PlatformModules.Subscriptions",
@@ -154,6 +156,19 @@ public class ModuleBoundaryTests
             .GetResult();
         attendanceResult.IsSuccessful.ShouldBeTrue("Attendance module must consume Organization and Students via published Contracts, not DbContexts.");
 
+        var feesAssembly = Assembly.Load("SchoolOS.Modules.Fees");
+        var feesResult = Types.InAssembly(feesAssembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(
+                "SchoolOS.Modules.Organization.Persistence",
+                "SchoolOS.Modules.Students.Persistence",
+                "SchoolOS.Modules.Admissions.Persistence",
+                "SchoolOS.Modules.Attendance.Persistence",
+                "SchoolOS.Modules.Exams.Persistence",
+                "SchoolOS.Modules.Identity.Persistence")
+            .GetResult();
+        feesResult.IsSuccessful.ShouldBeTrue("Fees module must consume Organization and Students via published Contracts, not DbContexts.");
+
         var examsAssembly = Assembly.Load("SchoolOS.Modules.Exams");
         var examsResult = Types.InAssembly(examsAssembly)
             .ShouldNot()
@@ -162,6 +177,7 @@ public class ModuleBoundaryTests
                 "SchoolOS.Modules.Students.Persistence",
                 "SchoolOS.Modules.Admissions.Persistence",
                 "SchoolOS.Modules.Attendance.Persistence",
+                "SchoolOS.Modules.Fees.Persistence",
                 "SchoolOS.Modules.Identity.Persistence")
             .GetResult();
         examsResult.IsSuccessful.ShouldBeTrue("Exams module must consume Organization, Students, and Attendance via published Contracts, not DbContexts.");
