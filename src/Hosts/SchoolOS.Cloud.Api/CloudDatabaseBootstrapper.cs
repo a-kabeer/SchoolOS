@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SchoolOS.BuildingBlocks.Persistence;
+using SchoolOS.BuildingBlocks.Security;
 using SchoolOS.PlatformModules.Subscriptions.Application;
 using SchoolOS.PlatformModules.Subscriptions.Persistence;
 using SchoolOS.PlatformModules.Tenants.Persistence;
@@ -55,6 +56,8 @@ public static class CloudDatabaseBootstrapper
     public static async Task SeedCatalogAsync(IServiceProvider services, CancellationToken cancellationToken = default)
     {
         using var scope = services.CreateScope();
+        var tenantContext = (TenantContext)scope.ServiceProvider.GetRequiredService<ITenantContext>();
+        tenantContext.EnterSystemJobScope("system:cloud-catalog-seeder", isPlatformWorker: true);
         var db = scope.ServiceProvider.GetRequiredService<SubscriptionsDbContext>();
         await SubscriptionCatalogSeeder.SeedAsync(db, cancellationToken);
     }
